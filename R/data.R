@@ -5,31 +5,35 @@
 #'
 #' @description
 #' \code{mockSC} is designed to generate synthetic single-cell
-#' These data are not meant to represent biologically
-#' meaningful use-cases, but are solely intended for use in examples, for
-#' unit-testing, and to demonstrate \code{SETA}'s general functionality.
+#'   These data are not meant to represent biologically
+#'   meaningful use-cases, but are solely intended for use in examples, for
+#'   unit-testing, and to demonstrate \code{SETA}'s general functionality.
 #'
-#' @param ng,nc,nt integer scalar specifying the number
-#'   of genes, cells, types (groups) to simulate.
+#' @param ng,nc,nt,ns,nb integer scalar specifying the number
+#'   of genes, cells, types (groups), number of samples and number of batches
+#'   to simulate.
 #'
 #' @return
 #' \itemize{
-#' \item{\code{mockSC} returns a \code{SingleCellExperiment}
+#' \item{\code{mockSC} returns a \code{SeuratObject}
 #'   with rows = genes, columns = single cells, and cell metadata
 #'   (\code{colData}) column \code{type} containing group identifiers.}
 #'
 #' @examples
 #' sce <- mockSC()
+#' df_long <- mockLong()
+#' df_count <- mockCount(df_long)
+#' df_count2 <- mockCount(sce@meta.data)
 NULL
 
 #' @rdname data
 #' @importFrom SeuratObject CreateSeuratObject DefaultAssay
 #' @importFrom Seurat NormalizeData ScaleData RunPCA
-#' @importFrom stats rnbinom runif
+#' @importFrom stats rnbinom runif aggregate
 #' @importFrom Matrix Matrix
 #' @export
 
-mockSC <- function(ng = 200, nc = 50, nt = 3) {
+mockSC <- function(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2) {
     z <- lapply(seq_len(nt), \(t) {
         # mu parameter size for rnbinom
         ms <- 2^runif(ng, 2, 10)
@@ -48,10 +52,16 @@ mockSC <- function(ng = 200, nc = 50, nt = 3) {
             paste0("type", seq_len(nt))
         )
         x$batch <- factor(
-            sample(c("Batch1", "Batch2"),
+            sample(paste0("Batch", seq_len(nb)),
                    nc,
                    replace = TRUE),
-            c("Batch1", "Batch2")
+            paste0("Batch", seq_len(nb))
+        )
+        x$sample <- factor(
+            sample(paste0("Sample", seq_len(ns)),
+                   nc,
+                   replace = TRUE),
+            paste0("Sample", seq_len(ns))
         )
         return(x)
     })
@@ -68,3 +78,20 @@ mockSC <- function(ng = 200, nc = 50, nt = 3) {
 
     se
 }
+
+mockLong <- function(nc = 500, nt = 3, ns = 4, nb = 2) {
+
+    data.frame(
+        bc = paste0("cell", seq_len(nc)),
+        type = sample(paste0("type", seq_len(nt)), nc, replace = TRUE),
+        batch = sample(paste0("batch", seq_len(nb)), nc, replace = TRUE),
+        sample = sample(paste0("sample", seq_len(ns)), nc, replace = TRUE)
+    )
+
+}
+
+mockCount <- function(df) {
+    aggregate(bc ~ type + sample + batch, data = mockLong(), FUN = length)
+}
+
+
