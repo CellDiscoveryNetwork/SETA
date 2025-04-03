@@ -1,8 +1,8 @@
 <img src="docs/SETAsmall.jpg?raw=true" align="right" width=250px>  
 
-![GitHub Actions](https://github.com/CellDiscoveryNetwork/SETA/workflows/WorkflowName/badge.svg)
-![Code Climate](https://img.shields.io/codeclimate/maintainability/username/repo)
-![Codacy Grade](https://api.codacy.com/project/badge/Grade/yourProjectToken)
+![Downloads](https://img.shields.io/github/downloads/CellDiscoveryNetwork/SETA/total)
+![GitHub stars](https://img.shields.io/github/stars/CellDiscoveryNetwork/SETA?style=social)
+![R-CMD-check](https://github.com/CellDiscoveryNetwork/SETA/workflows/R-CMD-check/badge.svg)
 
 # SETA: Ecological Compositional Analysis of scRNA-seq Data
 
