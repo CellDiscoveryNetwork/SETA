@@ -26,9 +26,9 @@ SETA aims to make compositional analysis user friendly and easy to understand wi
 - Continuous Integration
   - Configure GitHub Actions or similar for automated checks
   - Validate R CMD check, test coverage, and code style
-- Composition Object Creation
-  - Implement reference frame for normalization
-  - Integrate latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA)
+- Compositional Space Calculation
+  - Implement reference frames for normalization
+  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA)
   - Add trajectory capabilities
 - Compositional Transforms
   - ALR
