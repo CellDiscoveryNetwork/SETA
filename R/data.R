@@ -34,6 +34,9 @@ NULL
 #' @export
 
 mockSC <- function(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2) {
+    if(!requireNamespace("Seurat", quietly = TRUE)) {
+        stop("Package 'Seurat' must be installed to use mockSC.")
+    }
     z <- lapply(seq_len(nt), \(t) {
         # mu parameter size for rnbinom
         ms <- 2^runif(ng, 2, 10)
@@ -93,6 +96,9 @@ mockCount <- function(df) {
 }
 
 mockSCE <- function() {
+    if(!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+        stop("Package 'SingleCellExperiment' must be installed to use mockSCE.")
+    }
     library(SingleCellExperiment)
     df <- mockLong()
     bc <- df$bc
