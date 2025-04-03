@@ -80,18 +80,25 @@ mockSC <- function(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2) {
 }
 
 mockLong <- function(nc = 500, nt = 3, ns = 4, nb = 2) {
-
     data.frame(
         bc = paste0("cell", seq_len(nc)),
         type = sample(paste0("type", seq_len(nt)), nc, replace = TRUE),
         batch = sample(paste0("batch", seq_len(nb)), nc, replace = TRUE),
         sample = sample(paste0("sample", seq_len(ns)), nc, replace = TRUE)
     )
-
 }
 
 mockCount <- function(df) {
     aggregate(bc ~ type + sample + batch, data = mockLong(), FUN = length)
 }
 
-
+mockSCE <- function() {
+    library(SingleCellExperiment)
+    df <- mockLong()
+    bc <- df$bc
+    cd <- DataFrame(df)
+    mat <- matrix(rpois(nrow(df)*20,5),nrow=20)
+    rownames(mat) <- paste0("gene",1:20)
+    colnames(mat) <- bc
+    SingleCellExperiment(assays=list(counts=mat),colData=cd)
+}
