@@ -1,3 +1,9 @@
+<img src="docs/SETAsmall.jpg?raw=true" align="right" width=250px>  
+
+![GitHub Actions](https://github.com/CellDiscoveryNetwork/SETA/workflows/WorkflowName/badge.svg)
+![Code Climate](https://img.shields.io/codeclimate/maintainability/username/repo)
+![Codacy Grade](https://api.codacy.com/project/badge/Grade/yourProjectToken)
+
 # SETA: Ecological Compositional Analysis of scRNA-seq Data
 
 SETA aims to make compositional analysis user friendly and easy to understand with visualization of single-cell RNA-seq data, allowing researchers to easily assess cell-type proportions and distribution changes across biological conditions.
