@@ -11,7 +11,7 @@ setaLatent <- function(transform_obj,
               varExplained = NULL)
 
   if(method == "PCA") {
-    pca_res <- prcomp(x, center = TRUE, scale. = FALSE)
+    pca_res <- stats::prcomp(x, center = TRUE, scale. = FALSE)
     out$latentSpace <- as.data.frame(pca_res$x[, seq_len(dims), drop = FALSE])
     out$loadings <- as.data.frame(
         pca_res$rotation[, seq_len(dims), drop = FALSE]
@@ -21,8 +21,8 @@ setaLatent <- function(transform_obj,
   }
 
   if(method == "PCoA") {
-    d <- dist(x)
-    cmd <- cmdscale(d, k = dims, eig = TRUE)
+    d <- stats::dist(x)
+    cmd <- stats::cmdscale(d, k = dims, eig = TRUE)
     out$latentSpace <- as.data.frame(cmd$points)
     out$loadings <- NA
     eig_vals <- cmd$eig[cmd$eig > 0]
@@ -30,8 +30,8 @@ setaLatent <- function(transform_obj,
   }
 
   if(method == "NMDS") {
-    requireNamespace("MASS", quietly = TRUE) # Typically included with R
-    d <- dist(x)
+    requireNamespace("MASS", quietly = TRUE)
+    d <- stats::dist(x)
     nmds <- MASS::isoMDS(d, k = dims)
     out$latentSpace <- as.data.frame(nmds$points)
     out$loadings <- NA

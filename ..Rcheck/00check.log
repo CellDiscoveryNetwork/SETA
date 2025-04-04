@@ -6,33 +6,85 @@
     GNU Fortran (GCC) 12.2.0
 * running under: macOS 15.3.1
 * using session charset: UTF-8
-* using option ‘--as-cran’
 * checking for file ‘./DESCRIPTION’ ... OK
 * this is package ‘SETA’ version ‘0.1.1’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [3s/20s] NOTE
-Maintainer: ‘Kyle Kimler <kkimler@broadinstitute.org>’
-
-New submission
-
-Package has a VignetteBuilder field but no prebuilt vignette index.
-
-Found the following (possibly) invalid URLs:
-  URL: https://github.com/jo-m-lab/SETA
-    From: README.md
-    Status: 404
-    Message: Not Found
-
-The Description field should not start with the package name,
-  'This package' or similar.
-
-The build time stamp is missing.
 * checking package namespace information ... OK
-* checking package dependencies ... ERROR
-Namespace dependencies missing from DESCRIPTION Imports/Depends entries:
-  'Matrix', 'Seurat', 'SingleCellExperiment'
-
-See section ‘The DESCRIPTION file’ in the ‘Writing R Extensions’
-manual.
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  .DS_Store
+  .gitignore
+  R/.DS_Store
+  docs/.DS_Store
+  ..Rcheck
+  .git
+  .github
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘SETA’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking DESCRIPTION meta-information ... NOTE
+Checking should be performed on sources prepared by ‘R CMD build’.
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directory with the name of a check directory:
+  ./..Rcheck
+Most likely, these were included erroneously.
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking dependencies in R code ... NOTE
+Namespace in Imports field not imported from: ‘methods’
+  All declared Imports should be used.
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented code objects:
+  ‘setaALR’ ‘setaCLR’ ‘setaCounts’ ‘setaILR’ ‘setaLatent’ ‘setaLogCPM’
+  ‘setaPercent’ ‘setaTransform’
+All user-level objects in a package should have documentation entries.
+See chapter ‘Writing R documentation files’ in the ‘Writing R
+Extensions’ manual.
+* checking examples ... NONE
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... ERROR
+  Running ‘testthat.R’
+Running the tests in ‘tests/testthat.R’ failed.
+Last 13 lines of output:
+   4. └─base::ncol(colData(x))
+  ── Failure ('test_transforms.R:9:3'): setaCLR returns correct known results ────
+  out$counts not equal to `expected`.
+  4/4 mismatches (average diff: 0.0983)
+  [1] -0.203 - -0.347 ==  0.1439
+  [2] -0.294 - -0.348 ==  0.0544
+  [3]  0.203 -  0.347 == -0.1439
+  [4]  0.294 -  0.345 == -0.0509
+  ── Failure ('test_transforms.R:20:3'): setaALR returns correct known results ───
+  out$counts not equal to `expected`.
+  Attributes: < Length mismatch: comparison on first 1 components >
+  
+  [ FAIL 4 | WARN 3 | SKIP 0 | PASS 40 ]
+  Error: Test failures
+  Execution halted
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+* checking PDF version of manual without index ... ERROR
+Re-running with no redirection of stdout/stderr.
 * DONE
-Status: 1 ERROR, 1 NOTE
+Status: 2 ERRORs, 3 WARNINGs, 3 NOTEs

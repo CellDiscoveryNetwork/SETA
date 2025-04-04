@@ -1,0 +1,55 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(testthat)
+Warning message:
+package 'testthat' was built under R version 4.4.1 
+> library(SETA)
+> test_check("SETA")
+initial  value 0.000000 
+final  value 0.000000 
+converged
+[ FAIL 4 | WARN 3 | SKIP 0 | PASS 40 ]
+
+══ Failed tests ════════════════════════════════════════════════════════════════
+── Failure ('test_mockSC.R:5:5'): mockSC returns a Seurat object ───────────────
+ncol(x@meta.data > 0) is not TRUE
+
+`actual` is an integer vector (6)
+`expected` is a logical vector (TRUE)
+── Error ('test_mockSCE.R:5:5'): mockSCE returns a SingleCellExperiment object ──
+Error in `colData(x)`: could not find function "colData"
+Backtrace:
+    ▆
+ 1. ├─testthat::expect_true(ncol(colData(x)) > 0) at test_mockSCE.R:5:5
+ 2. │ └─testthat::quasi_label(enquo(object), label, arg = "object")
+ 3. │   └─rlang::eval_bare(expr, quo_get_env(quo))
+ 4. └─base::ncol(colData(x))
+── Failure ('test_transforms.R:9:3'): setaCLR returns correct known results ────
+out$counts not equal to `expected`.
+4/4 mismatches (average diff: 0.0983)
+[1] -0.203 - -0.347 ==  0.1439
+[2] -0.294 - -0.348 ==  0.0544
+[3]  0.203 -  0.347 == -0.1439
+[4]  0.294 -  0.345 == -0.0509
+── Failure ('test_transforms.R:20:3'): setaALR returns correct known results ───
+out$counts not equal to `expected`.
+Attributes: < Length mismatch: comparison on first 1 components >
+
+[ FAIL 4 | WARN 3 | SKIP 0 | PASS 40 ]
+Error: Test failures
+Execution halted
