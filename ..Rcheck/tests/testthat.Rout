@@ -23,13 +23,10 @@ package 'testthat' was built under R version 4.4.1
 initial  value 0.000000 
 final  value 0.000000 
 converged
-[ FAIL 1 | WARN 3 | SKIP 0 | PASS 43 ]
+[ FAIL 0 | WARN 3 | SKIP 0 | PASS 44 ]
 
-══ Failed tests ════════════════════════════════════════════════════════════════
-── Failure ('test_transforms.R:10:3'): setaCLR returns correct known results ───
-out$counts not equal to `expected`.
-Attributes: < Length mismatch: comparison on first 1 components >
-
-[ FAIL 1 | WARN 3 | SKIP 0 | PASS 43 ]
-Error: Test failures
-Execution halted
+[ FAIL 0 | WARN 3 | SKIP 0 | PASS 44 ]
+> 
+> proc.time()
+   user  system elapsed 
+  4.329   0.209   4.535 

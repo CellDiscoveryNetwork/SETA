@@ -17,7 +17,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
 colnames(mat) <- c("A", "B")
 out <- setaALR(mat, ref="A", pseudocount=0)
 out$counts

@@ -29,7 +29,7 @@ ALR transforms the data by taking \eqn{\log(x_i / x_{ref})} for each column
 the simplex to a Euclidean space in compositional data analysis.
 }
 \examples{
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
 colnames(mat) <- c("A", "B")
 out <- setaALR(mat, ref="A", pseudocount=0)
 out$counts

@@ -36,7 +36,194 @@ Type 'q()' to quit R.
 > 
 > ### ** Examples
 > 
-> #' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
 > colnames(mat) <- c("A", "B")
-Error: object 'mat' not found
-Execution halted
+> out <- setaALR(mat, ref="A", pseudocount=0)
+> out$counts
+             B
+[1,] 0.6931472
+[2,] 0.6931472
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaCLR")
+> ### * setaCLR
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaCLR
+> ### Title: Centered Log-Ratio Transform
+> ### Aliases: setaCLR
+> 
+> ### ** Examples
+> 
+> mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> out <- setaCLR(mat, pseudocount=0)
+> out$counts
+           [,1]      [,2]
+[1,] -0.3465736 0.3465736
+[2,] -0.3465736 0.3465736
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaCounts")
+> ### * setaCounts
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaCounts
+> ### Title: Extract Taxonomic Counts from Various Single Cell Objects
+> ### Aliases: setaCounts
+> 
+> ### ** Examples
+> 
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaILR")
+> ### * setaILR
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaILR
+> ### Title: Isometric Log-Ratio Transform
+> ### Aliases: setaILR
+> 
+> ### ** Examples
+> 
+> mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> out <- setaILR(mat, boxcox_p=0)
+> out$counts
+          [,1]
+[1,] 0.2867071
+[2,] 0.4156279
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaLatent")
+> ### * setaLatent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaLatent
+> ### Title: Compute a Latent Space from Transformed Counts
+> ### Aliases: setaLatent
+> 
+> ### ** Examples
+> 
+> mat <- matrix(rpois(20, lambda=5), nrow=4)  # small 4x5 matrix
+> colnames(mat) <- paste0("C", 1:5)
+> clr_out <- setaCLR(mat)
+> latent_pca <- setaLatent(clr_out, method="PCA", dims=2)
+> latent_pca$latentSpace
+          PC1          PC2
+1  0.74202954 -0.217243665
+2 -0.58133235 -0.353636177
+3 -0.07773674  0.570765665
+4 -0.08296045  0.000114177
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaLogCPM")
+> ### * setaLogCPM
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaLogCPM
+> ### Title: log2(CPM) Transform
+> ### Aliases: setaLogCPM
+> 
+> ### ** Examples
+> 
+> mat <- matrix(1:4, nrow=2)
+> out <- setaLogCPM(mat)
+> out$counts
+         [,1]     [,2]
+[1,] 18.93157 18.93157
+[2,] 19.51653 19.25350
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaPercent")
+> ### * setaPercent
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaPercent
+> ### Title: Percentage Transform
+> ### Aliases: setaPercent
+> 
+> ### ** Examples
+> 
+> mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> out <- setaPercent(mat)
+> out$counts
+     [,1] [,2]
+[1,]   20   20
+[2,]   80   80
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("setaTransform")
+> ### * setaTransform
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: setaTransform
+> ### Title: Wrapper for Common Compositional Transforms
+> ### Aliases: setaTransform
+> 
+> ### ** Examples
+> 
+> mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> setaTransform(mat, method="CLR")
+$method
+[1] "CLR"
+
+$counts
+           [,1]      [,2]
+[1,] -0.2027326 0.2027326
+[2,] -0.2938933 0.2938933
+
+> setaTransform(mat, method="percent")
+$method
+[1] "percent"
+
+$counts
+     [,1] [,2]
+[1,]   20   20
+[2,]   80   80
+
+> 
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  0.034 0.003 0.036 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

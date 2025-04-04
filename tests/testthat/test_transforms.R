@@ -5,7 +5,6 @@ test_that("setaCLR returns correct known results", {
   # Row2: log(4/5.656854) = -0.3465735, log(8/5.656854) = 0.346574
   expected <- matrix(c(-0.3465739, 0.346573, -0.346574, 0.346574),
                      nrow = 2, byrow = TRUE)
-  colnames(expected) <- c("A", "B")
   out <- setaCLR(mat, pseudocount = 0)
   expect_equal(out$counts, expected, tolerance = 1e-3)
   expect_equal(out$method, "CLR")

@@ -151,7 +151,7 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
 #' \emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
 #'
 #' @examples
-#' #' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
 #' colnames(mat) <- c("A", "B")
 #' out <- setaALR(mat, ref="A", pseudocount=0)
 #' out$counts
