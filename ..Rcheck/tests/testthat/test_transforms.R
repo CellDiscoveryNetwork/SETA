@@ -1,11 +1,12 @@
 test_that("setaCLR returns correct known results", {
   mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
   # Hand-calculated CLR for this 2x2:
-  # Row1: log(1/1.4142) = -0.3466, log(2/1.4142) = 0.3466
-  # Row2: log(4/5.6569) = -0.3483, log(8/5.6569) = 0.3448
-  expected <- matrix(c(-0.3466, 0.3466, -0.3483, 0.3448),
+  # Row1: log(1/1.414214) = -0.3465739, log(2/1.414214) = 0.346573
+  # Row2: log(4/5.656854) = -0.3465735, log(8/5.656854) = 0.346574
+  expected <- matrix(c(-0.3465739, 0.346573, -0.346574, 0.346574),
                      nrow = 2, byrow = TRUE)
-  out <- setaCLR(mat)
+  colnames(expected) <- c("A", "B")
+  out <- setaCLR(mat, pseudocount = 0)
   expect_equal(out$counts, expected, tolerance = 1e-3)
   expect_equal(out$method, "CLR")
 })
@@ -14,8 +15,9 @@ test_that("setaALR returns correct known results", {
   mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
   colnames(mat) <- c("A", "B")
   # ALR with "A" as ref => log(B/A)
-  # Row1: log(2/1)=0.6931, Row2: log(8/4)=0.6931
-  expected <- matrix(c(0.6931, 0.6931), nrow = 2, byrow = TRUE)
+  # Row1: log(2/1)=0.69315, Row2: log(8/4)=0.69315
+  expected <- matrix(c(0.69315, 0.69315), nrow = 2, byrow = TRUE)
+  colnames(expected) <- "B"
   out <- setaALR(mat, ref = "A", pseudocount = 0)
   expect_equal(out$counts, expected, tolerance = 1e-3)
   expect_match(out$method, "ALR_ref=A")

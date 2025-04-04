@@ -12,4 +12,5 @@ Suggests: testthat (>= 3.0.0), knitr, rmarkdown, MASS, Matrix, Seurat,
         SummarizedExperiment, SingleCellExperiment
 VignetteBuilder: knitr
 biocViews: SingleCell
-Built: R 4.4.0; ; 2025-04-04 19:25:30 UTC; unix
+RoxygenNote: 7.3.2
+Built: R 4.4.0; ; 2025-04-04 21:58:30 UTC; unix

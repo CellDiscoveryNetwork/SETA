@@ -1,8 +1,9 @@
 Hmm ... looks like a package
-Converting parsed Rd's to LaTeX Creating pdf output from LaTeX ...
+Converting parsed Rd's to LaTeX 
+Creating pdf output from LaTeX ...
 Error in texi2dvi(file = file, pdf = TRUE, clean = clean, quiet = quiet,  : 
   pdflatex is not available
 Error in texi2dvi(file = file, pdf = TRUE, clean = clean, quiet = quiet,  : 
   pdflatex is not available
 Error in running tools::texi2pdf()
-You may want to clean up by 'rm -Rf /var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T//RtmpV00Xb0/Rd2pdf115253afb24c1'
+You may want to clean up by 'rm -Rf /var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T//RtmpGSTrgM/Rd2pdf1257641a0075e'

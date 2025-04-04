@@ -22,3 +22,4 @@ Suggests:
 VignetteBuilder: knitr
 biocViews:
     SingleCell
+RoxygenNote: 7.3.2

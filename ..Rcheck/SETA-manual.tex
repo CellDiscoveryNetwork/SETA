@@ -27,7 +27,429 @@
 SummarizedExperiment, SingleCellExperiment}
 \item[VignetteBuilder]\AsIs{knitr}
 \item[biocViews]\AsIs{SingleCell}
+\item[RoxygenNote]\AsIs{7.3.2}
 \end{description}
 \Rdcontents{Contents}
+\HeaderA{setaALR}{Additive Log-Ratio Transform}{setaALR}
+%
+\begin{Description}
+Applies an ALR transform to a matrix of counts using a specified reference column.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaALR(counts, ref, pseudocount = 1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts.
+
+\item[\code{ref}] The reference column, specified either by name or by index.
+
+\item[\code{pseudocount}] Numeric. Added to avoid log(0). Default is 1.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+ALR transforms the data by taking \eqn{\log(x_i / x_{ref})}{} for each column
+\eqn{i}{} except the reference column. This is another way to map data from
+the simplex to a Euclidean space in compositional data analysis.
+\end{Details}
+%
+\begin{Value}
+A list with:
+\begin{description}
+
+\item[method] A string noting \code{ALR\_ref=<ref>}.
+\item[counts] A matrix of dimension \code{nrow(counts) x (ncol(counts) - 1)}.
+
+\end{description}
+
+\end{Value}
+%
+\begin{References}
+Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
+\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+colnames(mat) <- c("A", "B")
+out <- setaALR(mat, ref="A", pseudocount=0)
+out$counts
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaCLR}{Centered Log-Ratio Transform}{setaCLR}
+%
+\begin{Description}
+Applies a CLR transform to a matrix of counts.
+This transform is commonly used in compositional data analysis (CoDA)
+to project counts into a log-ratio space.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaCLR(counts, pseudocount = 1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts (rows = features, columns = samples).
+
+\item[\code{pseudocount}] Numeric.
+Added to all entries to avoid taking log(0). Default is 1.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+The CLR transform is defined as \eqn{\log(x / g(x))}{}
+where \eqn{g(x)}{} is the geometric mean
+of each row (sample) in the log scale.
+A pseudocount helps avoid log(0) - default is 1, as scRNA data can be sparse.
+\end{Details}
+%
+\begin{Value}
+A list with two elements:
+\begin{description}
+
+\item[method] A string indicating the transform ("CLR").
+\item[counts] A matrix of the same dimensions
+as the input after CLR transform.
+
+\end{description}
+
+\end{Value}
+%
+\begin{References}
+Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
+\emph{Journal of the Royal Statistical Society.
+Series B (Methodological)}, 44(2), 139-177.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+out <- setaCLR(mat, pseudocount=0)
+out$counts
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaCounts}{Extract Taxonomic Counts from Various Single Cell Objects}{setaCounts}
+%
+\begin{Description}
+Given a \code{SingleCellExperiment}, \code{Seurat}, or long-form \code{data.frame},
+this function produces a type-by-sample matrix of cell counts. For \code{SingleCellExperiment}
+or \code{Seurat}, it looks for \code{type} and \code{sample} columns in the object-level metadata.
+For long-form data frames, it expects columns \code{bc}, \code{type}, and \code{sample}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaCounts(obj)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{obj}] Either a \code{SingleCellExperiment}, a \code{Seurat} object, or
+a \code{data.frame} with columns \code{bc}, \code{type}, and \code{sample}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+\begin{itemize}
+
+\item{} \strong{SingleCellExperiment}: Reads \code{colData(obj)} for \code{type} and \code{sample}.
+\item{} \strong{Seurat}: Uses \code{obj@meta.data} for \code{type} and \code{sample}.
+\item{} \strong{data.frame}: Duplicates (by \code{bc}) are removed so each cell is counted once.
+
+\end{itemize}
+
+If \code{type} or \code{sample} columns are missing, an error is thrown.
+\end{Details}
+%
+\begin{Value}
+A matrix whose rows are cell types and whose columns are samples,
+with entries giving the count of unique barcodes per type-sample combination.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# For a data.frame:
+df <- data.frame(
+  bc = paste0("cell", 1:10),
+  type = sample(c("Tcell", "Bcell"), 10, TRUE),
+  sample = sample(c("sample1","sample2"), 10, TRUE)
+)
+cmat <- setaCounts(df)
+cmat
+
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaILR}{Isometric Log-Ratio Transform}{setaILR}
+%
+\begin{Description}
+Applies an ILR transform to a matrix of counts, using a Helmert basis by default.
+Optionally includes a Box-Cox–like step on the log scale.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaILR(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts.
+
+\item[\code{boxcox\_p}] Numeric. If nonzero, applies a Box-Cox–type transform to the log-values.
+
+\item[\code{taxTree}] Currently unused. Reserved for future taxonomic-balance approaches.
+
+\item[\code{pseudocount}] Numeric. Pseudocount to avoid log(0). Default is 1.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+The ILR transform is a key tool in compositional data analysis. By default, it
+uses a Helmert contrast matrix. The parameter \code{boxcox\_p} allows an
+additional transform on the log-values, as described by whuber on
+\url{https://stats.stackexchange.com/questions/259208/how-to-perform-isometric-log-ratio-transformation}.
+\end{Details}
+%
+\begin{Value}
+A list with:
+\begin{description}
+
+\item[method] A string indicating ILR with a Helmert basis (potentially noting \code{boxcox\_p}).
+\item[counts] A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns.
+
+\end{description}
+
+\end{Value}
+%
+\begin{References}
+Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
+\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+out <- setaILR(mat, boxcox_p=0)
+out$counts
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaLatent}{Compute a Latent Space from Transformed Counts}{setaLatent}
+%
+\begin{Description}
+Given an object produced by one of the \code{seta*} transform functions (e.g., \code{setaCLR}),
+this function applies a dimension reduction method (PCA, PCoA, or NMDS) to the
+\code{transform\_obj\$counts}.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaLatent(transform_obj, method = c("PCA", "PCoA", "NMDS"), dims = 2)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{transform\_obj}] A list returned by, e.g., \code{setaCLR}, \code{setaILR}, etc.,
+containing a \code{counts} matrix.
+
+\item[\code{method}] A string specifying the dimension reduction method. One of \code{"PCA"},
+\code{"PCoA"}, or \code{"NMDS"}.
+
+\item[\code{dims}] Integer. Number of dimensions (components) to return. Default is 2.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+\begin{itemize}
+
+\item{} \strong{PCA}: Uses \code{stats::prcomp} on the rows of \code{transform\_obj\$counts}.
+\item{} \strong{PCoA}: Computes a distance matrix via \code{stats::dist}, then
+applies classical multidimensional scaling (\code{stats::cmdscale}).
+\item{} \strong{NMDS}: Uses \code{MASS::isoMDS} to compute non-metric MDS from the distance matrix.
+
+\end{itemize}
+
+Each method returns a data frame of coordinates in \code{latentSpace}, plus additional information
+specific to that method.
+\end{Details}
+%
+\begin{Value}
+A list containing:
+\begin{description}
+
+\item[method] The chosen latent space method.
+\item[latentSpace] A data frame of coordinates in the chosen latent space, with \code{dims} columns.
+\item[loadings] For PCA, the loadings matrix. Otherwise \code{NA}.
+\item[varExplained] Variance explained (for PCA or PCoA) or stress (for NMDS).
+
+\end{description}
+
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(rpois(20, lambda=5), nrow=4)  # small 4x5 matrix
+colnames(mat) <- paste0("C", 1:5)
+clr_out <- setaCLR(mat)
+latent_pca <- setaLatent(clr_out, method="PCA", dims=2)
+latent_pca$latentSpace
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaLogCPM}{log2(CPM) Transform}{setaLogCPM}
+%
+\begin{Description}
+Computes log2-based counts-per-million (CPM) for each column. Optionally uses provided size factors.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaLogCPM(counts, pseudocount = 1, size_factors = NULL, scale_factor = 1e+06)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts.
+
+\item[\code{pseudocount}] Numeric. Added to counts to avoid \code{log2(0)}. Default is 1.
+
+\item[\code{size\_factors}] Optional numeric vector. If \code{NULL}, uses the column sums.
+
+\item[\code{scale\_factor}] Numeric. The scaling factor for "per million" style. Default is \code{1e6}.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+A common RNA-seq transform is log2(CPM + 1). This variant allows adjusting the
+pseudocount, size factors, and overall scale factor.
+\end{Details}
+%
+\begin{Value}
+A list with:
+\begin{description}
+
+\item[method] \code{"logCPM"}.
+\item[counts] A matrix of the same dimension, containing log2(CPM + pseudocount).
+
+\end{description}
+
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(1:4, nrow=2)
+out <- setaLogCPM(mat)
+out$counts
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaPercent}{Percentage Transform}{setaPercent}
+%
+\begin{Description}
+Converts columns (samples) of a counts matrix to percentages of their respective column sums.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaPercent(counts)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}
+Simple re-scaling for compositional-like interpretation in percentages.
+Useful for simplified Wilcoxon rank comparisons and such
+\end{Details}
+%
+\begin{Value}
+A list with:
+\begin{description}
+
+\item[method] \code{"percent"}.
+\item[counts] A matrix of the same dimension, with each column summing to 100.
+
+\end{description}
+
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+out <- setaPercent(mat)
+out$counts
+
+\end{ExampleCode}
+\end{Examples}
+\HeaderA{setaTransform}{Wrapper for Common Compositional Transforms}{setaTransform}
+%
+\begin{Description}
+A convenience function that dispatches to one of the transforms:
+CLR, ALR, ILR, percent, or logCPM.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+setaTransform(
+  counts,
+  method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
+  ref = NULL,
+  taxTree = NULL,
+  pseudocount = 1,
+  size_factors = NULL
+)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{counts}] A matrix of counts.
+
+\item[\code{method}] Which transform to apply. One of \code{"CLR"}, \code{"ALR"},
+\code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.
+
+\item[\code{ref}] Reference column (only used if \code{method="ALR"}).
+
+\item[\code{taxTree}] Optional tree for ILR (not yet implemented).
+
+\item[\code{pseudocount}] Numeric, used by CLR, ALR, ILR, logCPM. Default 1.
+
+\item[\code{size\_factors}] For logCPM scaling. If \code{NULL}, uses column sums.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Value}
+A list as returned by the respective transform function.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+setaTransform(mat, method="CLR")
+setaTransform(mat, method="percent")
+
+\end{ExampleCode}
+\end{Examples}
 \printindex{}
 \end{document}

@@ -53,32 +53,46 @@ Namespace in Imports field not imported from: ‘methods’
 * checking replacement functions ... OK
 * checking foreign function calls ... OK
 * checking R code for possible problems ... OK
-* checking for missing documentation entries ... WARNING
-Undocumented code objects:
-  ‘setaALR’ ‘setaCLR’ ‘setaCounts’ ‘setaILR’ ‘setaLatent’ ‘setaLogCPM’
-  ‘setaPercent’ ‘setaTransform’
-All user-level objects in a package should have documentation entries.
-See chapter ‘Writing R documentation files’ in the ‘Writing R
-Extensions’ manual.
-* checking examples ... NONE
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... ERROR
+Running examples in ‘SETA-Ex.R’ failed
+The error most likely occurred in:
+
+> ### Name: setaALR
+> ### Title: Additive Log-Ratio Transform
+> ### Aliases: setaALR
+> 
+> ### ** Examples
+> 
+> #' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+> colnames(mat) <- c("A", "B")
+Error: object 'mat' not found
+Execution halted
 * checking for unstated dependencies in ‘tests’ ... OK
 * checking tests ... ERROR
   Running ‘testthat.R’
 Running the tests in ‘tests/testthat.R’ failed.
 Last 13 lines of output:
-   4. └─base::ncol(colData(x))
-  ── Failure ('test_transforms.R:9:3'): setaCLR returns correct known results ────
-  out$counts not equal to `expected`.
-  4/4 mismatches (average diff: 0.0983)
-  [1] -0.203 - -0.347 ==  0.1439
-  [2] -0.294 - -0.348 ==  0.0544
-  [3]  0.203 -  0.347 == -0.1439
-  [4]  0.294 -  0.345 == -0.0509
-  ── Failure ('test_transforms.R:20:3'): setaALR returns correct known results ───
+  > library(SETA)
+  > test_check("SETA")
+  initial  value 0.000000 
+  final  value 0.000000 
+  converged
+  [ FAIL 1 | WARN 3 | SKIP 0 | PASS 43 ]
+  
+  ══ Failed tests ════════════════════════════════════════════════════════════════
+  ── Failure ('test_transforms.R:10:3'): setaCLR returns correct known results ───
   out$counts not equal to `expected`.
   Attributes: < Length mismatch: comparison on first 1 components >
   
-  [ FAIL 4 | WARN 3 | SKIP 0 | PASS 40 ]
+  [ FAIL 1 | WARN 3 | SKIP 0 | PASS 43 ]
   Error: Test failures
   Execution halted
 * checking PDF version of manual ... WARNING
@@ -87,4 +101,4 @@ This typically indicates Rd problems.
 * checking PDF version of manual without index ... ERROR
 Re-running with no redirection of stdout/stderr.
 * DONE
-Status: 2 ERRORs, 3 WARNINGs, 3 NOTEs
+Status: 3 ERRORs, 2 WARNINGs, 3 NOTEs
