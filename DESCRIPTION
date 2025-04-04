@@ -1,9 +1,11 @@
 Package: SETA
 Title: Single cell Ecological Taxonomic Analysis
-Version: 0.1.0
-Authors@R: c(person("Kyle","Kimler",role=c("aut","cre"),email="kkimler@broadinstitute.org"),
-            person("Marc","Elosua-Bayes",role=c("aut","cre"),email="melosua@broadinstitute.org"))
-Description: This package provides functions for compositional analysis and visualization for single-cell data.
+Version: 0.1.1
+Authors@R: c(
+    person("Kyle", "Kimler", role = c("aut", "cre"), email = "kkimler@broadinstitute.org"),
+    person("Marc", "Elosua-Bayes", role = "aut", email = "melosua@broadinstitute.org")
+)
+Maintainer: Kyle Kimler <kkimler@broadinstitute.org>Description: This package provides functions for compositional analysis and visualization for single-cell data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

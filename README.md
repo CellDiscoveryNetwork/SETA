@@ -54,7 +54,7 @@ Until acceptance on Bioconductor, you can install from GitHub:
 
 ```{r}
 install.packages("remotes")
-remotes::install_github("CellDiscoveryNetwork/cdnSETA")
+remotes::install_github("CellDiscoveryNetwork/SETA")
 ```
 
 Contributions are welcome. Please open an issue or pull request with any suggestions or enhancements. 
