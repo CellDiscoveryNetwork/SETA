@@ -1,1 +1,5 @@
 exportPattern("^[^\\.]")
+importFrom("stats", "aggregate", "rnbinom", "rpois", "runif")
+importFrom("Matrix", "Matrix")
+importFrom("Seurat", "CreateSeuratObject", "NormalizeData", "FindVariableFeatures", "ScaleData", "RunPCA")
+importFrom("SingleCellExperiment", "SingleCellExperiment")

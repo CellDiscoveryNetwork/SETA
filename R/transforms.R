@@ -1,7 +1,7 @@
 setaCLR <- function(counts, pseudocount = 1) {
   # Basic sanity check
   if(!is.matrix(counts)) stop("'counts' must be a matrix.")
-  
+
   # Centered log-ratio transform
   # Pseudocount = 1 to avoid issues with zeros
   counts <- counts + pseudocount
@@ -12,7 +12,7 @@ setaCLR <- function(counts, pseudocount = 1) {
   list(
     method = "CLR",
     counts = clr_mat
-  )
+      )
 }
 
 setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {

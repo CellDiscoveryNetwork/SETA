@@ -1,0 +1,38 @@
+* using log directory ‘/Users/kylekimler/gitHub/cdnSETA/..Rcheck’
+* using R version 4.4.0 (2024-04-24)
+* using platform: aarch64-apple-darwin20
+* R was compiled by
+    Apple clang version 14.0.0 (clang-1400.0.29.202)
+    GNU Fortran (GCC) 12.2.0
+* running under: macOS 15.3.1
+* using session charset: UTF-8
+* using option ‘--as-cran’
+* checking for file ‘./DESCRIPTION’ ... OK
+* this is package ‘SETA’ version ‘0.1.1’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [3s/20s] NOTE
+Maintainer: ‘Kyle Kimler <kkimler@broadinstitute.org>’
+
+New submission
+
+Package has a VignetteBuilder field but no prebuilt vignette index.
+
+Found the following (possibly) invalid URLs:
+  URL: https://github.com/jo-m-lab/SETA
+    From: README.md
+    Status: 404
+    Message: Not Found
+
+The Description field should not start with the package name,
+  'This package' or similar.
+
+The build time stamp is missing.
+* checking package namespace information ... OK
+* checking package dependencies ... ERROR
+Namespace dependencies missing from DESCRIPTION Imports/Depends entries:
+  'Matrix', 'Seurat', 'SingleCellExperiment'
+
+See section ‘The DESCRIPTION file’ in the ‘Writing R Extensions’
+manual.
+* DONE
+Status: 1 ERROR, 1 NOTE
