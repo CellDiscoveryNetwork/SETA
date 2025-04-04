@@ -5,7 +5,8 @@ Authors@R: c(
     person("Kyle", "Kimler", role = c("aut", "cre"), email = "kkimler@broadinstitute.org"),
     person("Marc", "Elosua-Bayes", role = "aut", email = "melosua@broadinstitute.org")
 )
-Maintainer: Kyle Kimler <kkimler@broadinstitute.org>Description: This package provides functions for compositional analysis and visualization for single-cell data.
+Maintainer: Kyle Kimler <kkimler@broadinstitute.org>
+Description: This package provides functions for compositional analysis and visualization for single-cell data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
