@@ -13,7 +13,8 @@ setaPercent(counts)
 A list with:
 \describe{
   \item{method}{The string \code{"percent"}.}
-  \item{counts}{A matrix of the same dimensions as \code{counts}, where each row sums to 100.}
+  \item{counts}{A matrix of the same dimensions as
+                \code{counts}, where each row sums to 100.}
 }
 }
 \description{

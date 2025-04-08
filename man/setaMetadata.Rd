@@ -7,27 +7,31 @@
 setaMetadata(source_obj, sample_col = "Sample ID", meta_cols = NULL)
 }
 \arguments{
-\item{source_obj}{An object of class Seurat, SingleCellExperiment, or a dataframe, which contains
-cell-level or sample-level metadata.}
+\item{source_obj}{An object of class Seurat, SingleCellExperiment,
+or a dataframe which contains cell-level or sample-level metadata.}
 
-\item{sample_col}{Character. The name of the column in source_obj that indicates the sample identifier. 
-Default is 'sample_id'. This column is used to group the metadata and check for uniqueness.}
+\item{sample_col}{Character. The sample identifier column name in source_obj.
+Default is 'sample_id'. This column is used to group the metadata.}
 
-\item{meta_cols}{Character vector. Names of metadata columns to retain. If NULL, all columns present in 
-the source object are considered. However, only those columns where all entries are identical within 
+\item{meta_cols}{Character vector. Names of metadata columns to retain.
+If NULL, all columns present in the source object are considered.
+However, only those columns where all entries are identical within
 each sample are included in the final output.}
 }
 \value{
-A dataframe where each row corresponds to a unique sample and each column represents a metadata 
-variable that has uniform values within samples. Columns with non-unique values within any sample are 
+A dataframe where each row corresponds to a unique sample and each
+column represents a metadata variable that has uniform values within samples.
+Columns with non-unique values within any sample are
 excluded, and a warning lists these columns.
 }
 \description{
-This function extracts sample-level metadata from a given source object (Seurat, SingleCellExperiment, 
-or dataframe). It ensures that each metadata column contains unique values per sample. If a metadata 
-column contains non-unique values within any sample, that column is excluded from the output, and the 
-user is notified via a warning. This function is particularly useful when preparing metadata for 
-high-level visualizations or analyses where sample-level aggregation is required.
+This function extracts sample-level metadata
+from a given source object (Seurat, SingleCellExperiment,
+or dataframe). It ensures that each metadata column contains
+unique values per sample. If a metadata column contains
+non-unique values within any sample, that column is excluded from the output,
+and the user is notified via a warning. Useful when preparing metadata for
+visualizations or analyses where sample-level inspection is required.
 }
 \examples{
 # Using a Seurat object

@@ -17,9 +17,11 @@ setaTransform(
 \item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
 \item{method}{A character string specifying which transform to apply. One of
-\code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.}
+\code{"CLR"}, \code{"ALR"}, \code{"ILR"},
+\code{"percent"}, or \code{"logCPM"}.}
 
-\item{ref}{Reference taxon (only used if \code{method="ALR"}). Can be a taxon name or column index.}
+\item{ref}{Reference taxon (only used if \code{method="ALR"}).
+Can be a taxon name or column index.}
 
 \item{taxTree}{Optional tree for ILR (not yet implemented).}
 
@@ -32,7 +34,8 @@ A list as returned by the corresponding transform function.
 }
 \description{
 A convenience function that dispatches to one of the transforms:
-CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix should have rows as samples
+CLR, ALR, ILR, percent, or logCPM.
+Note that the input \code{counts} matrix should have rows as samples
 and columns as taxa.
 }
 \examples{

@@ -9,18 +9,21 @@ setaLogCPM(counts, pseudocount = 1, size_factors = NULL, scale_factor = 1e+06)
 \arguments{
 \item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
-\item{pseudocount}{Numeric. Added to counts to avoid \code{log2(0)}. Default is 1.}
+\item{pseudocount}{Numeric.
+Added to counts to avoid \code{log2(0)}. Default is 1.}
 
 \item{size_factors}{Optional numeric vector of library sizes for each sample.
 If \code{NULL}, the row sums are used.}
 
-\item{scale_factor}{Numeric. The scaling factor, typically 1e6 for CPM. Default is 1e6.}
+\item{scale_factor}{Numeric.
+The scaling factor, typically 1e6 for CPM. Default is 1e6.}
 }
 \value{
 A list with:
 \describe{
   \item{method}{The string \code{"logCPM"}.}
-  \item{counts}{A matrix of the same dimensions with log2-transformed CPM values.}
+  \item{counts}{A matrix of the same dimensions
+                with log2-transformed CPM values.}
 }
 }
 \description{

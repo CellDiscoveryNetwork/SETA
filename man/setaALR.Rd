@@ -9,25 +9,30 @@ setaALR(counts, ref, pseudocount = 1)
 \arguments{
 \item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
-\item{ref}{Either the reference taxon name (a character string, which must appear in \code{colnames(counts)})
+\item{ref}{Either the reference taxon name (a character string,
+which must appear in \code{colnames(counts)})
 or the column index of the reference.}
 
-\item{pseudocount}{Numeric. Added to every count to avoid \code{log(0)}. Default is 1.}
+\item{pseudocount}{Numeric.
+Added to every count to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{A string indicating the ALR transform with the reference taxon.}
-  \item{counts}{A matrix with the same number of rows and \eqn{(\text{n_taxa} - 1)} columns.}
+  \item{method}{A string indicating the ALR transform
+                with the reference taxon.}
+  \item{counts}{A matrix with one row per sample
+                and \eqn{(\text{n_taxa} - 1)} columns.}
 }
 }
 \description{
-Applies the ALR transform to a matrix of counts using a specified reference taxon.
-Samples are in rows and taxa in columns.
+Applies the ALR transform to an integer matrix of counts
+using a specified reference taxon. Samples are in rows and taxa in columns.
 }
 \details{
-Applies the ALR transform to a matrix of counts using a specified reference taxon.
-Samples are in rows and taxa in columns. For each sample, the transform computes
+Applies the ALR transform to an integer matrix of counts
+using a specified reference taxon. Samples are in rows and taxa in columns.
+For each sample, the transform computes:
 \deqn{\mathrm{ALR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}{
 \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}
 for all taxa \(i\) except the reference.

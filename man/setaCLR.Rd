@@ -7,9 +7,10 @@
 setaCLR(counts, pseudocount = 1)
 }
 \arguments{
-\item{counts}{A numeric matrix of counts with rows as samples and columns as taxa.}
+\item{counts}{An integer matrix of celltype counts with samples in rows.}
 
-\item{pseudocount}{Numeric. Added to all entries to avoid \code{log(0)}. Default is 1.}
+\item{pseudocount}{Numeric.
+Added to all entries to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
@@ -19,8 +20,9 @@ A list with:
 }
 }
 \description{
-Applies a CLR transform to a matrix of counts. In this version, samples are assumed to be
-in rows and taxa (cell types) in columns. For each sample, the transform computes
+Applies a CLR transform to a matrix of counts.
+Samples should be in rows and taxa (cell types) in columns.
+For each sample, the transform computes
 \eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
 where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
 }
@@ -41,5 +43,6 @@ out$counts
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+\emph{Journal of the Royal Statistical Society.
+Series B (Methodological)}, 44(2), 139-177.
 }

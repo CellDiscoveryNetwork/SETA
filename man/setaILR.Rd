@@ -7,28 +7,32 @@
 setaILR(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1)
 }
 \arguments{
-\item{counts}{A numeric matrix of counts with rows as samples and columns as taxa or cell types.}
+\item{counts}{An integer matrix of celltype counts with samples in rows.}
 
-\item{boxcox_p}{Numeric. If nonzero, a Box-Cox–type transform is applied to the log-values.
-Default is 0 (no Box-Cox transformation).}
+\item{boxcox_p}{Numeric. If nonzero, a Box-Cox–type transform
+is applied to the log-values. Default is 0 (no Box-Cox transformation).}
 
-\item{taxTree}{Currently unused. Reserved for future taxonomic-balance approaches.}
+\item{taxTree}{Unused. Reserved for future taxonomic-balance approaches.}
 
 \item{pseudocount}{Numeric. Added to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{A string indicating the ILR transform. If \code{boxcox_p} is nonzero,
-                 the value is indicated in the method string.}
-  \item{counts}{A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns
+  \item{method}{A string indicating the ILR transform.
+                If \code{boxcox_p} is nonzero,
+                the value is indicated in the method string.}
+  \item{counts}{A matrix of ILR-transformed values with
+                \code{ncol(counts) - 1} columns
                 and the same number of rows (samples) as the input.}
 }
 }
 \description{
-Applies the ILR transform to a counts matrix using an orthonormal Helmert basis.
-For each sample (row), the data are log-transformed (with an optional Box-Cox–like transformation),
-and then projected onto an orthonormal Helmert basis to reduce dimensionality by one.
+Applies the ILR transform to an integer counts matrix.
+For each sample (row), the data are log-transformed
+(with an optional Box-Cox–like transformation)
+then projected onto an orthonormal Helmert basis,
+reducing dimensionality by one.
 }
 \details{
 The ILR transform is computed as follows:
@@ -37,7 +41,8 @@ The ILR transform is computed as follows:
     \deqn{y = \log(x + \text{pseudocount})}
   \item If \code{boxcox_p != 0}, apply the Box-Cox–like transform:
     \deqn{y = \frac{\exp(p \, y) - 1}{p}}
-  \item Project the log-transformed data onto an orthonormal Helmert basis computed via QR decomposition.
+  \item Project the log-transformed data onto an orthonormal
+        Helmert basis computed via QR decomposition.
 }
 }
 \examples{
@@ -51,5 +56,6 @@ out$counts
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+\emph{Journal of the Royal Statistical Society.
+      Series B (Methodological)}, 44(2), 139-177.
 }

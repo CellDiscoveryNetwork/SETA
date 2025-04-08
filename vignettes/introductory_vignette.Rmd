@@ -1,37 +1,42 @@
 ---
-title: "SETA: Sample-level Ecological Analysis on scRNA-seq Data"
-author: "Your Name"
+title: "Introduction to SETA ecological transforms and sample-level latent spaces"
+author: "Kyle Kimler"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{SETA: Sample-level Ecological Analysis on scRNA-seq Data}
+  %\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
 
-The `SETA` package provides a set of functions for the compositional analysis of single-cell RNA-seq data.
+## Introduction
+
+`SETA` provides a set of functions for compositional analysis of single-cell RNA-seq data.
+
 In this vignette we show how to:
   
-- **Extract a taxonomic counts matrix** from various objects (here we use a Seurat object),
-- **Apply compositional transforms** such as CLR and ALR,
-- **Compute a latent space** using PCA (with options for PCoA or NMDS).
+- **Extract a taxonomic counts matrix** from various objects (e.g. a Seurat object)
+- **Apply compositional transforms** such as CLR and ALR
+- **Compute a latent space** using PCA (with options for PCoA or NMDS)
 
 This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. 
 The dataset contains blood samples from 17 donors (`donor_id`), with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g. `Severity`, `Comorbidity`, and `development_stage`).
 
-*This vignette is modular; users can update or replace the dataset-specific settings (e.g., metadata column names, reference cell type) as appropriate for their own data.*
+*This vignette is modular; users can update or replace the dataset-specific settings*
+*(e.g., metadata column names, reference cell type) as appropriate for their own data.*
 
-# Loading the Data
+
+## Loading the Data
 
 In this example we assume the Seurat object is stored as an RDS file.
 We load the object along with the required package (`Seurat`) and our package (`SETA`).
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-data_loc <- "/Users/kylekimler/gitHub/workshops/beginners-guide-to-analyzing-scRNAseq/data/"
+base_path <- "/Users/kylekimler/gitHub/workshops/"
+data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
 ```
 
 ```{r setup, message=FALSE, warning=FALSE, echo=TRUE}
@@ -40,18 +45,21 @@ library(SETA)
 library(ggplot2)
 library(wesanderson)
 library(dplyr)
+library(DT)
 
 # Modify the file path if needed
 seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
 seurat_obj <- readRDS(seurat_file)
 ```
 
-# Extracting the Taxonomic Counts Matrix
+
+## Extracting the Taxonomic Counts Matrix
 
 The setaCounts function extracts a cell-type counts matrix given 
 that the object contains cell‐level metadata. For this dataset, 
 we want the cell-type annotations to come from Celltype and 
-the sample identifiers from donor_id. If necessary, we reassign these columns before extraction.
+the sample identifiers from donor_id. If necessary, 
+we reassign these columns before extraction.
 
 ```{r data wrangling, message=FALSE, warning=FALSE, echo=TRUE}
 # Extract the taxonomic counts matrix using custom metadata column names
@@ -62,7 +70,8 @@ taxa_counts <- setaCounts(seurat_obj,
 print(taxa_counts)
 ```
 
-# Applying Compositional Transforms
+
+## Applying Compositional Transforms
 
 Below we apply two transforms:
 
@@ -77,14 +86,12 @@ If it does not exist in your dataset, change the reference accordingly.
 ```{r transformation, echo=TRUE}
 # CLR Transformation with a pseudocount of 1 (default)
 clr_out <- setaCLR(taxa_counts, pseudocount = 1)
-cat("CLR Transform Method:", clr_out$method, "\n")
-head(clr_out$counts)
+DT::datatable(clr_out$counts)
 
 # ALR Transformation: using "NK cell" as the reference cell type
 if ("NK cell" %in% rownames(taxa_counts)) {
   alr_out <- setaALR(taxa_counts, ref = "NK cell", pseudocount = 1)
-  cat("ALR Transform Method:", alr_out$method, "\n")
-  head(alr_out$counts)
+  DT::datatable(alr_out$counts)
 } else {
   message("Reference 'NK cell' not found in taxa_counts. 
             Please choose an available cell type.")
@@ -93,33 +100,30 @@ if ("NK cell" %in% rownames(taxa_counts)) {
 # ILR Transform using Helmert basis (boxcox_p = 0 for standard ILR)
 # This is the method used by Cacoa (Viktor Petukhov & Kharchenko Lab)
 ilr_out <- setaILR(taxa_counts, boxcox_p = 0, pseudocount = 1)
-cat("ILR Transform Method:", ilr_out$method, "\n")
-head(ilr_out$counts)
+DT::datatable(ilr_out$counts)
 
 # Simple Percentage Transform
 pct_out <- setaPercent(taxa_counts)
-cat("Percent Transform Method:", pct_out$method, "\n")
-head(pct_out$counts)
+DT::datatable(pct_out$counts)
 
 # LogCPM (counts per 10k) Transform
 lcpm_out <- setaLogCPM(taxa_counts, pseudocount = 1)
-cat("logCPM Transform Method:", lcpm_out$method, "\n")
-head(lcpm_out$counts)
+DT::datatable(lcpm_out$counts)
 ```
 
-# Latent Space Analysis
+## Latent Space Analysis
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
-cat("PCA Latent Space Coordinates (first 5 rows):\n")
-head(latent_pca$latentSpace, 5)
-cat("Variance Explained:\n")
+# PCA Latent Space Coordinates:
+DT::datatable(latent_pca$latentSpace)
+# Variance Explained:
 print(latent_pca$varExplained)
 ```
 
-# Visualization
+## Visualization
 Below we show how to create basic visualizations of SETA latent spaces
 
-## Variance Explained Plot
+### Variance Explained Plot
 Plot the variance explained by the first few principal components.
 
 ```{r variance explained, message=FALSE, warning=FALSE, echo=TRUE}
@@ -136,7 +140,7 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
   theme_minimal()
 ```
 
-## Loadings Plot
+### Loadings Plot
 Plot the variance explained by the first few principal components.
 
 ```{r loadings, message=FALSE, warning=FALSE, echo=TRUE}
@@ -169,7 +173,7 @@ if (!is.null(latent_pca$loadings)) {
   message("No loadings information available for the chosen latent method.")
 }
 ```
-## PCA Scatter plot
+### PCA Scatter plot
 We overlay the PCA latent space coordinates (using the CLR transform) 
 with metadata from the Seurat object. 
 In this example, points are shaped by disease and colored by Severity. 
@@ -197,8 +201,7 @@ ggplot(pca_plot_df, aes(x = PC1, y = PC2, shape = disease, color = Severity)) +
   theme_minimal()
 ```
 
-
-# Conclusion
+## Conclusion
 This vignette illustrated a basic workflow using the SETA package:
 
 1. Extracting a taxonomic counts matrix from a Seurat Object with setaCounts

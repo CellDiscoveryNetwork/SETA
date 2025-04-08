@@ -4,4 +4,4 @@
 ..Rcheck/
 ^doc$
 ^Meta$
-^SETA\.BiocCheck$
+^SETA.BiocCheck$

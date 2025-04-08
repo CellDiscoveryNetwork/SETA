@@ -7,39 +7,47 @@
 setaLatent(transform_obj, method = c("PCA", "PCoA", "NMDS"), dims = 2)
 }
 \arguments{
-\item{transform_obj}{A list returned by, e.g., \code{setaCLR}, \code{setaILR}, etc.,
-containing a \code{counts} matrix, where rows are samples and columns are features (taxa or cell types).}
+\item{transform_obj}{A list returned by, e.g., \code{setaCLR}, \code{setaILR}
+containing a \code{counts} matrix, where rows are samples
+and columns are features (taxa or cell types).}
 
-\item{method}{A string specifying the dimension reduction method. One of \code{"PCA"},
-\code{"PCoA"}, or \code{"NMDS"}.}
+\item{method}{A string specifying the dimension reduction method.
+One of \code{"PCA"}, \code{"PCoA"}, or \code{"NMDS"}.}
 
-\item{dims}{Integer. Number of dimensions (components) to return. Default is 2.}
+\item{dims}{Integer number of dimensions to return. Default is 2.}
 }
 \value{
 A list containing:
 \describe{
   \item{method}{The chosen latent space method.}
-  \item{latentSpace}{A data frame of coordinates in the chosen latent space, with \code{dims} columns.}
+  \item{latentSpace}{A data frame of coordinates in the chosen latent space
+                     with \code{dims} columns.}
   \item{loadings}{For PCA, the loadings matrix. Otherwise \code{NA}.}
-  \item{varExplained}{Variance explained (for PCA or PCoA) or stress (for NMDS).}
+  \item{varExplained}{Variance explained (for PCA or PCoA)
+                      or stress (for NMDS).}
 }
 }
 \description{
-Given an object produced by one of the \code{seta*} transform functions (e.g., \code{setaCLR}),
-this function applies a dimension reduction method (PCA, PCoA, or NMDS) to the
+Given an object produced by one of the
+\code{seta*} transform functions (e.g., \code{setaCLR}),
+this function applies a dimension reduction method (PCA, PCoA, or NMDS) to
 \code{transform_obj$counts}.
 }
 \details{
 \itemize{
-  \item \strong{PCA}: Uses \code{stats::prcomp} on the rows of \code{transform_obj$counts}.
-  \item \strong{PCoA}: Computes a distance matrix via \code{stats::dist}, then
+  \item \strong{PCA}: Uses \code{stats::prcomp}
+                      on the rows of \code{transform_obj$counts}.
+  \item \strong{PCoA}: Computes a distance matrix
+                       via \code{stats::dist}, then
         applies classical multidimensional scaling (\code{stats::cmdscale}).
-  \item \strong{NMDS}: Uses \code{MASS::isoMDS} to compute non-metric MDS from the distance matrix.
+  \item \strong{NMDS}: Uses \code{MASS::isoMDS} to compute
+                       non-metric MDS from the distance matrix.
 }
-Each method returns a data frame of coordinates in \code{latentSpace}, plus additional information
-specific to that method.
+Each method returns a data frame of coordinates in \code{latentSpace},
+plus additional information specific to that method.
 }
 \examples{
+set.seed(687)
 mat <- matrix(rpois(20, lambda=5), nrow=4)  # small 4x5 matrix
 colnames(mat) <- paste0("C", 1:5)
 clr_out <- setaCLR(mat)
