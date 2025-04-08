@@ -32,19 +32,19 @@ SETA aims to make compositional analysis user friendly and easy to understand wi
 - Continuous Integration
   - Configure GitHub Actions or similar for automated checks
   - Validate R CMD check, test coverage, and code style
-- Compositional Space Calculation
+- Compositional Space Calculation (done)
   - Implement reference frames for normalization
-  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA)
+  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA) - first 3 are implemented
   - Add trajectory capabilities
 - Compositional Transforms
-  - ALR
-  - CLR
-  - ILR (with or without balances)
+  - ALR (done)
+  - CLR (done)
+  - ILR (with or without balances) (done without balances)
 - Methods for Cell Type Trees
   - Build hierarchical or phylogenetic structures from input counts
 - Analysis Methods
   - Compare distances in latent or full space (Aitchison, Euclidean)
-  - Compare loadings of different latent spaces
+  - Compare loadings of different latent spaces (done)
   - Compare results of rank-based tests (Wilcoxon/MWU)
   - Build proportionality or Pearson correlation networks of cell type compositions
 
