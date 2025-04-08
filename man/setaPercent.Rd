@@ -7,24 +7,23 @@
 setaPercent(counts)
 }
 \arguments{
-\item{counts}{A matrix of counts.}
+\item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{\code{"percent"}.}
-  \item{counts}{A matrix of the same dimension, with each column summing to 100.}
+  \item{method}{The string \code{"percent"}.}
+  \item{counts}{A matrix of the same dimensions as \code{counts}, where each row sums to 100.}
 }
 }
 \description{
-Converts columns (samples) of a counts matrix to percentages of their respective column sums.
+Converts each row (sample) of a counts matrix to percentages of its row sum.
 }
 \details{
-Simple re-scaling for compositional-like interpretation in percentages.
-Useful for simplified Wilcoxon rank comparisons and such
+Useful for simplified comparisons and as an input to non-parametric tests.
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 out <- setaPercent(mat)
 out$counts
 

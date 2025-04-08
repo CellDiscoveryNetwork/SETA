@@ -29,4 +29,4 @@ converged
 > 
 > proc.time()
    user  system elapsed 
-  4.329   0.209   4.535 
+  4.598   0.322   4.922 

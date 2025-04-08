@@ -2,39 +2,50 @@
 % Please edit documentation in R/transforms.R
 \name{setaILR}
 \alias{setaILR}
-\title{Isometric Log-Ratio Transform}
+\title{Isometric Log-Ratio (ILR) Transform}
 \usage{
 setaILR(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1)
 }
 \arguments{
-\item{counts}{A matrix of counts.}
+\item{counts}{A numeric matrix of counts with rows as samples and columns as taxa or cell types.}
 
-\item{boxcox_p}{Numeric. If nonzero, applies a Box-Cox–type transform to the log-values.}
+\item{boxcox_p}{Numeric. If nonzero, a Box-Cox–type transform is applied to the log-values.
+Default is 0 (no Box-Cox transformation).}
 
 \item{taxTree}{Currently unused. Reserved for future taxonomic-balance approaches.}
 
-\item{pseudocount}{Numeric. Pseudocount to avoid log(0). Default is 1.}
+\item{pseudocount}{Numeric. Added to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{A string indicating ILR with a Helmert basis (potentially noting \code{boxcox_p}).}
-  \item{counts}{A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns.}
+  \item{method}{A string indicating the ILR transform. If \code{boxcox_p} is nonzero,
+                 the value is indicated in the method string.}
+  \item{counts}{A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns
+                and the same number of rows (samples) as the input.}
 }
 }
 \description{
-Applies an ILR transform to a matrix of counts, using a Helmert basis by default.
-Optionally includes a Box-Cox–like step on the log scale.
+Applies the ILR transform to a counts matrix using an orthonormal Helmert basis.
+For each sample (row), the data are log-transformed (with an optional Box-Cox–like transformation),
+and then projected onto an orthonormal Helmert basis to reduce dimensionality by one.
 }
 \details{
-The ILR transform is a key tool in compositional data analysis. By default, it
-uses a Helmert contrast matrix. The parameter \code{boxcox_p} allows an
-additional transform on the log-values, as described by whuber on
-\url{https://stats.stackexchange.com/questions/259208/how-to-perform-isometric-log-ratio-transformation}.
+The ILR transform is computed as follows:
+\enumerate{
+  \item Add a pseudocount and take the natural logarithm:
+    \deqn{y = \log(x + \text{pseudocount})}
+  \item If \code{boxcox_p != 0}, apply the Box-Cox–like transform:
+    \deqn{y = \frac{\exp(p \, y) - 1}{p}}
+  \item Project the log-transformed data onto an orthonormal Helmert basis computed via QR decomposition.
+}
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-out <- setaILR(mat, boxcox_p=0)
+# Example matrix: rows are samples, columns are cell types.
+mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("A", "B")
+# ILR transformation reduces the dimension by 1.
+out <- setaILR(mat, boxcox_p = 0, pseudocount = 1)
 out$counts
 
 }

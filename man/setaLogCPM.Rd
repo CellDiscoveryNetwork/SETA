@@ -7,31 +7,35 @@
 setaLogCPM(counts, pseudocount = 1, size_factors = NULL, scale_factor = 1e+06)
 }
 \arguments{
-\item{counts}{A matrix of counts.}
+\item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
 \item{pseudocount}{Numeric. Added to counts to avoid \code{log2(0)}. Default is 1.}
 
-\item{size_factors}{Optional numeric vector. If \code{NULL}, uses the column sums.}
+\item{size_factors}{Optional numeric vector of library sizes for each sample.
+If \code{NULL}, the row sums are used.}
 
-\item{scale_factor}{Numeric. The scaling factor for "per million" style. Default is \code{1e6}.}
+\item{scale_factor}{Numeric. The scaling factor, typically 1e6 for CPM. Default is 1e6.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{\code{"logCPM"}.}
-  \item{counts}{A matrix of the same dimension, containing log2(CPM + pseudocount).}
+  \item{method}{The string \code{"logCPM"}.}
+  \item{counts}{A matrix of the same dimensions with log2-transformed CPM values.}
 }
 }
 \description{
-Computes log2-based counts-per-million (CPM) for each column. Optionally uses provided size factors.
+Computes the log2 counts-per-million (CPM) for each sample.
+Samples are in rows and taxa in columns.
 }
 \details{
-A common RNA-seq transform is log2(CPM + 1). This variant allows adjusting the
-pseudocount, size factors, and overall scale factor.
+The transform is defined as:
+\deqn{\log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right),}{
+\log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right)}
+where the library size is computed per sample.
 }
 \examples{
-mat <- matrix(1:4, nrow=2)
-out <- setaLogCPM(mat)
+mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
+out <- setaLogCPM(mat, pseudocount = 1)
 out$counts
 
 }

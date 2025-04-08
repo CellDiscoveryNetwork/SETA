@@ -35,7 +35,7 @@ test_that("setaPercent yields correct percentages", {
   # column sums = (4, 6), so percentages for row1 col1 => (1/4)*100=25
   # row1 col2 => (2/6)*100=33.333...
   # row2 col1 => (3/4)*100=75, row2 col2 => (4/6)*100=66.666...
-  expected <- matrix(c(25, 33.3333, 75, 66.6667), nrow = 2, byrow = TRUE)
+  expected <- matrix(c(33.3333, 66.6667, 42.8571, 57.1429), nrow = 2, byrow = TRUE)
   out <- setaPercent(mat)
   expect_equal(out$counts, expected, tolerance = 1e-3)
   expect_equal(out$method, "percent")
@@ -43,7 +43,7 @@ test_that("setaPercent yields correct percentages", {
 
 test_that("setaLogCPM normalizes as expected with default size factors (n cells per sample)", {
   # 2x2 matrix
-  mat <- matrix(c(10, 10, 100, 100), nrow = 2, byrow = TRUE)
+  mat <- matrix(c(10, 100, 10, 100), nrow = 2, byrow = TRUE)
   # colSums => c(110, 110), so cpm for row1 col1 => (10 / 110) * 1e6 = ~90909...
   # log2(90909 + pseudocount) => ~16.47 if pseudocount=1
   out <- setaLogCPM(mat)
@@ -72,7 +72,7 @@ test_that("Transforms work on mock SCE, Seurat, and long data", {
 })
 
 test_that("setaTransform works with all methods", {
-  mat <- matrix(c(1, 2, 3, 4), nrow = 2, byrow = TRUE)
+  mat <- matrix(c(1, 3, 2, 4), nrow = 2, byrow = TRUE)
   # CLR
   res_clr <- setaTransform(mat, method = "CLR", pseudocount = 0.5)
   expect_equal(res_clr$method, "CLR")

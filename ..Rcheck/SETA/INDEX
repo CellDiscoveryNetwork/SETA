@@ -1,9 +1,11 @@
-setaALR                 Additive Log-Ratio Transform
-setaCLR                 Centered Log-Ratio Transform
+setaALR                 Additive Log-Ratio (ALR) Transform
+setaCLR                 Centered Log-Ratio (CLR) Transform
 setaCounts              Extract Taxonomic Counts from Various Single
                         Cell Objects
-setaILR                 Isometric Log-Ratio Transform
+setaILR                 Isometric Log-Ratio (ILR) Transform
 setaLatent              Compute a Latent Space from Transformed Counts
 setaLogCPM              log2(CPM) Transform
+setaMetadata            Extract Sample-Level Metadata from Various
+                        Objects
 setaPercent             Percentage Transform
-setaTransform           Wrapper for Common Compositional Transforms
+setaTransform           Wrapper for Compositional Transforms

@@ -1,4 +1,4 @@
-* using log directory ‘/Users/kylekimler/gitHub/cdnSETA/..Rcheck’
+* using log directory ‘/Users/kylekimler/gitHub/SETA/..Rcheck’
 * using R version 4.4.0 (2024-04-24)
 * using platform: aarch64-apple-darwin20
 * R was compiled by
@@ -61,10 +61,443 @@ Namespace in Imports field not imported from: ‘methods’
 * checking Rd \usage sections ... OK
 * checking Rd contents ... OK
 * checking for unstated dependencies in examples ... OK
+* checking files in ‘vignettes’ ... WARNING
+Files in the 'vignettes' directory but no files in 'inst/doc':
+  ‘introductory_vignette.Rmd’
 * checking examples ... OK
 * checking for unstated dependencies in ‘tests’ ... OK
 * checking tests ... OK
   Running ‘testthat.R’
-* checking PDF version of manual ... OK
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... WARNING
+Directory 'inst/doc' does not exist.
+Package vignette without corresponding single PDF/HTML:
+  ‘introductory_vignette.Rmd’
+* checking re-building of vignette outputs ... OK
+* checking PDF version of manual ... WARNING
+LaTeX errors when creating PDF version.
+This typically indicates Rd problems.
+LaTeX errors found:
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\text@ ...e {\textdef@ \displaystyle \f@size {#1}}
+                                                  {\textdef@ \textstyle \f@s...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\text@ ...xtstyle \f@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \sf@...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\text@ ...tstyle \sf@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \ssf...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\text@ ...style \ssf@size {\firstchoice@false #1}}
+                                                  \check@mathfonts }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Extra }, or forgotten $.
+\text@ ...firstchoice@false #1}}\check@mathfonts }
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\text@ ...e {\textdef@ \displaystyle \f@size {#1}}
+                                                  {\textdef@ \textstyle \f@s...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\text@ ...xtstyle \f@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \sf@...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\text@ ...tstyle \sf@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \ssf...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\text@ ...style \ssf@size {\firstchoice@false #1}}
+                                                  \check@mathfonts }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra }, or forgotten $.
+\text@ ...firstchoice@false #1}}\check@mathfonts }
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Extra \right.
+<argument> ... \times \text {scale_factor}\right )
+                                                  ,
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing \right. inserted.
+<inserted text> 
+                \right .
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+! Display math should end with $$.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+* checking PDF version of manual without index ... ERROR
 * DONE
-Status: 1 WARNING, 3 NOTEs
+Status: 1 ERROR, 4 WARNINGs, 3 NOTEs

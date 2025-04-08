@@ -1,4 +1,7 @@
 ^.*\.Rproj$
 ^\.Rhistory$
 ^\.Rdata$
-.Rcheck/
+..Rcheck/
+^doc$
+^Meta$
+^SETA\.BiocCheck$

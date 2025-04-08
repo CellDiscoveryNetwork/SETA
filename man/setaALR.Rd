@@ -2,40 +2,42 @@
 % Please edit documentation in R/transforms.R
 \name{setaALR}
 \alias{setaALR}
-\title{Additive Log-Ratio Transform}
+\title{Additive Log-Ratio (ALR) Transform}
 \usage{
 setaALR(counts, ref, pseudocount = 1)
 }
 \arguments{
-\item{counts}{A matrix of counts.}
+\item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
-\item{ref}{The reference column, specified either by name or by index.}
+\item{ref}{Either the reference taxon name (a character string, which must appear in \code{colnames(counts)})
+or the column index of the reference.}
 
-\item{pseudocount}{Numeric. Added to avoid log(0). Default is 1.}
+\item{pseudocount}{Numeric. Added to every count to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{A string noting \code{ALR_ref=<ref>}.}
-  \item{counts}{A matrix of dimension \code{nrow(counts) x (ncol(counts) - 1)}.}
+  \item{method}{A string indicating the ALR transform with the reference taxon.}
+  \item{counts}{A matrix with the same number of rows and \eqn{(\text{n_taxa} - 1)} columns.}
 }
 }
 \description{
-Applies an ALR transform to a matrix of counts using a specified reference column.
+Applies the ALR transform to a matrix of counts using a specified reference taxon.
+Samples are in rows and taxa in columns.
 }
 \details{
-ALR transforms the data by taking \eqn{\log(x_i / x_{ref})} for each column
-\eqn{i} except the reference column. This is another way to map data from
-the simplex to a Euclidean space in compositional data analysis.
+Applies the ALR transform to a matrix of counts using a specified reference taxon.
+Samples are in rows and taxa in columns. For each sample, the transform computes
+\deqn{\mathrm{ALR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}{
+\log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}
+for all taxa \(i\) except the reference.
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-colnames(mat) <- c("A", "B")
-out <- setaALR(mat, ref="A", pseudocount=0)
+# Example with 2 samples and 2 taxa:
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("TaxonA", "TaxonB")
+# Using TaxonA as the reference.
+out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 out$counts
 
-}
-\references{
-Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
 }

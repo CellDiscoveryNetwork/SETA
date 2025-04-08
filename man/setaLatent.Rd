@@ -8,7 +8,7 @@ setaLatent(transform_obj, method = c("PCA", "PCoA", "NMDS"), dims = 2)
 }
 \arguments{
 \item{transform_obj}{A list returned by, e.g., \code{setaCLR}, \code{setaILR}, etc.,
-containing a \code{counts} matrix.}
+containing a \code{counts} matrix, where rows are samples and columns are features (taxa or cell types).}
 
 \item{method}{A string specifying the dimension reduction method. One of \code{"PCA"},
 \code{"PCoA"}, or \code{"NMDS"}.}

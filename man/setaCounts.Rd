@@ -4,40 +4,55 @@
 \alias{setaCounts}
 \title{Extract Taxonomic Counts from Various Single Cell Objects}
 \usage{
-setaCounts(obj)
+setaCounts(obj, cell_type_col = "type", sample_col = "sample", bc_col = "bc")
 }
 \arguments{
 \item{obj}{Either a \code{SingleCellExperiment}, a \code{Seurat} object, or
-a \code{data.frame} with columns \code{bc}, \code{type}, and \code{sample}.}
+a \code{data.frame}. This function requires specific metadata or columns
+to function correctly.}
+
+\item{cell_type_col}{The name of the column representing cell types.
+Default is "type".}
+
+\item{sample_col}{The name of the column representing sample identifiers.
+Default is "sample".}
+
+\item{bc_col}{The name of the column representing barcodes (only needed for
+\code{data.frame} input). Default is "bc".}
 }
 \value{
-A matrix whose rows are cell types and whose columns are samples,
+A matrix whose rows are samples and whose columns are cell types,
   with entries giving the count of unique barcodes per type-sample combination.
 }
 \description{
 Given a \code{SingleCellExperiment}, \code{Seurat}, or long-form \code{data.frame},
-this function produces a type-by-sample matrix of cell counts. For \code{SingleCellExperiment}
-or \code{Seurat}, it looks for \code{type} and \code{sample} columns in the object-level metadata.
-For long-form data frames, it expects columns \code{bc}, \code{type}, and \code{sample}.
+this function produces a type-by-sample matrix of cell counts. Users can specify
+the names of the columns for cell types, samples, and barcodes. The function
+ensures that each cell is counted once per type-sample combination by using
+unique barcodes.
 }
 \details{
 \itemize{
-  \item \strong{SingleCellExperiment}: Reads \code{colData(obj)} for \code{type} and \code{sample}.
-  \item \strong{Seurat}: Uses \code{obj@meta.data} for \code{type} and \code{sample}.
-  \item \strong{data.frame}: Duplicates (by \code{bc}) are removed so each cell is counted once.
+  \item \strong{SingleCellExperiment}: Reads \code{colData(obj)} for the specified
+  \code{cell_type_col} and \code{sample_col}.
+  \item \strong{Seurat}: Uses \code{obj@meta.data} for the specified
+  \code{cell_type_col} and \code{sample_col}.
+  \item \strong{data.frame}: The function first removes duplicates based on the \code{bc_col}
+  to ensure each cell is counted once, then counts cells per specified \code{cell_type_col}
+  and \code{sample_col}.
 }
-If \code{type} or \code{sample} columns are missing, an error is thrown.
+If the specified columns are missing, an error is thrown.
 }
 \examples{
-\donttest{
-# For a data.frame:
+
+# For a data.frame with custom column names:
 df <- data.frame(
-  bc = paste0("cell", 1:10),
-  type = sample(c("Tcell", "Bcell"), 10, TRUE),
-  sample = sample(c("sample1","sample2"), 10, TRUE)
+  barcode = paste0("cell", 1:10),
+  cellType = sample(c("Tcell", "Bcell"), 10, TRUE),
+  sampleID = sample(c("sample1","sample2"), 10, TRUE)
 )
-cmat <- setaCounts(df)
-cmat
-}
+cmat <- setaCounts(df, cell_type_col = "cellType", sample_col = "sampleID", bc_col = "barcode")
+print(cmat)
+
 
 }

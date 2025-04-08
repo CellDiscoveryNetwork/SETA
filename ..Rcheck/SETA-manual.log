@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  4 APR 2025 17:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  8 APR 2025 13:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**\input ./Rd2.tex \input ./Rd2.tex \input ./Rd2.tex \input ./Rd2.tex
+**\input ./Rd2.tex
 (./Rd2.tex
 (/usr/local/texlive/2025basic/texmf-dist/tex/latex/base/book.cls
 Document Class: book 2024/06/29 v1.4n Standard LaTeX document class
@@ -352,8 +352,8 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count302
 \l__pdf_internal_box=\box59
 )
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.aux)
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.aux)
 \openout1 = `Rd2.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
@@ -391,10 +391,10 @@ LaTeX Font Info:    ... okay on input line 8.
 )
 Package hyperref Info: Link coloring ON on input line 8.
 
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.out)
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.out)
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.out)
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.out)
 \@outlinefile=\write4
 \openout4 = `Rd2.out'.
 
@@ -406,19 +406,20 @@ File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
 (Font)              scaled to size 10.0pt on input line 19.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 22.
 
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.toc
-LaTeX Font Info:    Trying to load font information for U+msa on input line 1.
 
 (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 1.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 22.
+
 
 (/usr/local/texlive/2025basic/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
+)
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.toc)
 \tf@toc=\write5
 \openout5 = `Rd2.toc'.
 
@@ -430,6 +431,424 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 {/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/us
 r/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/te
 xlive/2025basic/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
+Overfull \hbox (54.038pt too wide) in paragraph at lines 52--54
+[]\T1/ptm/m/n/10 Either the ref-er-ence taxon name (a char-ac-ter string, which
+ must ap-pear in []\T1/zi4/m/n/10 colnames(counts)[]\T1/ptm/m/n/10 )
+ []
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...e {\textdef@ \displaystyle \f@size {#1}}
+                                                  {\textdef@ \textstyle \f@s...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...xtstyle \f@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \sf@...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...tstyle \sf@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \ssf...
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...style \ssf@size {\firstchoice@false #1}}
+                                                  \check@mathfonts }
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...firstchoice@false #1}}\check@mathfonts }
+                                                  
+l.71 ...er of rows and \eqn{(\text{n_taxa} - 1)}{}
+                                                   columns.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.73 \end{description}
+                      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   $
+l.73 \end{description}
+                      
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.73 \end{description}
+                      
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
 (Font)              scaled to size 9.0pt on input line 78.
 
@@ -437,89 +856,544 @@ LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
 [2]
 
 [3]
-Overfull \hbox (8.4896pt too wide) in paragraph at lines 159--161
-[]\T1/ptm/m/n/10 Either a []\T1/zi4/m/n/10 SingleCellExperiment[]\T1/ptm/m/n/10
- , a []\T1/zi4/m/n/10 Seurat []\T1/ptm/m/n/10 ob-ject, or a []\T1/zi4/m/n/10 da
-ta.frame []\T1/ptm/m/n/10 with columns
- []
-
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-67.
-(/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+80.
+ (/usr/local/texlive/2025basic/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-
-[4]
-Overfull \hbox (144.0708pt too wide) in paragraph at lines 222--226
-\T1/ptm/m/n/10 whu-ber on [][]$\T1/zi4/m/n/10 https : / / stats . stackexchange
- . com / questions / 259208 / how-[]to-[]perform-[]isometric-[]log-[]ratio-[]tr
-ansformation$[][]\T1/ptm/m/n/10 . 
+Overfull \hbox (15.35858pt too wide) in paragraph at lines 180--182
+[]\T1/ptm/b/n/10 SingleCellExperiment\T1/ptm/m/n/10 : Reads []\T1/zi4/m/n/10 co
+lData(obj) []\T1/ptm/m/n/10 for the spec-i-fied []\T1/zi4/m/n/10 cell_type_col 
+[]\T1/ptm/m/n/10 and []\T1/zi4/m/n/10 sample_col[]\T1/ptm/m/n/10 . 
  []
 
 
+Overfull \hbox (15.74715pt too wide) in paragraph at lines 207--207
+ []\T1/zi4/m/n/9 cmat <- setaCounts(df, cell_type_col = "cellType", sample_col 
+= "sampleID", bc_col = "barcode")[] 
+ []
+
+
+
+[4]
 
 [5]
 
 [6]
-Overfull \hbox (7.83609pt too wide) in paragraph at lines 382--384
-[]\T1/ptm/m/n/10 Simple re-scaling for compositional-like in-ter-pre-ta-tion in
- per-cent-ages. Use-ful for sim-pli-fied Wilcoxon
- []
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...e {\textdef@ \displaystyle \f@size {#1}}
+                                                  {\textdef@ \textstyle \f@s...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...xtstyle \f@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \sf@...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...tstyle \sf@size {\firstchoice@false #1}}
+                                                  {\textdef@ \textstyle \ssf...
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Extra }, or forgotten $.
+\textdef@ ...th {#1}\let \f@size #2\selectfont #3}
+                                                  }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\textdef@ ...h {#1}\let \f@size #2\selectfont #3}}
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...style \ssf@size {\firstchoice@false #1}}
+                                                  \check@mathfonts }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra }, or forgotten $.
+\text@ ...firstchoice@false #1}}\check@mathfonts }
+                                                  
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+! Extra \right.
+<argument> ... \times \text {scale_factor}\right )
+                                                  ,
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I'm ignoring a \right that had no matching \left.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing { inserted.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing \right. inserted.
+<inserted text> 
+                \right .
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+! Display math should end with $$.
+<to be read again> 
+                   \endgroup 
+l.374 ...e}} \times \text{scale_factor}\right),}{}
+                                                  
+The `$' that I just saw supposedly matches a previous `$$'.
+So I shall assume that you typed `$$' both times.
 
 
 
 [7]
-Overfull \hbox (7.64pt too wide) in paragraph at lines 429--431
-[]\T1/ptm/m/n/10 Which trans-form to ap-ply. One of []\T1/zi4/m/n/10 "CLR"[]\T1
-/ptm/m/n/10 , []\T1/zi4/m/n/10 "ALR"[]\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "ILR"[]
-\T1/ptm/m/n/10 , []\T1/zi4/m/n/10 "percent"[]\T1/ptm/m/n/10 , or []\T1/zi4/m/n/
-10 "logCPM"[]\T1/ptm/m/n/10 . 
- []
-
-
 
 [8]
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.ind
 
 [9]
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.ind
+
+[10]
 
 
 
-[10
+[11
 
 
 ])
-(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmpbLQdp8/Rd2pdf13ce
-3741d12a6/Rd2.aux)
+(/private/var/folders/zc/5fly3ly908xb0pd8zy6m6bj80000gn/T/RtmphEq0Vl/Rd2pdfef22
+41cefd9/Rd2.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `Rd2.out' has not changed.
-(rerunfilecheck)             Checksum: 27CA82CCDE4EEFA40AE5F13D5EC45BEB;836.
+(rerunfilecheck)             Checksum: 832B8E4B468CEC9EBA64FA8BFF1FBED1;949.
  ) 
 Here is how much of TeX's memory you used:
- 10706 strings out of 474662
- 162784 string characters out of 5751110
- 555834 words of memory out of 5000000
- 33495 multiletter control sequences out of 15000+600000
- 592209 words of font info for 76 fonts, out of 8000000 for 9000
+ 10725 strings out of 474662
+ 163041 string characters out of 5751110
+ 558835 words of memory out of 5000000
+ 33502 multiletter control sequences out of 15000+600000
+ 597653 words of font info for 80 fonts, out of 8000000 for 9000
  319 hyphenation exceptions out of 8191
- 92i,5n,95p,313b,735s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 92i,16n,95p,337b,733s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/inconsolata/Incon
 solata-zi4r.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmmi10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/
-urw/times/utmb8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/t
-imes/utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/times/
-utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/urw/times/utmri
-8a.pfb>
-Output written on Rd2.pdf (10 pages, 119196 bytes).
+fonts/cm/cmex10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025basic/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2025basic/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025basic/texmf-dist
+/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025basic/texmf-dist/font
+s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/typ
+e1/urw/times/utmr8a.pfb></usr/local/texlive/2025basic/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Rd2.pdf (11 pages, 163503 bytes).
 PDF statistics:
- 226 PDF objects out of 1000 (max. 8388607)
- 196 compressed objects within 2 object streams
- 80 named destinations out of 1000 (max. 500000)
- 73 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 267 PDF objects out of 1000 (max. 8388607)
+ 227 compressed objects within 3 object streams
+ 90 named destinations out of 1000 (max. 500000)
+ 81 words of extra memory for PDF output out of 10000 (max. 10000000)
 

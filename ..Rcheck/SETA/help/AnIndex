@@ -4,5 +4,6 @@ setaCounts	setaCounts
 setaILR	setaILR
 setaLatent	setaLatent
 setaLogCPM	setaLogCPM
+setaMetadata	setaMetadata
 setaPercent	setaPercent
 setaTransform	setaTransform

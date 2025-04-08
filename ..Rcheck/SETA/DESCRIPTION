@@ -3,7 +3,9 @@ Title: Single Cell Ecological Taxonomic Analysis
 Version: 0.1.1
 Author: Kyle Kimler <kkimler@broadinstitute.org>
 Maintainer: Kyle Kimler <kkimler@broadinstitute.org>
-Description: This package provides functions for compositional analysis and visualization for single-cell data.
+Description: Tools for compositional and other sample-level ecological analyses and visualizations tailored for single-cell RNA-seq data. It includes functions for normalizing data, performing statistical tests, and visualizing results in the context of single-cell variability.
+URL: https://github.com/kkimler/SETA
+BugReports: https://github.com/kkimler/SETA/issues
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.0)
@@ -13,4 +15,4 @@ Suggests: testthat (>= 3.0.0), knitr, rmarkdown, MASS, Matrix, Seurat,
 VignetteBuilder: knitr
 biocViews: SingleCell
 RoxygenNote: 7.3.2
-Built: R 4.4.0; ; 2025-04-04 22:19:58 UTC; unix
+Built: R 4.4.0; ; 2025-04-08 17:29:52 UTC; unix

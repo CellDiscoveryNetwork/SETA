@@ -12,14 +12,16 @@ nameEx("setaALR")
 flush(stderr()); flush(stdout())
 
 ### Name: setaALR
-### Title: Additive Log-Ratio Transform
+### Title: Additive Log-Ratio (ALR) Transform
 ### Aliases: setaALR
 
 ### ** Examples
 
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-colnames(mat) <- c("A", "B")
-out <- setaALR(mat, ref="A", pseudocount=0)
+# Example with 2 samples and 2 taxa:
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("TaxonA", "TaxonB")
+# Using TaxonA as the reference.
+out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 out$counts
 
 
@@ -32,13 +34,15 @@ nameEx("setaCLR")
 flush(stderr()); flush(stdout())
 
 ### Name: setaCLR
-### Title: Centered Log-Ratio Transform
+### Title: Centered Log-Ratio (CLR) Transform
 ### Aliases: setaCLR
 
 ### ** Examples
 
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-out <- setaCLR(mat, pseudocount=0)
+# Example matrix with 2 samples and 2 taxa:
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("Taxon1", "Taxon2")
+out <- setaCLR(mat, pseudocount = 0)
 out$counts
 
 
@@ -57,6 +61,16 @@ flush(stderr()); flush(stdout())
 ### ** Examples
 
 
+# For a data.frame with custom column names:
+df <- data.frame(
+  barcode = paste0("cell", 1:10),
+  cellType = sample(c("Tcell", "Bcell"), 10, TRUE),
+  sampleID = sample(c("sample1","sample2"), 10, TRUE)
+)
+cmat <- setaCounts(df, cell_type_col = "cellType", sample_col = "sampleID", bc_col = "barcode")
+print(cmat)
+
+
 
 
 
@@ -67,13 +81,16 @@ nameEx("setaILR")
 flush(stderr()); flush(stdout())
 
 ### Name: setaILR
-### Title: Isometric Log-Ratio Transform
+### Title: Isometric Log-Ratio (ILR) Transform
 ### Aliases: setaILR
 
 ### ** Examples
 
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-out <- setaILR(mat, boxcox_p=0)
+# Example matrix: rows are samples, columns are cell types.
+mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("A", "B")
+# ILR transformation reduces the dimension by 1.
+out <- setaILR(mat, boxcox_p = 0, pseudocount = 1)
 out$counts
 
 
@@ -112,10 +129,26 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-mat <- matrix(1:4, nrow=2)
-out <- setaLogCPM(mat)
+mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
+out <- setaLogCPM(mat, pseudocount = 1)
 out$counts
 
+
+
+
+cleanEx()
+nameEx("setaMetadata")
+### * setaMetadata
+
+flush(stderr()); flush(stdout())
+
+### Name: setaMetadata
+### Title: Extract Sample-Level Metadata from Various Objects
+### Aliases: setaMetadata
+
+### ** Examples
+
+# Using a Seurat object
 
 
 
@@ -131,7 +164,7 @@ flush(stderr()); flush(stdout())
 
 ### ** Examples
 
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 out <- setaPercent(mat)
 out$counts
 
@@ -145,14 +178,16 @@ nameEx("setaTransform")
 flush(stderr()); flush(stdout())
 
 ### Name: setaTransform
-### Title: Wrapper for Common Compositional Transforms
+### Title: Wrapper for Compositional Transforms
 ### Aliases: setaTransform
 
 ### ** Examples
 
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-setaTransform(mat, method="CLR")
-setaTransform(mat, method="percent")
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+# Apply CLR transform:
+setaTransform(mat, method = "CLR", pseudocount = 1)
+# Apply percent transform:
+setaTransform(mat, method = "percent")
 
 
 

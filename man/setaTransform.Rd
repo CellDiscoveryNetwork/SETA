@@ -2,7 +2,7 @@
 % Please edit documentation in R/transforms.R
 \name{setaTransform}
 \alias{setaTransform}
-\title{Wrapper for Common Compositional Transforms}
+\title{Wrapper for Compositional Transforms}
 \usage{
 setaTransform(
   counts,
@@ -14,29 +14,32 @@ setaTransform(
 )
 }
 \arguments{
-\item{counts}{A matrix of counts.}
+\item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
-\item{method}{Which transform to apply. One of \code{"CLR"}, \code{"ALR"},
-\code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.}
+\item{method}{A character string specifying which transform to apply. One of
+\code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.}
 
-\item{ref}{Reference column (only used if \code{method="ALR"}).}
+\item{ref}{Reference taxon (only used if \code{method="ALR"}). Can be a taxon name or column index.}
 
 \item{taxTree}{Optional tree for ILR (not yet implemented).}
 
-\item{pseudocount}{Numeric, used by CLR, ALR, ILR, logCPM. Default 1.}
+\item{pseudocount}{Numeric, used by CLR, ALR, ILR, and logCPM. Default is 1.}
 
-\item{size_factors}{For logCPM scaling. If \code{NULL}, uses column sums.}
+\item{size_factors}{For logCPM scaling. If \code{NULL}, uses row sums.}
 }
 \value{
-A list as returned by the respective transform function.
+A list as returned by the corresponding transform function.
 }
 \description{
 A convenience function that dispatches to one of the transforms:
-CLR, ALR, ILR, percent, or logCPM.
+CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix should have rows as samples
+and columns as taxa.
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-setaTransform(mat, method="CLR")
-setaTransform(mat, method="percent")
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+# Apply CLR transform:
+setaTransform(mat, method = "CLR", pseudocount = 1)
+# Apply percent transform:
+setaTransform(mat, method = "percent")
 
 }

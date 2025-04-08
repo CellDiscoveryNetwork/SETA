@@ -1,301 +1,279 @@
-#' Centered Log-Ratio Transform
+#' Centered Log-Ratio (CLR) Transform
 #'
-#' Applies a CLR transform to a matrix of counts.
-#' This transform is commonly used in compositional data analysis (CoDA)
-#' to project counts into a log-ratio space.
+#' Applies a CLR transform to a matrix of counts. In this version, samples are assumed to be
+#' in rows and taxa (cell types) in columns. For each sample, the transform computes
+#' \eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
+#' where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
 #'
-#' @param counts A matrix of counts (rows = features, columns = samples).
-#' @param pseudocount Numeric.
-#'        Added to all entries to avoid taking log(0). Default is 1.
-#'
-#' @return A list with two elements:
-#' \describe{
-#'   \item{method}{A string indicating the transform ("CLR").}
-#'   \item{counts}{A matrix of the same dimensions
-#'                 as the input after CLR transform.}
-#' }
-#'
-#' @details
-#' The CLR transform is defined as \eqn{\log(x / g(x))}
-#' where \eqn{g(x)} is the geometric mean
-#' of each row (sample) in the log scale.
-#' A pseudocount helps avoid log(0) - default is 1, as scRNA data can be sparse.
-#'
-#' @references
-#' Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-#' \emph{Journal of the Royal Statistical Society.
-#'       Series B (Methodological)}, 44(2), 139-177.
-#'
-#' @examples
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-#' out <- setaCLR(mat, pseudocount=0)
-#' out$counts
-#'
-#' @export
-setaCLR <- function(counts, pseudocount = 1) {
-  # Basic sanity check
-  if(!is.matrix(counts)) stop("'counts' must be a matrix.")
-
-  # Centered log-ratio transform
-  # Pseudocount = 1 to avoid issues with zeros
-  counts <- counts + pseudocount
-  gm <- exp(rowMeans(log(counts)))
-  clr_mat <- log(counts / gm)
-  
-  # Restore column names
-  colnames(clr_mat) <- colnames(counts)
-  # Return a list with the transformed matrix and metadata
-  list(
-    method = "CLR",
-    counts = clr_mat
-      )
-}
-
-#' Isometric Log-Ratio Transform
-#'
-#' Applies an ILR transform to a matrix of counts, using a Helmert basis by default.
-#' Optionally includes a Box-Cox–like step on the log scale.
-#'
-#' @param counts A matrix of counts.
-#' @param boxcox_p Numeric. If nonzero, applies a Box-Cox–type transform to the log-values.
-#' @param taxTree Currently unused. Reserved for future taxonomic-balance approaches.
-#' @param pseudocount Numeric. Pseudocount to avoid log(0). Default is 1.
+#' @param counts A numeric matrix of counts with rows as samples and columns as taxa.
+#' @param pseudocount Numeric. Added to all entries to avoid \code{log(0)}. Default is 1.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{A string indicating ILR with a Helmert basis (potentially noting \code{boxcox_p}).}
-#'   \item{counts}{A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns.}
+#'   \item{method}{A string indicating the transform ("CLR").}
+#'   \item{counts}{A matrix of the same dimensions as the input after CLR transform.}
 #' }
 #'
 #' @details
-#' The ILR transform is a key tool in compositional data analysis. By default, it
-#' uses a Helmert contrast matrix. The parameter \code{boxcox_p} allows an
-#' additional transform on the log-values, as described by whuber on
-#' \url{https://stats.stackexchange.com/questions/259208/how-to-perform-isometric-log-ratio-transformation}.
+#' The CLR transform is defined sample-wise as:
+#' \deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right),}{
+#' \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
+#' where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
+#' and \(p\) is the number of taxa.
 #'
 #' @references
 #' Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
 #' \emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
 #'
 #' @examples
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-#' out <- setaILR(mat, boxcox_p=0)
+#' # Example matrix with 2 samples and 2 taxa:
+#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+#' colnames(mat) <- c("Taxon1", "Taxon2")
+#' out <- setaCLR(mat, pseudocount = 0)
+#' out$counts
+#'
+#' @export
+setaCLR <- function(counts, pseudocount = 1) {
+  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+  counts <- counts + pseudocount
+  # Compute geometric mean for each sample (row)
+  gm <- exp(apply(log(counts), 1, mean))
+  # Subtract log(geometric mean) from each log-transformed element in each row
+  clr_mat <- sweep(log(counts), 1, log(gm), FUN = "-")
+  # Restore column names
+  colnames(clr_mat) <- colnames(counts)
+  list(method = "CLR", counts = clr_mat)
+}
+
+#' Isometric Log-Ratio (ILR) Transform
+#'
+#' Applies the ILR transform to a counts matrix using an orthonormal Helmert basis.
+#' For each sample (row), the data are log-transformed (with an optional Box-Cox–like transformation),
+#' and then projected onto an orthonormal Helmert basis to reduce dimensionality by one.
+#'
+#' @param counts A numeric matrix of counts with rows as samples and columns as taxa or cell types.
+#' @param boxcox_p Numeric. If nonzero, a Box-Cox–type transform is applied to the log-values.
+#'   Default is 0 (no Box-Cox transformation).
+#' @param taxTree Currently unused. Reserved for future taxonomic-balance approaches.
+#' @param pseudocount Numeric. Added to avoid \code{log(0)}. Default is 1.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{method}{A string indicating the ILR transform. If \code{boxcox_p} is nonzero,
+#'                  the value is indicated in the method string.}
+#'   \item{counts}{A matrix of ILR-transformed values with \code{ncol(counts) - 1} columns
+#'                 and the same number of rows (samples) as the input.}
+#' }
+#'
+#' @details
+#' The ILR transform is computed as follows:
+#' \enumerate{
+#'   \item Add a pseudocount and take the natural logarithm:
+#'     \deqn{y = \log(x + \text{pseudocount})}
+#'   \item If \code{boxcox_p != 0}, apply the Box-Cox–like transform:
+#'     \deqn{y = \frac{\exp(p \, y) - 1}{p}}
+#'   \item Project the log-transformed data onto an orthonormal Helmert basis computed via QR decomposition.
+#' }
+#'
+#' @references
+#' Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
+#' \emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+#'
+#' @examples
+#' # Example matrix: rows are samples, columns are cell types.
+#' mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
+#' colnames(mat) <- c("A", "B")
+#' # ILR transformation reduces the dimension by 1.
+#' out <- setaILR(mat, boxcox_p = 0, pseudocount = 1)
 #' out$counts
 #'
 #' @export
 setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
   if (!is.null(taxTree)) {
-    message("A taxTree was provided but is not yet used. Defaulting to Helmert basis.")
+    message("A taxTree was provided but is not yet supported. Defaulting to Helmert basis.")
   }
-  # Add pseudocount to avoid log(0)
   counts <- counts + pseudocount
-  # Take the log
-  y <- log(counts)
-  # Optional Box-Cox–like step on the log-values if p != 0
-  # This is suggested by whuber:
-  # https://stats.stackexchange.com/questions/259208/how-to-perform-isometric-log-ratio-transformation
+  log_x <- log(counts)
   if (boxcox_p != 0) {
-    y <- (exp(boxcox_p * y) - 1) / boxcox_p
+    log_x <- (exp(boxcox_p * log_x) - 1) / boxcox_p
   }
-  
-  # Subtract row means to recenter
-  y <- y - rowMeans(y, na.rm = TRUE)
-  
-  # Build the Helmert basis
-  k <- ncol(y)
-  if (k < 2) stop("ILR requires at least 2 columns (cell types).")
-  
-  # contr.helmert(k) yields a k x (k-1) matrix; 
-  # we transpose and normalize each row by sqrt((2:k)*(2:k-1)).
-  # This ensures an orthonormal basis for ILR rotation.
-  H <- stats::contr.helmert(k)          # k x (k-1)
-  H <- t(H) / sqrt((2:k)*(2:k-1))       # (k-1) x k
-  
-  # For interpretability, we rename the resulting columns.
-  if (!is.null(colnames(counts)) && k > 1) {
-    colnames(y)[-1] <- paste0(colnames(y)[-1], ".ILR")
-  }
-  
-  # Apply the Helmert rotation
-  ilr_vals <- y %*% t(H)
-  
-  # Return a list with metadata
+  n_taxa <- ncol(counts)
+  if (n_taxa < 2) stop("ILR requires at least 2 taxa (columns).")
+
+  # Compute orthonormal Helmert basis
+  H <- stats::contr.helmert(n_taxa)
+  H <- qr.Q(qr(H))  # orthonormalize via QR decomposition
+  # Directly project log-values onto the orthonormal Helmert basis
+  ilr_mat <- log_x %*% H
   list(
-    method = paste0("ILR_Helmert (boxcox_p=", boxcox_p, ")"),
-    counts = ilr_vals
+    method = paste0("ILR_Helmert", if (boxcox_p != 0) paste0(" (boxcox_p=", boxcox_p, ")") else ""),
+    counts = ilr_mat
   )
 }
 
-#' Additive Log-Ratio Transform
+#' Additive Log-Ratio (ALR) Transform
 #'
-#' Applies an ALR transform to a matrix of counts using a specified reference column.
+#' Applies the ALR transform to a matrix of counts using a specified reference taxon.
+#' Samples are in rows and taxa in columns. 
 #'
-#' @param counts A matrix of counts.
-#' @param ref The reference column, specified either by name or by index.
-#' @param pseudocount Numeric. Added to avoid log(0). Default is 1.
+#' @param counts A numeric matrix with rows as samples and columns as taxa.
+#' @param ref Either the reference taxon name (a character string, which must appear in \code{colnames(counts)})
+#'   or the column index of the reference.
+#' @param pseudocount Numeric. Added to every count to avoid \code{log(0)}. Default is 1.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{A string noting \code{ALR_ref=<ref>}.}
-#'   \item{counts}{A matrix of dimension \code{nrow(counts) x (ncol(counts) - 1)}.}
+#'   \item{method}{A string indicating the ALR transform with the reference taxon.}
+#'   \item{counts}{A matrix with the same number of rows and \eqn{(\text{n_taxa} - 1)} columns.}
 #' }
 #'
 #' @details
-#' ALR transforms the data by taking \eqn{\log(x_i / x_{ref})} for each column
-#' \eqn{i} except the reference column. This is another way to map data from
-#' the simplex to a Euclidean space in compositional data analysis.
-#'
-#' @references
-#' Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-#' \emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
+#' Applies the ALR transform to a matrix of counts using a specified reference taxon.
+#' Samples are in rows and taxa in columns. For each sample, the transform computes
+#' \deqn{\mathrm{ALR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}{
+#' \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}
+#' for all taxa \(i\) except the reference.
 #'
 #' @examples
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-#' colnames(mat) <- c("A", "B")
-#' out <- setaALR(mat, ref="A", pseudocount=0)
+#' # Example with 2 samples and 2 taxa:
+#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+#' colnames(mat) <- c("TaxonA", "TaxonB")
+#' # Using TaxonA as the reference.
+#' out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 #' out$counts
 #'
 #' @export
 setaALR <- function(counts, ref, pseudocount = 1) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  if (missing(ref)) stop("Please specify a reference cell type or column.")
+  if (missing(ref)) stop("Please specify a reference taxon (by name or index).")
   if (is.character(ref)) {
     if (!(ref %in% colnames(counts))) {
-      stop("Reference celltype not found in column names.")
+      stop("Reference taxon not found in colnames(counts).")
     }
     refCol <- which(colnames(counts) == ref)
   } else if (is.numeric(ref)) {
-    if (ref < 1 || ref > ncol(counts)) {
-        stop("Reference celltype index out of range.")
-    }
+    if (ref < 1 || ref > ncol(counts)) stop("Reference taxon index out of range.")
     refCol <- ref
   } else {
     stop("'ref' must be a character or numeric.")
   }
   counts <- counts + pseudocount
-  refVec <- counts[, refCol]
-  alrCounts <- log(counts / refVec)
-  alrCounts <- alrCounts[, -refCol, drop = FALSE]
-  refName <- if (is.character(ref)) ref else colnames(counts)[ref]
-  list(method = paste0("ALR_ref=", refName), counts = alrCounts)
+  # For each sample, subtract log(value at reference taxon) from log(counts)
+  alr_mat <- sweep(log(counts), 1, log(counts[, refCol]), FUN = "-")
+  # Remove the reference taxon column from output
+  alr_mat <- alr_mat[, -refCol, drop = FALSE]
+  list(method = paste0("ALR_ref=", if (is.character(ref)) ref else colnames(counts)[refCol]),
+       counts = alr_mat)
 }
 
 #' Percentage Transform
 #'
-#' Converts columns (samples) of a counts matrix to percentages of their respective column sums.
+#' Converts each row (sample) of a counts matrix to percentages of its row sum.
 #'
-#' @param counts A matrix of counts.
+#' @param counts A numeric matrix with rows as samples and columns as taxa.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{\code{"percent"}.}
-#'   \item{counts}{A matrix of the same dimension, with each column summing to 100.}
+#'   \item{method}{The string \code{"percent"}.}
+#'   \item{counts}{A matrix of the same dimensions as \code{counts}, where each row sums to 100.}
 #' }
 #'
 #' @details
-#' Simple re-scaling for compositional-like interpretation in percentages.
-#' Useful for simplified Wilcoxon rank comparisons and such
+#' Useful for simplified comparisons and as an input to non-parametric tests.
 #'
 #' @examples
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
+#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 #' out <- setaPercent(mat)
 #' out$counts
 #'
 #' @export
 setaPercent <- function(counts) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  # Example: compute % by columns (assuming columns = samples)
-  col_sums <- colSums(counts)
-  pct_counts <- t(t(counts) / col_sums * 100)
+  pct_counts <- sweep(counts, 1, rowSums(counts), FUN = "/") * 100
   list(method = "percent", counts = pct_counts)
 }
 
 #' log2(CPM) Transform
 #'
-#' Computes log2-based counts-per-million (CPM) for each column. Optionally uses provided size factors.
+#' Computes the log2 counts-per-million (CPM) for each sample.
+#' Samples are in rows and taxa in columns.
 #'
-#' @param counts A matrix of counts.
+#' @param counts A numeric matrix with rows as samples and columns as taxa.
 #' @param pseudocount Numeric. Added to counts to avoid \code{log2(0)}. Default is 1.
-#' @param size_factors Optional numeric vector. If \code{NULL}, uses the column sums.
-#' @param scale_factor Numeric. The scaling factor for "per million" style. Default is \code{1e6}.
+#' @param size_factors Optional numeric vector of library sizes for each sample.
+#'   If \code{NULL}, the row sums are used.
+#' @param scale_factor Numeric. The scaling factor, typically 1e6 for CPM. Default is 1e6.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{\code{"logCPM"}.}
-#'   \item{counts}{A matrix of the same dimension, containing log2(CPM + pseudocount).}
+#'   \item{method}{The string \code{"logCPM"}.}
+#'   \item{counts}{A matrix of the same dimensions with log2-transformed CPM values.}
 #' }
 #'
 #' @details
-#' A common RNA-seq transform is log2(CPM + 1). This variant allows adjusting the
-#' pseudocount, size factors, and overall scale factor.
-#'
+#' The transform is defined as:
+#' \deqn{\log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right),}{
+#' \log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right)}
+#' where the library size is computed per sample.
 #' @examples
-#' mat <- matrix(1:4, nrow=2)
-#' out <- setaLogCPM(mat)
+#' mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
+#' out <- setaLogCPM(mat, pseudocount = 1)
 #' out$counts
 #'
 #' @export
-setaLogCPM <- function(counts, pseudocount = 1, size_factors = NULL,
-                       scale_factor = 1e6) {
+setaLogCPM <- function(counts, pseudocount = 1, size_factors = NULL, scale_factor = 1e6) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  if (is.null(size_factors)) size_factors <- colSums(counts)
-  # Add pseudocount, divide by size factor,
-  # then multiply by size factor
-  cpm <- sweep(counts + pseudocount, 2, 
-               size_factors + pseudocount, FUN = "/") * scale_factor
+  if (is.null(size_factors)) size_factors <- rowSums(counts)
+  cpm <- sweep(counts + pseudocount, 1, size_factors + pseudocount, FUN = "/") * scale_factor
   log_cpm <- log2(cpm)
   list(method = "logCPM", counts = log_cpm)
 }
 
-#' Wrapper for Common Compositional Transforms
+#' Wrapper for Compositional Transforms
 #'
 #' A convenience function that dispatches to one of the transforms:
-#' CLR, ALR, ILR, percent, or logCPM.
+#' CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix should have rows as samples
+#' and columns as taxa.
 #'
-#' @param counts A matrix of counts.
-#' @param method Which transform to apply. One of \code{"CLR"}, \code{"ALR"},
-#'   \code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.
-#' @param ref Reference column (only used if \code{method="ALR"}).
+#' @param counts A numeric matrix with rows as samples and columns as taxa.
+#' @param method A character string specifying which transform to apply. One of
+#'   \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"}, or \code{"logCPM"}.
+#' @param ref Reference taxon (only used if \code{method="ALR"}). Can be a taxon name or column index.
 #' @param taxTree Optional tree for ILR (not yet implemented).
-#' @param pseudocount Numeric, used by CLR, ALR, ILR, logCPM. Default 1.
-#' @param size_factors For logCPM scaling. If \code{NULL}, uses column sums.
+#' @param pseudocount Numeric, used by CLR, ALR, ILR, and logCPM. Default is 1.
+#' @param size_factors For logCPM scaling. If \code{NULL}, uses row sums.
 #'
-#' @return A list as returned by the respective transform function.
+#' @return A list as returned by the corresponding transform function.
 #'
 #' @examples
-#' mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-#' setaTransform(mat, method="CLR")
-#' setaTransform(mat, method="percent")
+#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+#' # Apply CLR transform:
+#' setaTransform(mat, method = "CLR", pseudocount = 1)
+#' # Apply percent transform:
+#' setaTransform(mat, method = "percent")
 #'
 #' @export
-setaTransform <- function(
-  counts,
-  method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
-  ref = NULL,
-  taxTree = NULL,
-  pseudocount = 1,
-  size_factors = NULL
-) {
+setaTransform <- function(counts,
+                          method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
+                          ref = NULL,
+                          taxTree = NULL,
+                          pseudocount = 1,
+                          size_factors = NULL) {
   method <- match.arg(method)
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  
   switch(method,
-    "CLR" = {
-      return(setaCLR(counts, pseudocount = pseudocount))
-    },
-    "ALR" = {
-      return(setaALR(counts, ref = ref, pseudocount = pseudocount))
-    },
-    "ILR" = {
-      return(setaILR(counts, taxTree = taxTree, pseudocount = pseudocount))
-    },
-    "percent" = {
-      return(setaPercent(counts))
-    },
-    "logCPM" = {
-      return(setaLogCPM(counts, pseudocount = pseudocount, 
-                        size_factors = size_factors))
-    }
+    "CLR"     = setaCLR(counts,
+                        pseudocount = pseudocount),
+    "ALR"     = setaALR(counts,
+                        ref = ref,
+                        pseudocount = pseudocount),
+    "ILR"     = setaILR(counts,
+                        taxTree = taxTree,
+                        pseudocount = pseudocount),
+    "percent" = setaPercent(counts),
+    "logCPM"  = setaLogCPM(counts,
+                           pseudocount = pseudocount,
+                           size_factors = size_factors)
   )
 }

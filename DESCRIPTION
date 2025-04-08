@@ -1,9 +1,10 @@
 Package: SETA
 Title: Single Cell Ecological Taxonomic Analysis
 Version: 0.1.1
-Author: Kyle Kimler <kkimler@broadinstitute.org>
-Maintainer: Kyle Kimler <kkimler@broadinstitute.org>
-Description: This package provides functions for compositional analysis and visualization for single-cell data.
+Authors@R: person("Kyle", "Kimler", email = "kkimler@broadinstitute.org", role = c("aut", "cre"))
+Description: Tools for compositional and other sample-level ecological analyses and visualizations tailored for single-cell RNA-seq data. It includes functions for normalizing data, performing statistical tests, and visualizing results in the context of single-cell variability.
+URL: https://github.com/kkimler/SETA
+BugReports: https://github.com/kkimler/SETA/issues
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.0)

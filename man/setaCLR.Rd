@@ -2,43 +2,44 @@
 % Please edit documentation in R/transforms.R
 \name{setaCLR}
 \alias{setaCLR}
-\title{Centered Log-Ratio Transform}
+\title{Centered Log-Ratio (CLR) Transform}
 \usage{
 setaCLR(counts, pseudocount = 1)
 }
 \arguments{
-\item{counts}{A matrix of counts (rows = features, columns = samples).}
+\item{counts}{A numeric matrix of counts with rows as samples and columns as taxa.}
 
-\item{pseudocount}{Numeric.
-Added to all entries to avoid taking log(0). Default is 1.}
+\item{pseudocount}{Numeric. Added to all entries to avoid \code{log(0)}. Default is 1.}
 }
 \value{
-A list with two elements:
+A list with:
 \describe{
   \item{method}{A string indicating the transform ("CLR").}
-  \item{counts}{A matrix of the same dimensions
-                as the input after CLR transform.}
+  \item{counts}{A matrix of the same dimensions as the input after CLR transform.}
 }
 }
 \description{
-Applies a CLR transform to a matrix of counts.
-This transform is commonly used in compositional data analysis (CoDA)
-to project counts into a log-ratio space.
+Applies a CLR transform to a matrix of counts. In this version, samples are assumed to be
+in rows and taxa (cell types) in columns. For each sample, the transform computes
+\eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
+where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
 }
 \details{
-The CLR transform is defined as \eqn{\log(x / g(x))}
-where \eqn{g(x)} is the geometric mean
-of each row (sample) in the log scale.
-A pseudocount helps avoid log(0) - default is 1, as scRNA data can be sparse.
+The CLR transform is defined sample-wise as:
+\deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right),}{
+\log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
+where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
+and \(p\) is the number of taxa.
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow=2, byrow=TRUE)
-out <- setaCLR(mat, pseudocount=0)
+# Example matrix with 2 samples and 2 taxa:
+mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+colnames(mat) <- c("Taxon1", "Taxon2")
+out <- setaCLR(mat, pseudocount = 0)
 out$counts
 
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-\emph{Journal of the Royal Statistical Society.
-      Series B (Methodological)}, 44(2), 139-177.
+\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139-177.
 }
