@@ -4,7 +4,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/CellDiscoveryNetwork/SETA?style=social)
 ![R-CMD-check](https://github.com/CellDiscoveryNetwork/SETA/workflows/R-CMD-check/badge.svg)
 
-# SETA: Ecological Compositional Analysis of scRNA-seq Data
+## SETA: Ecological Compositional Analysis of scRNA-seq Data
 
 SETA aims to make compositional analysis user friendly and easy to understand with visualization of single-cell RNA-seq data, allowing researchers to easily assess cell-type proportions and distribution changes across biological conditions.
 
@@ -33,20 +33,26 @@ SETA aims to make compositional analysis user friendly and easy to understand wi
   - Configure GitHub Actions or similar for automated checks
   - Validate R CMD check, test coverage, and code style
 - Compositional Space Calculation (done)
-  - Implement reference frames for normalization
-  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA) - first 3 are implemented
+  - Implement reference frames for normalization (done)
+  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA, tensors!) - first 3 are implemented
   - Add trajectory capabilities
 - Compositional Transforms
   - ALR (done)
   - CLR (done)
   - ILR (with or without balances) (done without balances)
 - Methods for Cell Type Trees
-  - Build hierarchical or phylogenetic structures from input counts
+  - Build hierarchical or phylogenetic structures from input counts (done)
 - Analysis Methods
-  - Compare distances in latent or full space (Aitchison, Euclidean)
+  - Compare distances in latent or full space (Aitchison, Euclidean) (done)
   - Compare loadings of different latent spaces (done)
-  - Compare results of rank-based tests (Wilcoxon/MWU)
+  - Compare results of rank-based tests (Wilcoxon/MWU) (done)
   - Build proportionality or Pearson correlation networks of cell type compositions
+- Vignettes
+  - Introductory vignette on transforms and sample-level latent spaces
+  - Comparing samples with SETA
+  - Analyzing CoDA with Reference Frames
+  - Proportionality Networks
+  - Multi-view tensor sample-level analysis
 
 ## Installation
 
