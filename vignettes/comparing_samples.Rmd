@@ -32,7 +32,7 @@ The dataset contains blood samples from 17 donors (`donor_id`), with disease ann
 
 ## Load libraries 
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=TRUE}
 library(Seurat)
 library(SETA)
 library(ggplot2)
@@ -155,10 +155,12 @@ combined <- cbind(clr_data, oh)
 # Compute full correlation matrix
 full_cor_mat <- cor(combined, method = "pearson")
 p_mat <- cor.mtest(full_cor_mat)$p
-
+```
+```{r, fig.width = 8, fig.height = 8}
 corrplot(full_cor_mat,
          method = "circle",
          type = "full",
+         addrect = 4,
          col = wes_palette("Zissou1", 100, type = "continuous"),
          p.mat = p_mat,
          sig.level = c(.001, .01, .05),
@@ -189,9 +191,10 @@ model <- train(disease ~ ., data = train_df %>% select(-Disease.group),
 importance <- varImp(model)
 ```
 
-```{r, fig.width = 4, fig.height = 7}
-plot(importance, 
-     main = "Cross-Validated Variable Importance in Caret GLMnet model",
+```{r, fig.width = 5, fig.height = 7}
+plot(importance,
+     main = "Cross-Validated Variable Importance",
+     sub = "Caret GLMnet model"
      )
 ```
 
