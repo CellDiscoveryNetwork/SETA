@@ -31,11 +31,11 @@ Users can specify the column names for cell types, samples, and barcodes.
 }
 \details{
 \itemize{
-  \item \strong{SingleCellExperiment}: Reads \code{colData(obj)}
+  \item \strong{SingleCellExperiment} Reads \code{colData(obj)}
   for the specified \code{cell_type_col} and \code{sample_col}.
-  \item \strong{Seurat}: Uses \code{obj@meta.data} for the specified
+  \item \strong{Seurat} Uses \code{obj@meta.data} for the specified
   \code{cell_type_col} and \code{sample_col}.
-  \item \strong{data.frame}: Counts cells per specified \code{cell_type_col}
+  \item \strong{data.frame} Counts cells per specified \code{cell_type_col}
   and \code{sample_col}.
 }
 If the specified columns are missing, an error is thrown.

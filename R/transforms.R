@@ -265,53 +265,146 @@ setaLogCPM <- function(counts,
   list(method = "logCPM", counts = log_cpm)
 }
 
-#' Wrapper for Compositional Transforms
+#' Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
 #'
 #' A convenience function that dispatches to one of the transforms:
-#' CLR, ALR, ILR, percent, or logCPM.
-#' Note that the input \code{counts} matrix should have rows as samples
-#' and columns as taxa.
+#' CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
+#' should have rows as samples and columns as taxa. Optionally, you can supply
+#' a taxonomy data frame to perform a within-lineage transform at a specified
+#' resolution.
 #'
 #' @param counts A numeric matrix with rows as samples and columns as taxa.
-#' @param method A character string specifying which transform to apply. One of
-#'   \code{"CLR"}, \code{"ALR"}, \code{"ILR"},
-#'   \code{"percent"}, or \code{"logCPM"}.
-#' @param ref Reference taxon (only used if \code{method="ALR"}).
-#'        Can be a taxon name or column index.
+#' @param method A character string specifying which transform to apply.
+#'     One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
+#'     or \code{"logCPM"}.
+#' @param ref Reference taxon (only used if \code{method = "ALR"}). This can be
+#'     a taxon name or a column index.
 #' @param taxTree Optional tree for ILR (not yet implemented).
 #' @param pseudocount Numeric, used by CLR, ALR, ILR, and logCPM. Default is 1.
 #' @param size_factors For logCPM scaling. If \code{NULL}, uses row sums.
+#' @param taxonomyDF Optional data frame specifying higher-level groupings
+#'     for each taxon. Row names of \code{taxonomyDF} should match
+#'     \code{colnames(counts)}.
+#' @param taxonomy_col The column of \code{taxonomyDF} indicating which lineage
+#'     each taxon belongs to. Only used if \code{within_resolution = TRUE}.
+#' @param within_resolution Logical. If \code{TRUE}, applies the transform
+#'     within each lineage of taxa defined by \code{taxonomyDF[[taxonomy_col]]}
+#'     separately, then merges them back into the original matrix structure.
+#'     Default is \code{FALSE}.
 #'
-#' @return A list as returned by the corresponding transform function.
+#' @return A list with the following elements:
+#' \describe{
+#'     \item{transform_method}{The core transform, e.g. \"CLR\", \"ALR\", etc.}
+#'     \item{within_resolution}{Logical indicating if a within-lineage transform
+#'         was used.}
+#'     \item{grouping_var}{The name of the column in \code{taxonomyDF} used for
+#'         grouping (lineages) if \code{within_resolution = TRUE}, otherwise
+#'         \code{NULL}.}
+#'     \item{counts}{The resulting matrix after transformation, with the same
+#'         dimensions as the input \code{counts}.}
+#' }
 #'
 #' @examples
-#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
-#' # Apply CLR transform:
-#' setaTransform(mat, method = "CLR", pseudocount = 1)
-#' # Apply percent transform:
-#' setaTransform(mat, method = "percent")
+#' #### Example with lines ~80 characters ####
+#' mat <- matrix(c(1, 2, 4, 8, 3, 6, 9, 12),
+#'               nrow = 2, byrow = TRUE)
+#' colnames(mat) <- c("TaxonA1", "TaxonA2", "TaxonB1", "TaxonB2")
+#'
+#' # Build a taxonomy data frame labeling lineages
+#' df_lineage <- data.frame(
+#'     Lineage = c("LineageA", "LineageA", "LineageB", "LineageB"),
+#'     row.names = colnames(mat)
+#' )
+#'
+#' # Apply CLR transform to all columns together
+#' out1 <- setaTransform(mat, method = "CLR")
+#' out1$transform_method         # \"CLR\"
+#' out1$within_resolution       # FALSE
+#'
+#' # Apply CLR within each Lineage
+#' out2 <- setaTransform(
+#'     mat,
+#'     method = "CLR",
+#'     taxonomyDF = df_lineage,
+#'     taxonomy_col = "Lineage",
+#'     within_resolution = TRUE
+#' )
+#' out2$transform_method        # \"CLR\"
+#' out2$within_resolution       # TRUE
+#' out2$grouping_var            # \"Lineage\"
 #'
 #' @export
-setaTransform <- function(counts,
-                          method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
-                          ref = NULL,
-                          taxTree = NULL,
-                          pseudocount = 1,
-                          size_factors = NULL) {
-  method <- match.arg(method)
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  switch(method,
-    "CLR"     = setaCLR(counts,
-                        pseudocount = pseudocount),
-    "ALR"     = setaALR(counts,
-                        ref = ref,
-                        pseudocount = pseudocount),
-    "ILR"     = setaILR(counts,
-                        taxTree = taxTree,
-                        pseudocount = pseudocount),
-    "percent" = setaPercent(counts),
-    "logCPM"  = setaLogCPM(counts,
-                           pseudocount = pseudocount,
-                           size_factors = size_factors)
-  )
+setaTransform <- function(
+    counts,
+    method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
+    ref = NULL,
+    taxTree = NULL,
+    pseudocount = 1,
+    size_factors = NULL,
+    taxonomyDF = NULL,
+    taxonomy_col = NULL,
+    within_resolution = FALSE
+) {
+    method <- match.arg(method)
+    if (!is.matrix(counts)) {
+        stop("'counts' must be a matrix with samples in rows and taxa in columns.")
+    }
+    # If not reference-frame grouping, a single transform
+    if (!within_resolution || is.null(taxonomyDF) || is.null(taxonomy_col)) {
+        result_counts <- switch(
+            method,
+            "CLR" = setaCLR(counts, pseudocount = pseudocount)$counts,
+            "ALR" = setaALR(counts, ref = ref, pseudocount = pseudocount)$counts,
+            "ILR" = setaILR(counts, taxTree = taxTree, pseudocount = pseudocount)$counts,
+            "percent" = setaPercent(counts)$counts,
+            "logCPM" = setaLogCPM(
+                counts,
+                pseudocount = pseudocount,
+                size_factors = size_factors
+            )$counts
+        )
+
+        return(list(
+            transform_method  = method,
+            within_resolution = FALSE,
+            grouping_var      = NULL,
+            counts            = result_counts
+        ))
+    }
+
+    # If reference frames, partition by taxonomy_col and transform each lineage
+    if (!all(colnames(counts) %in% rownames(taxonomyDF))) {
+        stop("Some colnames(counts) are not in rownames(taxonomyDF).")
+    }
+
+    # Reorder taxonomyDF rows to match column order in 'counts'
+    taxonomyDF <- taxonomyDF[colnames(counts), , drop = FALSE]
+    group_vector <- taxonomyDF[[taxonomy_col]]
+    unique_groups <- unique(group_vector)
+    newCounts <- counts
+
+    for (grp in unique_groups) {
+        idx <- which(group_vector == grp)
+        subCounts <- counts[, idx, drop = FALSE]
+        subOut <- switch(
+            method,
+            "CLR" = setaCLR(subCounts, pseudocount = pseudocount)$counts,
+            "ALR" = setaALR(subCounts, ref = ref, pseudocount = pseudocount)$counts,
+            "ILR" = setaILR(subCounts, taxTree = taxTree, pseudocount = pseudocount)$counts,
+            "percent" = setaPercent(subCounts)$counts,
+            "logCPM" = setaLogCPM(
+                subCounts,
+                pseudocount = pseudocount,
+                size_factors = size_factors
+            )$counts
+        )
+        newCounts[, idx] <- subOut
+    }
+
+    list(
+        transform_method  = method,
+        within_resolution = TRUE,
+        grouping_var      = taxonomy_col,
+        counts            = newCounts
+    )
 }

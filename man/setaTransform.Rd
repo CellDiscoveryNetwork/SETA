@@ -2,7 +2,7 @@
 % Please edit documentation in R/transforms.R
 \name{setaTransform}
 \alias{setaTransform}
-\title{Wrapper for Compositional Transforms}
+\title{Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions}
 \usage{
 setaTransform(
   counts,
@@ -10,39 +10,87 @@ setaTransform(
   ref = NULL,
   taxTree = NULL,
   pseudocount = 1,
-  size_factors = NULL
+  size_factors = NULL,
+  taxonomyDF = NULL,
+  taxonomy_col = NULL,
+  within_resolution = FALSE
 )
 }
 \arguments{
 \item{counts}{A numeric matrix with rows as samples and columns as taxa.}
 
-\item{method}{A character string specifying which transform to apply. One of
-\code{"CLR"}, \code{"ALR"}, \code{"ILR"},
-\code{"percent"}, or \code{"logCPM"}.}
+\item{method}{A character string specifying which transform to apply.
+One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
+or \code{"logCPM"}.}
 
-\item{ref}{Reference taxon (only used if \code{method="ALR"}).
-Can be a taxon name or column index.}
+\item{ref}{Reference taxon (only used if \code{method = "ALR"}). This can be
+a taxon name or a column index.}
 
 \item{taxTree}{Optional tree for ILR (not yet implemented).}
 
 \item{pseudocount}{Numeric, used by CLR, ALR, ILR, and logCPM. Default is 1.}
 
 \item{size_factors}{For logCPM scaling. If \code{NULL}, uses row sums.}
+
+\item{taxonomyDF}{Optional data frame specifying higher-level groupings
+for each taxon. Row names of \code{taxonomyDF} should match
+\code{colnames(counts)}.}
+
+\item{taxonomy_col}{The column of \code{taxonomyDF} indicating which lineage
+each taxon belongs to. Only used if \code{within_resolution = TRUE}.}
+
+\item{within_resolution}{Logical. If \code{TRUE}, applies the transform
+within each lineage of taxa defined by \code{taxonomyDF[[taxonomy_col]]}
+separately, then merges them back into the original matrix structure.
+Default is \code{FALSE}.}
 }
 \value{
-A list as returned by the corresponding transform function.
+A list with the following elements:
+\describe{
+    \item{transform_method}{The core transform, e.g. \"CLR\", \"ALR\", etc.}
+    \item{within_resolution}{Logical indicating if a within-lineage transform
+        was used.}
+    \item{grouping_var}{The name of the column in \code{taxonomyDF} used for
+        grouping (lineages) if \code{within_resolution = TRUE}, otherwise
+        \code{NULL}.}
+    \item{counts}{The resulting matrix after transformation, with the same
+        dimensions as the input \code{counts}.}
+}
 }
 \description{
 A convenience function that dispatches to one of the transforms:
-CLR, ALR, ILR, percent, or logCPM.
-Note that the input \code{counts} matrix should have rows as samples
-and columns as taxa.
+CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
+should have rows as samples and columns as taxa. Optionally, you can supply
+a taxonomy data frame to perform a within-lineage transform at a specified
+resolution.
 }
 \examples{
-mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
-# Apply CLR transform:
-setaTransform(mat, method = "CLR", pseudocount = 1)
-# Apply percent transform:
-setaTransform(mat, method = "percent")
+#### Example with lines ~80 characters ####
+mat <- matrix(c(1, 2, 4, 8, 3, 6, 9, 12),
+              nrow = 2, byrow = TRUE)
+colnames(mat) <- c("TaxonA1", "TaxonA2", "TaxonB1", "TaxonB2")
+
+# Build a taxonomy data frame labeling lineages
+df_lineage <- data.frame(
+    Lineage = c("LineageA", "LineageA", "LineageB", "LineageB"),
+    row.names = colnames(mat)
+)
+
+# Apply CLR transform to all columns together
+out1 <- setaTransform(mat, method = "CLR")
+out1$transform_method         # \"CLR\"
+out1$within_resolution       # FALSE
+
+# Apply CLR within each Lineage
+out2 <- setaTransform(
+    mat,
+    method = "CLR",
+    taxonomyDF = df_lineage,
+    taxonomy_col = "Lineage",
+    within_resolution = TRUE
+)
+out2$transform_method        # \"CLR\"
+out2$within_resolution       # TRUE
+out2$grouping_var            # \"Lineage\"
 
 }

@@ -1,0 +1,244 @@
+---
+title: "Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA"
+author: "Kyle Kimler"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## Introduction
+
+`SETA` provides a set of functions for compositional analysis of single-cell RNA-seq data. In earlier vignettes, we introduced the basics of compositional transforms (`setaCLR`, `setaALR`, etc.) and distance/metadata handling. 
+
+In this vignette, we demonstrate how to create and utilize _multi-resolution_ annotations—here referred to as **reference frames**—for hierarchical or subcompositional analysis. Our outline:
+
+- **Extract a taxonomic data frame** of differing cell-type resolutions  
+- **Visualize the taxonomy as a tree** using `ggraph`  
+- **Transform counts data with a chosen taxonomic reference frame**  
+- **Compare PCA latent spaces** based on different reference frames
+
+This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. The dataset contains blood samples from 17 donors (`donor_id`) with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g., `Severity`, `Comorbidity`, `development_stage`). Although the Seurat object does not inherently contain multi-resolution cell-type columns, we'll artificially define a broader “lineage” level for demonstration.
+
+```{r setup, message=FALSE, warning=FALSE}
+library(Seurat)
+library(SETA)
+library(ggplot2)
+library(ggraph)
+library(tidygraph)
+library(dplyr)
+library(wesanderson)
+library(ggplot2)
+library(patchwork)
+```
+
+```{r dirs, echo = FALSE}
+# Path to dataset (modify as needed)
+base_path <- "/Users/kylekimler/gitHub/workshops/"
+data_loc  <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
+```
+
+```{r load data, warning = FALSE, message = FALSE}
+seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
+
+seurat_obj <- readRDS(seurat_file)
+# Inspect the cell types:
+unique(seurat_obj@meta.data$Celltype)
+```
+
+
+## Creating a Taxonomic Data Frame
+Below, we define a custom lineage column that lumps certain cell types together:
+
+All Monocyte variants → Monocytes
+
+All CD4/CD8 variants → T cells
+
+All B cell variants → B cells
+
+Everything else remains as is.
+
+```{r add lineage information}
+# We'll make a small mapping from original Celltype -> broader 'Lineage'
+lineage_map <- c(
+  "NK cell"               = "NK cell",
+  "CD4, EM-like"          = "T cells",
+  "CD8, non-EM-like"      = "T cells",
+  "classical Monocyte"    = "Monocytes",
+  "B cell, IgG+"          = "B cells",
+  "DC"                    = "DC",
+  "CD8, EM-like"          = "T cells",
+  "B cell, IgG-"          = "B cells",
+  "intermediate Monocyte" = "Monocytes",
+  "CD4, non-EM-like"      = "T cells",
+  "Platelet"              = "Platelet",
+  "nonclassical Monocyte" = "Monocytes",
+  "Uncategorized1"        = "Uncategorized1",
+  "RBC"                   = "RBC",
+  "Uncategorized2"        = "Uncategorized2"
+)
+
+# Convert factor -> character, then index
+seurat_obj@meta.data$Celltype <- as.character(seurat_obj@meta.data$Celltype)
+
+# Add a new column in @meta.data named 'Lineage'
+celltypes <- as.character(seurat_obj@meta.data$Celltype)
+seurat_obj@meta.data$Lineage <- lineage_map[celltypes]
+```
+
+
+Now we can build a taxonomic data frame that has two levels: 
+the fine label (Celltype) and the broad label (Lineage). 
+
+```{r create taxonomy DF}
+# We'll rename rownames of meta.data as 'bc'
+# Usually, they are barcodes. Then we ensure
+# we have columns for 'Celltype' and 'Lineage'.
+seurat_obj@meta.data$bc <- rownames(seurat_obj@meta.data)
+
+# We want a data frame that includes bc + 'Celltype' + 'Lineage'
+# Then we'll pass it to setaTaxonomyDF
+tax_df <- setaTaxonomyDF(
+  obj = seurat_obj,
+  resolution_cols = c("Lineage", "Celltype")
+)
+# Each row is a unique 'Celltype'.
+# The last column 'Celltype' is the finer label.
+# cols must be entered in order of increasing resolution (broadest to finest)
+tax_df
+```
+
+
+## Visualize the Taxonomy as a Tree via ggraph
+
+We now have a 2-level taxonomy: Celltype (fine) -> Lineage (coarse). 
+For demonstration, let's build a small graph that connects each Celltype node to its Lineage node. 
+We'll color edges by the lineage label:
+
+```{r ggraph, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 6}
+# Create a tidygraph object using SETA built-in utils
+tbl_g <- taxonomy_to_tbl_graph(tax_df, columns = c("Lineage", "Celltype"))
+
+# Plot with ggraph
+ggraph(tbl_g, layout = "dendrogram") +
+    geom_edge_diagonal2(aes(color = node.Lineage)) +
+    geom_node_text(aes(filter = leaf,
+                       label = Celltype, color = Lineage),
+                   nudge_y = 0.1, vjust = 0.5, hjust = 0, size = 5) +
+    geom_node_text(aes(filter = !leaf,
+                       label = Lineage),
+                   color = 'black',
+                   size = 5,
+                   repel = TRUE) +
+    guides(edge_colour = guide_legend(title = "Lineage"),
+           color = guide_legend(title = "Lineage")) +
+    theme_linedraw(base_size = 16) +
+    scale_edge_color_manual(values = wes_palette("Zissou1",
+                                                 10,
+                                                 type = "continuous")) +
+    scale_color_manual(values = wes_palette("Zissou1",
+                                            10,
+                                            type = "continuous")) +
+    scale_y_reverse(breaks = seq(0, 2, by = 1),
+                    labels = c("Type", "Lineage", "Root")) +
+    theme(axis.text.y = element_blank()) +
+    expand_limits(y = -5) +
+    coord_flip() +
+    ggtitle("SETA: Taxonomy") 
+```
+
+Here, each Lineage is a parent node, and each Celltype is a leaf node.
+The edges are colored by the lineage name.
+
+
+## Transform Counts with a Taxonomic Reference Frame
+
+We can now use setaCounts to get the sample × celltype matrix, 
+then apply a within-lineage transform. 
+This lumps certain columns (cell types) into subcompositions. 
+For example, a CLR transform within each lineage:
+
+```{r reference frame calculation}
+# Create sample x celltype counts:
+taxa_counts <- setaCounts(
+    seurat_obj,
+    cell_type_col = "Celltype",
+    sample_col = "donor_id"
+)
+
+# We'll transform them with a 'Lineage' grouping.
+# The taxonomyDF uses rownames = Celltype
+# so that colnames(taxa_counts) align with rownames(tax_df).
+refframe_out <- setaTransform(
+    counts            = taxa_counts,
+    method            = "CLR",
+    taxonomyDF        = tax_df,
+    taxonomy_col      = "Lineage",
+    within_resolution = TRUE
+)
+refframe_out$within_resolution
+refframe_out$grouping_var
+
+# Compare to a standard global CLR transform:
+global_out <- setaTransform(taxa_counts, method = "CLR")
+```
+
+
+## Visualize Latent Spaces With Different Reference Frames
+
+Below we show how to do PCA on the sample-level coordinates from either the global CLR or the lineage-based CLR. 
+We color points by disease to see if the subcompositional approach changes clustering.
+
+```{r latent reference frames, fig.width = 10, fig.height = 6}
+# A) Global CLR
+latent_global <- setaLatent(global_out, method = "PCA", dims = 2)
+pca_global <- latent_global$latentSpace
+pca_global$sample <- rownames(pca_global)
+
+# B) Within-Lineage CLR
+latent_lineage <- setaLatent(refframe_out, method = "PCA", dims = 2)
+pca_lineage <- latent_lineage$latentSpace
+pca_lineage$sample <- rownames(pca_lineage)
+
+# Merge with metadata
+meta_df <- setaMetadata(seurat_obj, sample_col = "Sample ID",
+                        meta_cols = c("Disease group", "Severity"))
+pca_global <- left_join(pca_global, meta_df, by = c("sample" = "Sample ID"))
+pca_lineage <- left_join(pca_lineage, meta_df, by = c("sample" = "Sample ID"))
+
+# Plot side by side
+p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = Disease.group)) +
+    geom_text(aes(label = sample)) +
+    scale_color_manual(
+        values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+    ) +
+    labs(title = "Global CLR PCA",
+        x = "PC1", y = "PC2", color = "Disease Status") +
+    theme_minimal() +
+    xlab(sprintf("PC1 (%s%%)",
+                 signif(latent_global$varExplained[1], 4) * 100)) +
+    ylab(sprintf("PC2 (%s%%)",
+                 signif(latent_global$varExplained[2], 4) * 100)) +
+    theme(legend.position = 'none')
+
+p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = Disease.group)) +
+    geom_text(aes(label = sample)) +
+    scale_color_manual(
+        values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+    ) +
+    labs(title = "Within-Lineage CLR PCA",
+        x = "PC1", y = "PC2", color = "Disease Status") +
+    theme_minimal() +
+    xlab(sprintf("PC1 (%s%%)",
+                 signif(latent_lineage$varExplained[1], 4) * 100)) +
+    ylab(sprintf("PC2 (%s%%)",
+                 signif(latent_lineage$varExplained[2], 4) * 100))
+
+
+p1 + p2
+```

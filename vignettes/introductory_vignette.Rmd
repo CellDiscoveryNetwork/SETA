@@ -165,15 +165,15 @@ pca_plot_df <- cbind(pca_coords, meta_df)
 ```{r, fig.width = 6, fig.height = 4}
 # Create the scatter plot
 ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = Disease.group)) +
-  geom_text(aes(label = `Sample ID`)) +
-  scale_color_manual(
-    values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
-  ) +
-  labs(title = "PCA Scatter Plot",
-       x = "PC1", y = "PC2", color = "Disease Status") +
-  theme_minimal() +
-  xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
-  ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))
+    geom_text(aes(label = `Sample ID`)) +
+    scale_color_manual(
+      values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+    ) +
+    labs(title = "PCA Scatter Plot",
+        x = "PC1", y = "PC2", color = "Disease Status") +
+    theme_minimal() +
+    xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
+    ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))
 ```
 
 ### Loadings Plot
