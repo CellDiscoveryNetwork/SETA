@@ -19,7 +19,9 @@ Suggests:
     Matrix,
     Seurat,
     SummarizedExperiment,
-    SingleCellExperiment
+    SingleCellExperiment,
+    DT,
+    wesanderson
 VignetteBuilder: knitr
 biocViews:
     SingleCell

@@ -1,0 +1,206 @@
+---
+title: "Comparing samples with SETA"
+author: "Kyle Kimler"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Comparing samples with SETA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+With compositional data analysis (CoDA), we can make sample-level comparisons of scRNAseq data 
+based on the relative abundance celltypes that compose them.
+
+In this vignette we show how to:
+  
+- **Calculate compositional distances** between samples
+- **Perform statistical tests** with a focus on rank-based methods, which are amenable to relative data
+- **Correlate celltype compositions and metadata** 
+- **Create predictive models** using popular statistical modeling methods
+
+This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. 
+The dataset contains blood samples from 17 donors (`donor_id`), with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g. `Severity`, `Comorbidity`, and `development_stage`).
+
+*This vignette is modular; users can update or replace the dataset-specific settings*
+*(e.g., metadata column names, reference cell type) as appropriate for their own data.*
+
+
+## Load libraries 
+
+```{r}
+library(Seurat)
+library(SETA)
+library(ggplot2)
+library(wesanderson)
+library(dplyr)
+library(tidyr)
+library(DT)
+library(ggpubr)
+library(corrplot)
+library(caret)
+```
+
+
+## Load and prepare data
+
+```{r, echo = FALSE}
+base_path <- "/Users/kylekimler/gitHub/workshops/"
+data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
+```
+
+```{r}
+seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
+seurat_obj <- readRDS(seurat_file)
+```
+
+
+### Extract taxa counts
+```{r}
+taxa_counts <- setaCounts(seurat_obj,
+                          cell_type_col = "Celltype",
+                          sample_col = "Sample ID")
+
+```
+
+
+### Prepare metadata
+```{r}
+meta_df <- setaMetadata(seurat_obj,
+                        sample_col = "Sample ID",
+                        meta_cols = c("disease", "Disease group"))
+```
+
+## Calculate distances between samples
+```{r}
+clr_transformed <- setaTransform(taxa_counts, method = "CLR")
+dist_df <- setaDistances(clr_transformed)
+
+# Merge metadata
+merged_dist <- dist_df %>%
+  left_join(meta_df, by = c("from" = "Sample ID")) %>%
+  left_join(meta_df, by = c("to" = "Sample ID"), suffix = c(".from", ".to"))
+
+# Create a disease-disease category for comparison
+merged_dist$disease_pair <- paste(merged_dist$disease.from,
+                                  merged_dist$disease.to,
+                                  sep = "-")
+```
+
+```{r, fig.width = 6, fig.height = 4}
+ggplot(merged_dist, aes(x = disease_pair, y = distance)) +
+    geom_boxplot(fill = "grey90") +
+    geom_jitter(width = 0.2, color = "black") +
+    labs(title = "Aitchison Distances Between Disease Groups",
+         x = "Disease Pair", y = "Aitchison Distance") +
+    theme_minimal(base_size = 16)
+```
+
+
+## Perform wilcoxon rank-sum tests on CoDA transformed data
+```{r}
+clr_long <- as.data.frame(clr_transformed$counts)
+colnames(clr_long) <- c("sample", "Celltype", "CLR")
+clr_long <- clr_long %>%
+    left_join(meta_df, by = c("sample" = "Sample ID"))
+```
+
+```{r, fig.width = 7, fig.height = 10}
+# Apply pairwise Wilcoxon tests and plot using ggpubr
+ggplot(clr_long, aes(x = disease, y = CLR,
+                     fill = disease, color = disease)) +
+    geom_boxplot(position = position_dodge(0.8), alpha = 0.7) +
+    geom_jitter(size = 1.5, shape = 21) +
+    stat_compare_means(method = "wilcox.test",
+                       label = "p.signif",
+                       comparisons = list(c("normal", "influenza"),
+                                          c("normal", "COVID-19"),
+                                          c("influenza", "COVID-19")),
+                       position = position_dodge(0.8)) +
+    facet_wrap(~ Celltype) +
+    theme_minimal(base_size = 12) +
+    scale_fill_manual(values = wes_palette("Zissou1")[c(1,4,5)]) +
+    scale_color_manual(values = wes_palette("Zissou1")[c(1,4,5)]) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 1)) +
+    labs(title = "CLR by Celltype and Disease",
+         x = "Disease",
+         y = "CLR-transformed Composition")
+```
+
+## Correlate celltype compositions with metadata
+
+```{r}
+clr_df <- clr_transformed$counts %>%
+            as.data.frame %>% # as.data.frame converts it to long form
+            pivot_wider(names_from='Var2',
+                        values_from = "Freq") %>%
+            rename(`Sample ID` = Var1)
+
+clr_metadata <- clr_df %>%
+    left_join(meta_df, by = "Sample ID")
+
+clr_data <- clr_metadata %>% select(where(is.numeric))
+
+# One-hot encode 'Disease.group'; clean column names
+oh <- model.matrix(~Disease.group - 1, data = clr_metadata)
+colnames(oh) <- sub("^Disease.group", "", colnames(oh))
+
+# Combine CLR data and metadata
+combined <- cbind(clr_data, oh)
+
+# Compute full correlation matrix
+full_cor_mat <- cor(combined, method = "pearson")
+p_mat <- cor.mtest(full_cor_mat)$p
+
+corrplot(full_cor_mat,
+         method = "circle",
+         type = "full",
+         col = wes_palette("Zissou1", 100, type = "continuous"),
+         p.mat = p_mat,
+         sig.level = c(.001, .01, .05),
+         insig = "label_sig",
+         tl.cex = 0.8,
+         pch.cex = 1.5,
+         tl.col = "black",
+         order = "hclust",
+         diag = FALSE)
+
+```
+
+
+## Use SETA transformed data to create predictive models with caret
+
+```{r}
+set.seed(687)
+train_df <- clr_metadata %>%
+  select(-`Sample ID`) %>%
+  mutate(disease = factor(disease))
+
+train_control <- trainControl(method = "cv", number = 5)
+
+model <- train(disease ~ ., data = train_df %>% select(-Disease.group),
+               method = "glmnet",
+               trControl = train_control)
+
+importance <- varImp(model)
+```
+
+```{r, fig.width = 4, fig.height = 7}
+plot(importance, 
+     main = "Cross-Validated Variable Importance in Caret GLMnet model",
+     )
+```
+
+
+## Conclusion
+Compositional data provides an intuitive basis for making sample-level comparisons
+in scRNAseq data, as it provides a single sample x feature space within which
+to make comparisons. Let us know if you have more ideas for using CoDA! 
+
+```{r}
+sessionInfo()
+```
