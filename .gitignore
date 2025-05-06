@@ -1,4 +1,7 @@
 .Rproj.user
+*.Rcheck/
+*.tar.gz
+SETA.BiocCheck/
 .Rhistory
 .RData
 .Ruserdata
@@ -6,4 +9,8 @@
 /doc/
 /Meta/
 ..Rcheck
+*.Rcheck/
 SETA.BiocCheck
+SETA.BiocCheck/
+.Rproj.user/
+
