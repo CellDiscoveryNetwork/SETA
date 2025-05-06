@@ -52,13 +52,13 @@ setaCLR <- function(counts, pseudocount = 1) {
 #'
 #' Applies the ILR transform to an integer counts matrix.
 #' For each sample (row), the data are log-transformed
-#' (with an optional Box-Cox–like transformation)
+#' (with an optional Box Cox like transformation)
 #' then projected onto an orthonormal Helmert basis,
 #' reducing dimensionality by one.
 #'
 #' @param counts An integer matrix of celltype counts with samples in rows.
-#' @param boxcox_p Numeric. If nonzero, a Box-Cox–type transform
-#'   is applied to the log-values. Default is 0 (no Box-Cox transformation).
+#' @param boxcox_p Numeric. If nonzero, a Box Cox type transform
+#'   is applied to the log-values. Default is 0 (no Box Cox transformation).
 #' @param taxTree Unused. Reserved for future taxonomic-balance approaches.
 #' @param pseudocount Numeric. Added to avoid \code{log(0)}. Default is 1.
 #'
@@ -77,7 +77,7 @@ setaCLR <- function(counts, pseudocount = 1) {
 #' \enumerate{
 #'   \item Add a pseudocount and take the natural logarithm:
 #'     \deqn{y = \log(x + \text{pseudocount})}
-#'   \item If \code{boxcox_p != 0}, apply the Box-Cox–like transform:
+#'   \item If \code{boxcox_p != 0}, apply the Box Cox like transform:
 #'     \deqn{y = \frac{\exp(p \, y) - 1}{p}}
 #'   \item Project the log-transformed data onto an orthonormal
 #'         Helmert basis computed via QR decomposition.
@@ -351,58 +351,56 @@ setaTransform <- function(
     }
     # If not reference-frame grouping, a single transform
     if (!within_resolution || is.null(taxonomyDF) || is.null(taxonomy_col)) {
-        result_counts <- switch(
-            method,
-            "CLR" = setaCLR(counts, pseudocount = pseudocount)$counts,
-            "ALR" = setaALR(counts, ref = ref, pseudocount = pseudocount)$counts,
-            "ILR" = setaILR(counts, taxTree = taxTree, pseudocount = pseudocount)$counts,
-            "percent" = setaPercent(counts)$counts,
-            "logCPM" = setaLogCPM(
-                counts,
-                pseudocount = pseudocount,
-                size_factors = size_factors
-            )$counts
-        )
-
-        return(list(
-            transform_method  = method,
-            within_resolution = FALSE,
-            grouping_var      = NULL,
-            counts            = result_counts
-        ))
-    }
+      result <- switch(
+          method,
+          "CLR" = setaCLR(counts, pseudocount = pseudocount),
+          "ALR" = setaALR(counts, ref = ref, pseudocount = pseudocount),
+          "ILR" = setaILR(counts, taxTree = taxTree, pseudocount = pseudocount),
+          "percent" = setaPercent(counts),
+          "logCPM" = setaLogCPM(counts,
+                                pseudocount = pseudocount,
+                                size_factors = size_factors)
+      )
+      return(list(
+          method  = result$method,
+          within_resolution = FALSE,
+          grouping_var      = NULL,
+          counts            = result$counts
+      ))
+  }
 
     # If reference frames, partition by taxonomy_col and transform each lineage
     if (!all(colnames(counts) %in% rownames(taxonomyDF))) {
-        stop("Some colnames(counts) are not in rownames(taxonomyDF).")
+    stop("Some colnames(counts) are not in rownames(taxonomyDF).")
     }
 
-    # Reorder taxonomyDF rows to match column order in 'counts'
     taxonomyDF <- taxonomyDF[colnames(counts), , drop = FALSE]
     group_vector <- taxonomyDF[[taxonomy_col]]
     unique_groups <- unique(group_vector)
     newCounts <- counts
+    final_method <- NULL
 
     for (grp in unique_groups) {
         idx <- which(group_vector == grp)
         subCounts <- counts[, idx, drop = FALSE]
-        subOut <- switch(
+        result <- switch(
             method,
-            "CLR" = setaCLR(subCounts, pseudocount = pseudocount)$counts,
-            "ALR" = setaALR(subCounts, ref = ref, pseudocount = pseudocount)$counts,
-            "ILR" = setaILR(subCounts, taxTree = taxTree, pseudocount = pseudocount)$counts,
-            "percent" = setaPercent(subCounts)$counts,
-            "logCPM" = setaLogCPM(
-                subCounts,
-                pseudocount = pseudocount,
-                size_factors = size_factors
-            )$counts
+            "CLR" = setaCLR(subCounts, pseudocount = pseudocount),
+            "ALR" = setaALR(subCounts, ref = ref, pseudocount = pseudocount),
+            "ILR" = setaILR(subCounts,
+                            taxTree = taxTree,
+                            pseudocount = pseudocount),
+            "percent" = setaPercent(subCounts),
+            "logCPM" = setaLogCPM(subCounts,
+                                  pseudocount = pseudocount,
+                                  size_factors = size_factors)
         )
-        newCounts[, idx] <- subOut
+        newCounts[, idx] <- result$counts
+        if (is.null(final_method)) final_method <- result$method
     }
 
     list(
-        transform_method  = method,
+        method  = final_method,
         within_resolution = TRUE,
         grouping_var      = taxonomy_col,
         counts            = newCounts

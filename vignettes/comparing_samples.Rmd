@@ -36,10 +36,8 @@ The dataset contains blood samples from 17 donors (`donor_id`), with disease ann
 library(Seurat)
 library(SETA)
 library(ggplot2)
-library(wesanderson)
 library(dplyr)
 library(tidyr)
-library(DT)
 library(ggpubr)
 library(corrplot)
 library(caret)
@@ -58,12 +56,22 @@ seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
 seurat_obj <- readRDS(seurat_file)
 ```
 
+```{r}
+# Set up a color palette for plots
+# 3-group distinct categoricals
+d_palette <- c("#3B9AB2", "#E1AF00", "#F21A00")
+# continuous palette of similar look
+c_palette <- colorRampPalette(c("#3B9AB2", "#78B7C5",
+                                "#EBCC2A", "#E1AF00",
+                                "#F21A00"))(100)
+```
 
 ### Extract taxa counts
 ```{r}
-taxa_counts <- setaCounts(seurat_obj,
+taxa_counts <- setaCounts(seurat_obj@meta.data,
                           cell_type_col = "Celltype",
-                          sample_col = "Sample ID")
+                          sample_col = "Sample ID",
+                          bc_col = "rownames")
 
 ```
 
@@ -123,8 +131,8 @@ ggplot(clr_long, aes(x = disease, y = CLR,
                        position = position_dodge(0.8)) +
     facet_wrap(~ Celltype) +
     theme_minimal(base_size = 12) +
-    scale_fill_manual(values = wes_palette("Zissou1")[c(1,4,5)]) +
-    scale_color_manual(values = wes_palette("Zissou1")[c(1,4,5)]) +
+    scale_fill_manual(values = d_palette) +
+    scale_color_manual(values = d_palette) +
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 1)) +
     labs(title = "CLR by Celltype and Disease",
          x = "Disease",
@@ -161,7 +169,7 @@ corrplot(full_cor_mat,
          method = "circle",
          type = "full",
          addrect = 4,
-         col = wes_palette("Zissou1", 100, type = "continuous"),
+         col = c_palette,
          p.mat = p_mat,
          sig.level = c(.001, .01, .05),
          insig = "label_sig",

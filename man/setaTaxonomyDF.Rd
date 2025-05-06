@@ -2,58 +2,59 @@
 % Please edit documentation in R/utils.R
 \name{setaTaxonomyDF}
 \alias{setaTaxonomyDF}
-\title{Build a Taxonomy Data Frame at Multiple Resolutions (Base R version)}
+\title{Build a taxonomy data frame at multiple resolutions}
 \usage{
-setaTaxonomyDF(obj, resolution_cols = c("fine_type", "mid_type", "broad_type"))
+setaTaxonomyDF(
+  obj,
+  resolution_cols = c("fine_type", "mid_type", "broad_type"),
+  bc_col = "bc"
+)
 }
 \arguments{
-\item{obj}{One of:
-\itemize{
-  \item A \strong{Seurat} object, with \code{@meta.data} containing columns
-    named in \code{resolution_cols}.
-  \item A \strong{SingleCellExperiment} object, with \code{colData()}
-    containing columns named in \code{resolution_cols}.
-  \item A long-form \code{data.frame}, with one row per cell, containing
-    at least a \code{bc} column plus all columns in \code{resolution_cols}.
-}}
+\item{obj}{A data.frame or similar object containing cell metadata.}
 
-\item{resolution_cols}{A character vector of colnames indicating different
-resolutions of cell-type (or lineage) labels. The \strong{last} element in
-this vector is treated as the "lowest-level" (finest) label, which will
-become the row name of the returned data frame.}
-}
-\value{
-A \code{data.frame} where each row is one unique value of the
-  "lowest-level" label. The columns are all the entries in
-  \code{resolution_cols}. Row names are set to the lowest-level label.
-  If a single lowest-level label maps to multiple coarser-level labels,
-  the function throws an error.
+\item{resolution_cols}{A character vector of column names
+indicating hierarchical taxonomy (from broad to fine).}
+
+\item{bc_col}{Optional. The name of the column containing barcodes,
+or "rownames" if they are row names.}
 }
 \description{
-Given a Seurat object, SingleCellExperiment, or long-form \code{data.frame},
-this function constructs a "taxonomy" data frame. Each row corresponds to
-a unique "lowest-level" label, and each column is one resolution level
-specified in \code{resolution_cols}. The last element of
-\code{resolution_cols} is considered the "lowest-level" (finest) label,
-which will become the row name of the returned data frame.
+setaTaxonomyDF() converts **one long-form metadata data.frame**-typically
+colData(sce), seu@meta.data, or any frame you already have, into a tidy
+taxonomy table.  Each row corresponds to a unique value of the *finest*
+label (the **last** element of `resolution_cols`), and every coarser label
+sits in its own column.
+}
+\details{
+## What the input must contain
+* exactly **one row per cell**
+* at least one **barcode** column (default `"bc"`).
+  Pass `bc_col = "rownames"` if barcodes live in `rownames(obj)`.
+* **all** columns listed in `resolution_cols`
+
+No `Seurat`/`SingleCellExperiment` objects are accepted here: extract their
+metadata/colData first, then hand it in as a `data.frame`
+
+## Value
+A `data.frame` whose **rownames** are the finest label. If any finest label
+maps to more than one set of coarser labels the function should stop with an
+informative error.
 }
 \examples{
-# Long-form example
-df_long <- data.frame(
-    bc = paste0("cell", 1:6),
-    fine_type = c("AlveolarType1","AlveolarType2","AlveolarType1",
-                  "Fibroblast1","Fibroblast1","AlveolarType2"),
-    mid_type  = c("Alveolar","Alveolar","Alveolar","Fibroblast",
-                  "Fibroblast","Alveolar"),
-    broad_type= c("Epithelial","Epithelial","Epithelial","Stromal",
-                  "Stromal","Epithelial")
+meta <- data.frame(
+  bc          = paste0("cell", 1:6),
+  fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+  mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
+  broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
 )
+setaTaxonomyDF(meta,
+               resolution_cols = c("broad_type","mid_type","fine_type"))
 
-# Build a taxonomy data frame specifying fine->mid->broad hierarchy
-taxDF <- setaTaxonomyDF(
-    df_long,
-    resolution_cols = c("fine_type","mid_type","broad_type")
-)
-taxDF
-
+## barcodes can be in rownames with bc_col = "rownames" (as in Seurat Object)
+rownames(meta) <- meta$bc
+meta$bc <- NULL
+setaTaxonomyDF(meta,
+               resolution_cols = c("broad_type","mid_type","fine_type"),
+               bc_col = "rownames")
 }

@@ -1,107 +1,95 @@
-mockSC <- function(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2) {
-    if(!requireNamespace("Seurat", quietly = TRUE)) {
-        stop("Package 'Seurat' must be installed to use mockSC.")
-    }
-    if (!requireNamespace("Matrix", quietly = TRUE)) {
-        stop("Matrix package must be installed.")
-    }
-    z <- lapply(seq_len(nt), \(t) {
-        # mu parameter size for rnbinom
-        ms <- 2^runif(ng, 2, 10)
-        # dispersion parameter for rnbinom
-        ds <- 0.5 + 100 / ms
-        y <- stats::rnbinom(ng * nc, mu = ms, size = 1 / ds)
-        y <- matrix(y, nrow = ng, ncol = nc)
-        y <- Matrix::Matrix(y, sparse = TRUE)
-        dimnames(y) <- list(
-            paste0("gene", seq_len(ng)),
-            paste0("cell", seq_len(nc))
-        )
-        x <- Seurat::CreateSeuratObject(counts = y)
-        x$type <- factor(
-            paste0("type", t),
-            paste0("type", seq_len(nt))
-        )
-        x$batch <- factor(
-            sample(paste0("Batch", seq_len(nb)),
-                   nc,
-                   replace = TRUE),
-            paste0("Batch", seq_len(nb))
-        )
-        x$sample <- factor(
-            sample(paste0("Sample", seq_len(ns)),
-                   nc,
-                   replace = TRUE),
-            paste0("Sample", seq_len(ns))
-        )
-        return(x)
-    })
-    # Merge the individual cell types
-    se <- merge(z[[1]], z[2:nt])
+mockSC <- function(ng = 200,   # genes
+                   nc = 50,    # cells per fine‑type
+                   nt = 3,     # # fine‑types ("type1", …)
+                   ns = 4,     # # samples
+                   nb = 2) {   # # batches
+  stopifnot(requireNamespace("Seurat",  quietly = TRUE),
+            requireNamespace("Matrix",  quietly = TRUE))
 
-    # Preprocess data
-    se <- Seurat::NormalizeData(se, verbose = FALSE)
-    se <- Seurat::FindVariableFeatures(se, verbose = FALSE)
-    se <- Seurat::ScaleData(se, verbose = FALSE)
-    se <- Seurat::RunPCA(se, npcs = 5, verbose = FALSE)
-    # Placeholder for @misc slot modifications if needed for tests
-    se@misc$pvclust <- list()
+  ## 1) create global IDs --------------------------------------------------
+  type_levels <- paste0("type",  seq_len(nt))
+  maps        <- make_type_hierarchy(type_levels)
 
-    se
+  cell_ids <- unlist(lapply(seq_len(nt), function(t)
+    paste0("cell", seq_len(nc), "_t", t)))         # unique over all types
+  gene_ids <- paste0("gene", seq_len(ng))
+
+  ## 2) counts matrix ------------------------------------------------------
+  counts_vec <- stats::rpois(length(gene_ids) * length(cell_ids), lambda = 10)
+  counts     <- Matrix::Matrix(
+                 matrix(counts_vec, nrow = ng, dimnames = list(gene_ids, cell_ids)),
+                 sparse = TRUE)
+
+  ## 3) per‑cell metadata --------------------------------------------------
+  fine_type <- rep(type_levels, each = nc)               # length == length(cell_ids)
+  mid_type  <- maps$mid  [fine_type]
+  broad_type<- maps$broad[fine_type]
+
+  meta <- data.frame(
+    type       = fine_type,
+    fine_type  = fine_type,
+    mid_type   = mid_type,
+    broad_type = broad_type,
+    batch      = sample(paste0("Batch",   seq_len(nb)), length(cell_ids), TRUE),
+    sample     = sample(paste0("Sample",  seq_len(ns)), length(cell_ids), TRUE),
+    row.names  = cell_ids,
+    check.names = FALSE
+  )
+
+  ## 4) build Seurat object (single assay, no extra layers) ---------------
+  se <- Seurat::CreateSeuratObject(counts = counts, meta.data = meta)
+
+  # light preprocessing (optional)
+  se <- Seurat::NormalizeData(se, verbose = FALSE)
+  se <- Seurat::FindVariableFeatures(se, verbose = FALSE)
+  se <- Seurat::ScaleData(se, verbose = FALSE)
+  se <- Seurat::RunPCA(se, npcs = 5, verbose = FALSE)
+
+  se@misc$pvclust <- list()  # placeholder slot for downstream tests
+  se
 }
 
-mockLong <- function(
-    nc = 500,  # number of cells
-    nt = 3,    # number of types
-    ns = 4,    # number of samples
-    nb = 2,    # number of batches
-    useBatch = TRUE
-    ) {
-    df <- data.frame(
-        bc    = paste0("cell", seq_len(nc)),
-        type  = sample(paste0("type",   seq_len(nt)), nc, replace = TRUE),
-        sample= sample(paste0("sample", seq_len(ns)), nc, replace = TRUE)
-    )
-    if (useBatch) {
-        df$batch <- sample(paste0("batch", seq_len(nb)), nc, replace = TRUE)
-    }
-    df
-}
+mockLong <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
+  type_levels <- paste0("type", seq_len(nt))
+  maps        <- make_type_hierarchy(type_levels)
 
+  df <- data.frame(
+    bc       = paste0("cell", seq_len(nc)),
+    type     = sample(type_levels, nc, TRUE),
+    sample   = sample(paste0("sample", seq_len(ns)), nc, TRUE),
+    stringsAsFactors = FALSE
+  )
+  if (useBatch)
+    df$batch <- sample(paste0("batch", seq_len(nb)), nc, TRUE)
+
+  df$fine_type  <- df$type
+  df$mid_type   <- maps$mid  [df$type]
+  df$broad_type <- maps$broad[df$type]
+  df
+}
 
 mockCount <- function(df = mockLong()) {
-    # If 'batch' exists, aggregate by (type, sample, batch);
-    # otherwise, just (type, sample).
-    groupVars <- c("type", "sample")
-    if ("batch" %in% colnames(df)) {
-        groupVars <- c(groupVars, "batch")
-    }
-    formulaStr <- paste0("bc ~ ", paste(groupVars, collapse = " + "))
-    aggregate(
-        stats::as.formula(formulaStr),
-        data = df,
-        FUN  = length
-    )
+  groupVars <- c("type", "sample")
+  if ("batch" %in% names(df)) groupVars <- c(groupVars, "batch")
+  aggregate(bc ~ ., data = df[, c("bc", groupVars)], FUN = length)
 }
 
+mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
+  stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
+  df  <- mockLong(nc, nt, ns, nb, useBatch)
+  mat <- matrix(stats::rpois(nc * 20, lambda = 5), 20,
+                dimnames = list(paste0("gene", seq_len(20)), df$bc))
+  SingleCellExperiment::SingleCellExperiment(
+    assays  = list(counts = mat),
+    colData = df
+  )
+}
 
-mockSCE <- function(
-    nc = 500,
-    nt = 3,
-    ns = 4,
-    nb = 2,
-    useBatch = TRUE
-) {
-    if(!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-        stop("Package 'SingleCellExperiment' must be installed to use mockSCE.")
-    }
-    df <- mockLong(nc = nc, nt = nt, ns = ns, nb = nb, useBatch = useBatch)
-    bc <- df$bc
-    mat <- matrix(stats::rpois(nrow(df) * 20, lambda = 5), nrow = 20)
-    rownames(mat) <- paste0("gene", seq_len(20))
-    colnames(mat) <- bc
-    SingleCellExperiment::SingleCellExperiment(
-        assays = list(counts = mat),
-        colData = df
-    )
+make_type_hierarchy <- function(type_levels) {
+  n  <- length(type_levels)
+  i  <- seq_along(type_levels)
+  list(
+    mid   = setNames(paste0("mid",   ceiling(i / 2)),           type_levels),
+    broad = setNames(paste0("broad", ifelse(i <= n / 2, 1, 2)), type_levels)
+  )
 }

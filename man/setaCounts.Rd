@@ -7,38 +7,23 @@
 setaCounts(obj, cell_type_col = "type", sample_col = "sample", bc_col = "bc")
 }
 \arguments{
-\item{obj}{Either a \code{SingleCellExperiment}, a \code{Seurat} object, or
-a \code{data.frame}. This function requires specific metadata or columns
-to function correctly.}
+\item{obj}{A long-form data.frame. Typically colData from a
+SingleCellExperiment or @meta.data from a Seurat object.}
 
-\item{cell_type_col}{The name of the column representing cell types.
-Default is "type".}
+\item{cell_type_col}{Column name for cell types (default "type")}
 
-\item{sample_col}{The name of the column representing sample identifiers.
-Default is "sample".}
+\item{sample_col}{Column name for sample IDs (default "sample")}
 
-\item{bc_col}{The name of the column representing barcodes (only needed for
-\code{data.frame} input). Default is "bc".}
+\item{bc_col}{Column name for barcodes (default "bc")
+Use `"rownames"` to extract barcodes from row names.}
 }
 \value{
-A matrix whose rows are samples and whose columns are cell types,
-  with entries of the count of unique barcodes per type-sample combination.
+A sample-by-celltype matrix of counts.
 }
 \description{
-Given a \code{SingleCellExperiment}, \code{Seurat}, or
-long-form \code{data.frame}, creates a type-by-sample matrix of cell counts.
+Given a long-form \code{data.frame},
+creates a type-by-sample matrix of cell counts.
 Users can specify the column names for cell types, samples, and barcodes.
-}
-\details{
-\itemize{
-  \item \strong{SingleCellExperiment} Reads \code{colData(obj)}
-  for the specified \code{cell_type_col} and \code{sample_col}.
-  \item \strong{Seurat} Uses \code{obj@meta.data} for the specified
-  \code{cell_type_col} and \code{sample_col}.
-  \item \strong{data.frame} Counts cells per specified \code{cell_type_col}
-  and \code{sample_col}.
-}
-If the specified columns are missing, an error is thrown.
 }
 \examples{
 # For a data.frame with custom column names:
@@ -52,7 +37,5 @@ cmat <- setaCounts(df,
                    cell_type_col = "cellType",
                    sample_col = "sampleID",
                    bc_col = "barcode")
-print(cmat)
-
-
+print(head(cmat))
 }

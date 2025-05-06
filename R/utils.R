@@ -1,32 +1,15 @@
 #' Extract Taxonomic Counts from Various Single Cell Objects
 #'
-#' Given a \code{SingleCellExperiment}, \code{Seurat}, or
-#' long-form \code{data.frame}, creates a type-by-sample matrix of cell counts.
+#' Given a long-form \code{data.frame},
+#' creates a type-by-sample matrix of cell counts.
 #' Users can specify the column names for cell types, samples, and barcodes.
 #'
-#' @param obj Either a \code{SingleCellExperiment}, a \code{Seurat} object, or
-#'   a \code{data.frame}. This function requires specific metadata or columns
-#'   to function correctly.
-#' @param cell_type_col The name of the column representing cell types.
-#'   Default is "type".
-#' @param sample_col The name of the column representing sample identifiers.
-#'   Default is "sample".
-#' @param bc_col The name of the column representing barcodes (only needed for
-#'   \code{data.frame} input). Default is "bc".
-#'
-#' @return A matrix whose rows are samples and whose columns are cell types,
-#'   with entries of the count of unique barcodes per type-sample combination.
-#'
-#' @details
-#' \itemize{
-#'   \item \strong{SingleCellExperiment} Reads \code{colData(obj)}
-#'   for the specified \code{cell_type_col} and \code{sample_col}.
-#'   \item \strong{Seurat} Uses \code{obj@meta.data} for the specified
-#'   \code{cell_type_col} and \code{sample_col}.
-#'   \item \strong{data.frame} Counts cells per specified \code{cell_type_col}
-#'   and \code{sample_col}.
-#' }
-#' If the specified columns are missing, an error is thrown.
+#' @param obj A long-form data.frame. Typically colData from a
+#'   SingleCellExperiment or @meta.data from a Seurat object.
+#' @param cell_type_col Column name for cell types (default "type")
+#' @param sample_col Column name for sample IDs (default "sample")
+#' @param bc_col Column name for barcodes (default "bc")
+#'        Use `"rownames"` to extract barcodes from row names.
 #'
 #' @examples
 #' # For a data.frame with custom column names:
@@ -40,218 +23,128 @@
 #'                    cell_type_col = "cellType",
 #'                    sample_col = "sampleID",
 #'                    bc_col = "barcode")
-#' print(cmat)
-#'
-#'
+#' print(head(cmat))
+#' @return A sample-by-celltype matrix of counts.
 #' @export
 setaCounts <- function(obj,
                        cell_type_col = "type",
-                       sample_col = "sample",
-                       bc_col = "bc") {
-  # SingleCellExperiment import
-  if ("SingleCellExperiment" %in% class(obj)) {
-    if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-      stop("Package 'SingleCellExperiment' must be installed.", call. = FALSE)
-    }
-    coldata <- SingleCellExperiment::colData(obj)
-    if (!all(c(cell_type_col, sample_col) %in% colnames(coldata))) {
-      stop(sprintf("colData(obj) must contain '%s' and '%s' columns.",
-                   cell_type_col,
-                   sample_col),
-           call. = FALSE)
-    }
-    return(as.matrix(table(coldata[[sample_col]], coldata[[cell_type_col]])))
+                       sample_col   = "sample",
+                       bc_col       = "bc") {
+  if (!is.data.frame(obj)) {
+    stop("Input must be a data.frame.
+          If you want to use Seurat metadata or SCE colData,
+          convert these to a dataframe and input them directly.")
   }
 
-  # Seurat import
-  if ("Seurat" %in% class(obj)) {
-    if (!requireNamespace("Seurat", quietly = TRUE)) {
-      stop("Package 'Seurat' must be installed.", call. = FALSE)
-    }
-    meta <- obj@meta.data
-    if (!all(c(cell_type_col, sample_col) %in% colnames(meta))) {
-      stop(sprintf("obj@meta.data must contain '%s' and '%s' columns.",
-                   cell_type_col,
-                   sample_col),
-           call. = FALSE)
-    }
-    return(as.matrix(table(meta[[sample_col]], meta[[cell_type_col]])))
+  # Handle special case for rownames
+  if (identical(bc_col, "rownames")) {
+    obj$.__barcodes__ <- rownames(obj)
+    bc_col <- ".__barcodes__"
   }
 
-  # Long-form data.frame import
-  if (is.data.frame(obj)) {
-    requiredCols <- c(bc_col, cell_type_col, sample_col)
-    if (!all(requiredCols %in% colnames(obj))) {
-      stop(sprintf("data.frame must have columns: '%s', '%s', '%s' at minimum.",
-                   bc_col,
-                   cell_type_col,
-                   sample_col),
-           call. = FALSE)
-    }
-    # Deduplicate by barcode so each cell is counted once
-    df <- unique(obj[, c(bc_col, cell_type_col, sample_col)])
-    return(as.matrix(table(df[[sample_col]], df[[cell_type_col]])))
+  required <- c(bc_col, cell_type_col, sample_col)
+  missing  <- setdiff(required, colnames(obj))
+  if (length(missing) > 0) {
+    stop("Missing required column(s): ", paste(missing, collapse = ", "))
   }
-  stop("Unsupported object type.")
+
+  df  <- unique(obj[, required])
+  mat <- as.matrix(table(df[[sample_col]], df[[cell_type_col]]))
+  return(mat)
 }
 
-#' Build a Taxonomy Data Frame at Multiple Resolutions (Base R version)
+#' Build a taxonomy data frame at multiple resolutions
 #'
-#' Given a Seurat object, SingleCellExperiment, or long-form \code{data.frame},
-#' this function constructs a "taxonomy" data frame. Each row corresponds to
-#' a unique "lowest-level" label, and each column is one resolution level
-#' specified in \code{resolution_cols}. The last element of
-#' \code{resolution_cols} is considered the "lowest-level" (finest) label,
-#' which will become the row name of the returned data frame.
+#' setaTaxonomyDF() converts **one long-form metadata data.frame**-typically
+#' colData(sce), seu@meta.data, or any frame you already have, into a tidy
+#' taxonomy table.  Each row corresponds to a unique value of the *finest*
+#' label (the **last** element of `resolution_cols`), and every coarser label
+#' sits in its own column.
 #'
-#' @param obj One of:
-#'   \itemize{
-#'     \item A \strong{Seurat} object, with \code{@meta.data} containing columns
-#'       named in \code{resolution_cols}.
-#'     \item A \strong{SingleCellExperiment} object, with \code{colData()}
-#'       containing columns named in \code{resolution_cols}.
-#'     \item A long-form \code{data.frame}, with one row per cell, containing
-#'       at least a \code{bc} column plus all columns in \code{resolution_cols}.
-#'   }
-#' @param resolution_cols A character vector of colnames indicating different
-#'   resolutions of cell-type (or lineage) labels. The \strong{last} element in
-#'   this vector is treated as the "lowest-level" (finest) label, which will
-#'   become the row name of the returned data frame.
+#' ## What the input must contain
+#' * exactly **one row per cell**
+#' * at least one **barcode** column (default `"bc"`).
+#'   Pass `bc_col = "rownames"` if barcodes live in `rownames(obj)`.
+#' * **all** columns listed in `resolution_cols`
 #'
-#' @return A \code{data.frame} where each row is one unique value of the
-#'   "lowest-level" label. The columns are all the entries in
-#'   \code{resolution_cols}. Row names are set to the lowest-level label.
-#'   If a single lowest-level label maps to multiple coarser-level labels,
-#'   the function throws an error.
+#' No `Seurat`/`SingleCellExperiment` objects are accepted here: extract their
+#' metadata/colData first, then hand it in as a `data.frame`
+#'
+#' ## Value
+#' A `data.frame` whose **rownames** are the finest label. If any finest label
+#' maps to more than one set of coarser labels the function should stop with an
+#' informative error.
+#'
+#' @param obj A data.frame or similar object containing cell metadata.
+#' @param resolution_cols A character vector of column names
+#'        indicating hierarchical taxonomy (from broad to fine).
+#' @param bc_col Optional. The name of the column containing barcodes,
+#'                         or "rownames" if they are row names.
 #'
 #' @examples
-#' # Long-form example
-#' df_long <- data.frame(
-#'     bc = paste0("cell", 1:6),
-#'     fine_type = c("AlveolarType1","AlveolarType2","AlveolarType1",
-#'                   "Fibroblast1","Fibroblast1","AlveolarType2"),
-#'     mid_type  = c("Alveolar","Alveolar","Alveolar","Fibroblast",
-#'                   "Fibroblast","Alveolar"),
-#'     broad_type= c("Epithelial","Epithelial","Epithelial","Stromal",
-#'                   "Stromal","Epithelial")
+#' meta <- data.frame(
+#'   bc          = paste0("cell", 1:6),
+#'   fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+#'   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
+#'   broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
 #' )
+#' setaTaxonomyDF(meta,
+#'                resolution_cols = c("broad_type","mid_type","fine_type"))
 #'
-#' # Build a taxonomy data frame specifying fine->mid->broad hierarchy
-#' taxDF <- setaTaxonomyDF(
-#'     df_long,
-#'     resolution_cols = c("fine_type","mid_type","broad_type")
-#' )
-#' taxDF
-#'
+#' ## barcodes can be in rownames with bc_col = "rownames" (as in Seurat Object)
+#' rownames(meta) <- meta$bc
+#' meta$bc <- NULL
+#' setaTaxonomyDF(meta,
+#'                resolution_cols = c("broad_type","mid_type","fine_type"),
+#'                bc_col = "rownames")
 #' @export
-setaTaxonomyDF <- function(
-    obj,
-    resolution_cols = c("fine_type", "mid_type", "broad_type")
-) {
-    ########################################################################
-    ## 1) Extract or build a data.frame with columns: bc + resolution_cols ##
-    ########################################################################
-    if (!is.vector(resolution_cols) || length(resolution_cols) < 1) {
-        stop("'resolution_cols' must be a character vector
-              with at least 1 entry.")
-    }
+setaTaxonomyDF <- function(obj,
+                           resolution_cols = c("fine_type",
+                                               "mid_type",
+                                               "broad_type"),
+                           bc_col = "bc") {
 
-    meta <- NULL
+  ## --------------------------------------------------------------------- ##
+  ## 0) Basic argument sanity -------------------------------------------- ##
+  if (!is.data.frame(obj))
+    stop("obj must be a data.frame. Extract metadata first.")
 
-    # CASE A: Long-form data.frame
-    if (is.data.frame(obj)) {
-        # Must have at least 'bc' plus all resolution_cols
-        req_cols <- c("bc", resolution_cols)
-        missing_cols <- setdiff(req_cols, colnames(obj))
-        if (length(missing_cols) > 0) {
-            stop(
-                "Long-form data.frame is missing columns: ",
-                paste(missing_cols, collapse = ", ")
-            )
-        }
-        meta <- obj[, req_cols, drop = FALSE]
+  if (!is.character(resolution_cols) || length(resolution_cols) < 1)
+    stop("resolution_cols must be a non-empty character vector.")
 
-    # CASE B: Seurat
-    } else if (inherits(obj, "Seurat")) {
-        meta_seu <- obj@meta.data
-        missing_cols <- setdiff(resolution_cols, colnames(meta_seu))
-        if (length(missing_cols) > 0) {
-            stop(
-                "Seurat object is missing these columns in @meta.data: ",
-                paste(missing_cols, collapse = ", ")
-            )
-        }
-        # We'll add a 'bc' column from rownames
-        meta_seu$bc <- rownames(meta_seu)
-        meta <- meta_seu[, c("bc", resolution_cols), drop = FALSE]
+  ## --------------------------------------------------------------------- ##
+  ## 1) Handle barcode column (incl. 'rownames' shortcut) ---------------- ##
+  if (identical(bc_col, "rownames")) {
+    obj$.__bc__ <- rownames(obj)
+    bc_col <- ".__bc__"
+  }
 
-    # CASE C: SingleCellExperiment
-    } else if (inherits(obj, "SingleCellExperiment")) {
-        cd <- SummarizedExperiment::colData(obj)
-        missing_cols <- setdiff(resolution_cols, colnames(cd))
-        if (length(missing_cols) > 0) {
-            stop(
-                "SingleCellExperiment colData is missing columns: ",
-                paste(missing_cols, collapse = ", ")
-            )
-        }
-        # Build a base df: bc is colnames(obj), then resolution_cols
-        bc_vec <- colnames(obj)
-        meta_sce <- data.frame(
-            bc = bc_vec,
-            as.data.frame(cd[, resolution_cols, drop = FALSE]),
-            stringsAsFactors = FALSE
-        )
-        meta <- meta_sce
+  req_cols <- c(bc_col, resolution_cols)
+  miss     <- setdiff(req_cols, names(obj))
+  if (length(miss))
+    stop("Missing required column(s): ", paste(miss, collapse = ", "))
 
-    } else {
-        stop(
-            "Unsupported object type. Must be data.frame, ",
-            "Seurat, or SingleCellExperiment."
-        )
-    }
+  meta <- obj[, req_cols, drop = FALSE]
 
-    ############################################################################
-    ## 2) Identify the fine (lowest-level) label last in resolution_cols      ##
-    ############################################################################
-    fine_label <- tail(resolution_cols, 1)
+  ## --------------------------------------------------------------------- ##
+  ## 2) Validate the finest label ---------------------------------------- ##
+  fine_label <- tail(resolution_cols, 1)
+  if (anyNA(meta[[fine_label]]))
+    stop("Some cells have NA in the finest label column ('", fine_label, "').")
 
-    if (any(is.na(meta[[fine_label]]))) {
-        stop(
-            "Some cells have an NA value for the '",
-            fine_label,
-            "' column."
-        )
-    }
+  ## --------------------------------------------------------------------- ##
+  ## 3) Unique combos & one to one mapping check ------------------------- ##
+  combos <- unique(meta[, resolution_cols, drop = FALSE])
 
-    ########################################################################
-    ## 3) Construct unique combos of all resolution_cols -> one row per   ##
-    ##    distinct (fine_type, mid_type, broad_type, etc.) combo.         ##
-    ########################################################################
-    needed <- meta[, resolution_cols, drop = FALSE]
+  bad <- names(which(table(combos[[fine_label]]) > 1))
+  if (length(bad))
+    stop("Finest labels mapping to >1 coarser combo: ",
+         paste(bad, collapse = ", "))
 
-    unique_combos <- unique(needed)
-
-    ########################################################################
-    ## 4) Check that each fine_label is associated with exactly ONE combo ##
-    ########################################################################
-    fine_vals <- unique_combos[[fine_label]]
-    freq_tab <- table(fine_vals)
-    conflicts <- names(freq_tab)[freq_tab > 1]
-    if (length(conflicts) > 0) {
-        stop(
-            "Some fine-level labels map to multiple coarser combos: ",
-            paste(conflicts, collapse = ", ")
-        )
-    }
-
-    ########################################################################
-    ## 5) Sort the table by coarsest label,                               ##
-    ##    Set row names to the fine_label and return the unique_combos df ##
-    ########################################################################
-    # unique_combos <- unique_combos[order(unique_combos[[1]]), ]
-    rownames(unique_combos) <- unique_combos[[fine_label]]
-    unique_combos
+  ## --------------------------------------------------------------------- ##
+  ## 4) Return taxonomy frame ------------------------------------------- ##
+  rownames(combos) <- combos[[fine_label]]
+  return(combos)
 }
 
 #' Convert Multi-Column Taxonomy to a Single-Root tbl_graph (with node metadata)

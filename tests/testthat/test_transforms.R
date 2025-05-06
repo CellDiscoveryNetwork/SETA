@@ -60,8 +60,8 @@ test_that("Transforms work on mock SCE, Seurat, and long data", {
   sce <- mockSCE()
   seu <- mockSC()
   df  <- mockLong()
-  matSCE <- setaCounts(sce)
-  matSeurat <- setaCounts(seu)
+  matSCE <- setaCounts(as.data.frame(SummarizedExperiment::colData(sce)))
+  matSeurat <- setaCounts(seu@meta.data, bc = "rownames")
   matDF <- setaCounts(df)
   outSCE <- setaCLR(matSCE)
   outSeurat <- setaCLR(matSeurat)
@@ -94,4 +94,3 @@ test_that("setaTransform works with all methods", {
   res_lcpm <- setaTransform(mat, method = "logCPM", pseudocount = 1)
   expect_equal(res_lcpm$method, "logCPM")
 })
-

@@ -43,15 +43,18 @@ data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
 library(Seurat)
 library(SETA)
 library(ggplot2)
-library(wesanderson)
 library(dplyr)
-library(DT)
 
 # Modify the file path if needed
 seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
 seurat_obj <- readRDS(seurat_file)
 ```
 
+```{r}
+# Set up a color palette for plots
+# 5-group distinct categoricals
+d_palette <- c("#3B9AB2", "#9BBDAC", "#EBCC2A", "#E98903", "#F21A00")
+```
 
 ## Extracting the Taxonomic Counts Matrix
 
@@ -64,9 +67,10 @@ we reassign these columns before extraction.
 ```{r data wrangling, message=FALSE, warning=FALSE, echo=TRUE}
 # Extract the taxonomic counts matrix using custom metadata column names
 # (Users can specify these column names according to their dataset.)
-taxa_counts <- setaCounts(seurat_obj,
+taxa_counts <- setaCounts(seurat_obj@meta.data,
                           cell_type_col = "Celltype",
-                          sample_col = "Sample ID")
+                          sample_col = "Sample ID",
+                          bc_col = "rownames")
 print(head(taxa_counts))
 ```
 
@@ -115,7 +119,7 @@ print(head(lcpm_out$counts))
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
 # PCA Latent Space Coordinates:
-DT::datatable(latent_pca$latentSpace)
+print(head(latent_pca$latentSpace))
 # Variance Explained:
 print(latent_pca$varExplained)
 ```
@@ -167,7 +171,7 @@ pca_plot_df <- cbind(pca_coords, meta_df)
 ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = Disease.group)) +
     geom_text(aes(label = `Sample ID`)) +
     scale_color_manual(
-      values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+      values = d_palette
     ) +
     labs(title = "PCA Scatter Plot",
         x = "PC1", y = "PC2", color = "Disease Status") +

@@ -32,7 +32,6 @@ library(ggplot2)
 library(ggraph)
 library(tidygraph)
 library(dplyr)
-library(wesanderson)
 library(ggplot2)
 library(patchwork)
 ```
@@ -42,6 +41,14 @@ library(patchwork)
 base_path <- "/Users/kylekimler/gitHub/workshops/"
 data_loc  <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
 ```
+
+```{r}
+# Set up a color palette for plots
+# 9-group distinct categoricals
+d_palette <- c("#3B9AB2", "#6BAFAF", "#9BBDAC", "#C9C171",
+               "#EBCC2A", "#E6A80F", "#E98903", "#F84C00", "#F21A00")
+```
+
 
 ```{r load data, warning = FALSE, message = FALSE}
 seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
@@ -91,28 +98,28 @@ celltypes <- as.character(seurat_obj@meta.data$Celltype)
 seurat_obj@meta.data$Lineage <- lineage_map[celltypes]
 ```
 
-
 Now we can build a taxonomic data frame that has two levels: 
 the fine label (Celltype) and the broad label (Lineage). 
 
 ```{r create taxonomy DF}
-# We'll rename rownames of meta.data as 'bc'
-# Usually, they are barcodes. Then we ensure
-# we have columns for 'Celltype' and 'Lineage'.
-seurat_obj@meta.data$bc <- rownames(seurat_obj@meta.data)
+# In a Seurat Object, barcodes are in the rownames of the metadata.
+# Similar to setaCounts, taxonomy DF creation can use rownames as bc.
+# Then we ensure we have columns for 'Celltype' and 'Lineage'.
+print(head(seurat_obj@meta.data$Celltype))
+print(head(seurat_obj@meta.data$Lineage))
 
 # We want a data frame that includes bc + 'Celltype' + 'Lineage'
 # Then we'll pass it to setaTaxonomyDF
 tax_df <- setaTaxonomyDF(
-  obj = seurat_obj,
-  resolution_cols = c("Lineage", "Celltype")
+  obj = seurat_obj@meta.data,
+  resolution_cols = c("Lineage", "Celltype"),
+  bc_col = "rownames"
 )
 # Each row is a unique 'Celltype'.
 # The last column 'Celltype' is the finer label.
 # cols must be entered in order of increasing resolution (broadest to finest)
 tax_df
 ```
-
 
 ## Visualize the Taxonomy as a Tree via ggraph
 
@@ -138,12 +145,8 @@ ggraph(tbl_g, layout = "dendrogram") +
     guides(edge_colour = guide_legend(title = "Lineage"),
            color = guide_legend(title = "Lineage")) +
     theme_linedraw(base_size = 16) +
-    scale_edge_color_manual(values = wes_palette("Zissou1",
-                                                 10,
-                                                 type = "continuous")) +
-    scale_color_manual(values = wes_palette("Zissou1",
-                                            10,
-                                            type = "continuous")) +
+    scale_edge_color_manual(values = d_palette) +
+    scale_color_manual(values = d_palette) +
     scale_y_reverse(breaks = seq(0, 2, by = 1),
                     labels = c("Type", "Lineage", "Root")) +
     theme(axis.text.y = element_blank()) +
@@ -166,9 +169,10 @@ For example, a CLR transform within each lineage:
 ```{r reference frame calculation}
 # Create sample x celltype counts:
 taxa_counts <- setaCounts(
-    seurat_obj,
+    seurat_obj@meta.data,
     cell_type_col = "Celltype",
-    sample_col = "donor_id"
+    sample_col = "donor_id",
+    bc_col = "rownames"
 )
 
 # We'll transform them with a 'Lineage' grouping.
@@ -215,7 +219,7 @@ pca_lineage <- left_join(pca_lineage, meta_df, by = c("sample" = "Sample ID"))
 p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = Disease.group)) +
     geom_text(aes(label = sample)) +
     scale_color_manual(
-        values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+        values = d_palette
     ) +
     labs(title = "Global CLR PCA",
         x = "PC1", y = "PC2", color = "Disease Status") +
@@ -229,7 +233,7 @@ p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = Disease.group)) +
 p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = Disease.group)) +
     geom_text(aes(label = sample)) +
     scale_color_manual(
-        values = wesanderson::wes_palette("Zissou1", 5, type = "continuous")
+        values = d_palette
     ) +
     labs(title = "Within-Lineage CLR PCA",
         x = "PC1", y = "PC2", color = "Disease Status") +
@@ -241,4 +245,8 @@ p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = Disease.group)) +
 
 
 p1 + p2
+```
+
+```{r}
+sessionInfo()
 ```

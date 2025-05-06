@@ -9,8 +9,8 @@ setaILR(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1)
 \arguments{
 \item{counts}{An integer matrix of celltype counts with samples in rows.}
 
-\item{boxcox_p}{Numeric. If nonzero, a Box-Cox–type transform
-is applied to the log-values. Default is 0 (no Box-Cox transformation).}
+\item{boxcox_p}{Numeric. If nonzero, a Box Cox type transform
+is applied to the log-values. Default is 0 (no Box Cox transformation).}
 
 \item{taxTree}{Unused. Reserved for future taxonomic-balance approaches.}
 
@@ -30,7 +30,7 @@ A list with:
 \description{
 Applies the ILR transform to an integer counts matrix.
 For each sample (row), the data are log-transformed
-(with an optional Box-Cox–like transformation)
+(with an optional Box Cox like transformation)
 then projected onto an orthonormal Helmert basis,
 reducing dimensionality by one.
 }
@@ -39,7 +39,7 @@ The ILR transform is computed as follows:
 \enumerate{
   \item Add a pseudocount and take the natural logarithm:
     \deqn{y = \log(x + \text{pseudocount})}
-  \item If \code{boxcox_p != 0}, apply the Box-Cox–like transform:
+  \item If \code{boxcox_p != 0}, apply the Box Cox like transform:
     \deqn{y = \frac{\exp(p \, y) - 1}{p}}
   \item Project the log-transformed data onto an orthonormal
         Helmert basis computed via QR decomposition.
