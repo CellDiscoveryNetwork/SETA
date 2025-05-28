@@ -40,6 +40,7 @@
 #' dist_df <- setaDistances(clr_mat)
 #' print(head(dist_df))
 #'
+#' @importFrom stats dist function
 #' @export
 setaDistances <- function(transformed_counts, method = "euclidean") {
   if (!is.matrix(transformed_counts$counts)) {
@@ -48,7 +49,7 @@ setaDistances <- function(transformed_counts, method = "euclidean") {
             with samples in rows and taxa in columns.")
   }
 
-  dist_mat <- stats::dist(transformed_counts$counts, method = method)
+  dist_mat <- dist(transformed_counts$counts, method = method)
 
   # Convert distance matrix to a long-form dataframe
   dist_df <- as.data.frame(as.table(as.matrix(dist_mat)))

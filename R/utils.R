@@ -224,13 +224,12 @@ setaTaxonomyDF <- function(obj,
 #'     theme_minimal() +
 #'     labs(title = \"Single-Root Taxonomy Tree\")
 #'
+#' @importFrom tidygraph  activate as_tbl_graph
+#' @importFrom dplyr left_join pull
 #' @export
 taxonomy_to_tbl_graph <- function(tax_df,
                                   columns   = NULL,
                                   root_name = "AllCells") {
-    if (!requireNamespace("tidygraph", quietly = TRUE)) {
-        stop("The 'tidygraph' package is required for taxonomy_to_tbl_graph().")
-    }
     if (is.null(columns)) {
         columns <- colnames(tax_df)
     }
@@ -264,7 +263,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
     edge_list <- unique(edge_list)
 
     # Create tbl_graph
-    tg <- tidygraph::as_tbl_graph(edge_list, directed = TRUE)
+    tg <- as_tbl_graph(edge_list, directed = TRUE)
 
     ###############################
     ## 2) Add node-level metadata
@@ -274,7 +273,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
     #  - else find all rows of tax_df where x appears in row's columns,
     #    gather distinct values for each col, combine with '|'.
 
-    node_names <- tg %>% tidygraph::activate("nodes") %>% dplyr::pull(name)
+    node_names <- tg |> activate("nodes") |> pull(name)
     # We'll build a data frame with the same number of rows as node_names
     node_info <- data.frame(name = node_names, stringsAsFactors = FALSE)
 
@@ -299,7 +298,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
                 vals <- unique(tax_df[idx, col])
                 if (length(vals) > 1) {
                     # If node is used in multiple places with different col entries
-                    return(paste(vals, collapse="|"))
+                    return(paste(vals, collapse = "|"))
                 }
                 vals
             }
@@ -310,9 +309,9 @@ taxonomy_to_tbl_graph <- function(tax_df,
     # We'll do: tg <- tg %>% tidygraph::left_join(node_info, by="name")
     # But 'left_join' is from dplyr, so we can do it with 'bind_nodes'
     # from tidygraph 1.2 or we can do a direct manual approach:
-    tg <- tg %>%
-        tidygraph::activate("nodes") %>%
-        dplyr::left_join(node_info, by="name")
+    tg <- tg |>
+        activate("nodes") |>
+        left_join(node_info, by="name")
 
     tg
 }
