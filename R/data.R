@@ -40,7 +40,7 @@
 NULL
 
 #' @rdname data
-#' @importFrom SeuratObject CreateSeuratObject GetAssay
+#' @importFrom SeuratObject CreateSeuratObject GetAssayData
 #' @importFrom SingleCellExperiment SingleCellExperiment colData
 #' @importFrom Matrix Matrix
 #' @importFrom stats rpois

@@ -23,6 +23,7 @@ output:
 editor_options: 
   markdown: 
     wrap: 80
+  chunk_output_type: console
 ---
 
 ```{=html}
@@ -69,7 +70,7 @@ library(TabulaMurisSenisData)
 
 ## Load and prepare data
 
-```{r, echo = FALSE}
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 ```
 
@@ -127,8 +128,8 @@ clr_transformed <- setaTransform(taxa_counts, method = "CLR")
 dist_df <- setaDistances(clr_transformed)
 
 # Merge metadata
-merged_dist <- dist_df %>%
-  left_join(meta_df, by = c("from" = "sample_id")) %>%
+merged_dist <- dist_df |>
+  left_join(meta_df, by = c("from" = "sample_id")) |>
   left_join(meta_df, by = c("to" = "sample_id"), suffix = c(".from", ".to"))
 
 # Create a disease-disease category for comparison
@@ -137,7 +138,7 @@ merged_dist$age_pair <- paste(merged_dist$age.from,
                                   sep = "-")
 ```
 
-```{r, fig.width = 6, fig.height = 4}
+```{r, fig.width = 9, fig.height = 6}
 ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
     geom_jitter(width = 0.2, color = "black") +
@@ -151,7 +152,7 @@ ggplot(merged_dist, aes(x = age_pair, y = distance)) +
 ```{r}
 clr_long <- as.data.frame(clr_transformed$counts)
 colnames(clr_long) <- c("sample", "Celltype", "CLR")
-clr_long <- clr_long %>%
+clr_long <- clr_long |>
     left_join(meta_df, by = c("sample" = "sample_id"))
 ```
 
@@ -180,16 +181,16 @@ ggplot(clr_long, aes(x = age, y = CLR,
 ## Correlate celltype compositions with metadata
 
 ```{r}
-clr_df <- clr_transformed$counts %>%
-            as.data.frame %>% # as.data.frame converts it to long form
+clr_df <- clr_transformed$counts |>
+            data.frame() |> # as.data.frame converts it to long form
             pivot_wider(names_from='Var2',
-                        values_from = "Freq") %>%
+                        values_from = "Freq") |>
             rename(`mouse.id` = Var1)
 
-clr_metadata <- clr_df %>%
+clr_metadata <- clr_df |>
     left_join(meta_df, by = c("mouse.id" = "sample_id"))
 
-clr_data <- clr_metadata %>% select(where(is.numeric))
+clr_data <- clr_metadata |> select(where(is.numeric))
 
 # One-hot encode 'Disease.group'; clean column names
 oh <- model.matrix(~age - 1, data = clr_metadata)
@@ -226,8 +227,8 @@ corrplot(full_cor_mat,
 
 ```{r warning=FALSE}
 set.seed(687)
-train_df <- clr_metadata %>%
-  select(-`mouse.id`) %>%
+train_df <- clr_metadata |>
+  select(-`mouse.id`) |>
   mutate(disease = factor(age))
 
 train_control <- trainControl(method = "cv", number = 5)

@@ -40,7 +40,7 @@
 #' dist_df <- setaDistances(clr_mat)
 #' print(head(dist_df))
 #'
-#' @importFrom stats dist function
+#' @importFrom stats dist
 #' @export
 setaDistances <- function(transformed_counts, method = "euclidean") {
   if (!is.matrix(transformed_counts$counts)) {

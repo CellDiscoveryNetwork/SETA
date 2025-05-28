@@ -9,20 +9,22 @@ License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.0)
 Imports:
-    methods,
-    stats
-Suggests:
-    testthat (>= 3.0.0),
-    knitr,
-    rmarkdown,
+    dplyr,
+    ggplot2,
     MASS,
     Matrix,
-    Seurat,
+    methods,
+    stats,
+    tidygraph
+Suggests:
+    knitr,
+    rmarkdown,
+    SeuratObject,
     SummarizedExperiment,
     SingleCellExperiment,
-    DT,
-    wesanderson
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 biocViews:
-    SingleCell
+    SingleCell,
+    StatisticalMethod
 RoxygenNote: 7.3.2
