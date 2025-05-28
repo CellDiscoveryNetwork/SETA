@@ -7,8 +7,10 @@ output:
     toc: true
 vignette: >
   %\VignetteIndexEntry{Comparing samples with SETA}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ## Introduction
@@ -23,7 +25,7 @@ In this vignette we show how to:
 - **Correlate celltype compositions and metadata** 
 - **Create predictive models** using popular statistical modeling methods
 
-This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. 
+This example uses a dataset from CELLxGENE stored in `"Covid_Flu_sceect_DF.rds"`. 
 The dataset contains blood samples from 17 donors (`donor_id`), with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g. `Severity`, `Comorbidity`, and `development_stage`).
 
 *This vignette is modular; users can update or replace the dataset-specific settings*
@@ -33,7 +35,7 @@ The dataset contains blood samples from 17 donors (`donor_id`), with disease ann
 ## Load libraries 
 
 ```{r, message=FALSE, warning=FALSE, echo=TRUE}
-library(Seurat)
+library(SingleCellExperiment)
 library(SETA)
 library(ggplot2)
 library(dplyr)
@@ -41,25 +43,32 @@ library(tidyr)
 library(ggpubr)
 library(corrplot)
 library(caret)
+library(TabulaMurisSenisData)
 ```
 
 
 ## Load and prepare data
 
 ```{r, echo = FALSE}
-base_path <- "/Users/kylekimler/gitHub/workshops/"
-data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
+sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 ```
 
+Quick data exploration:
+
 ```{r}
-seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
-seurat_obj <- readRDS(seurat_file)
+table(sce$free_annotation, sce$age)
 ```
 
 ```{r}
 # Set up a color palette for plots
 # 3-group distinct categoricals
-d_palette <- c("#3B9AB2", "#E1AF00", "#F21A00")
+age_palette <- c(
+    "1m" = "#90EE90",
+    "3m" = "#4CBB17",
+    "18m" = "#228B22",
+    "21m" = "#355E3B",
+    "30m" = "#023020")
+
 # continuous palette of similar look
 c_palette <- colorRampPalette(c("#3B9AB2", "#78B7C5",
                                 "#EBCC2A", "#E1AF00",
@@ -68,19 +77,20 @@ c_palette <- colorRampPalette(c("#3B9AB2", "#78B7C5",
 
 ### Extract taxa counts
 ```{r}
-taxa_counts <- setaCounts(seurat_obj@meta.data,
-                          cell_type_col = "Celltype",
-                          sample_col = "Sample ID",
-                          bc_col = "rownames")
-
+df <- data.frame(colData(sce))
+taxa_counts <- setaCounts(
+    df,
+    cell_type_col = "free_annotation",
+    sample_col = "mouse.id",
+    bc_col = "cell")
 ```
 
 
 ### Prepare metadata
 ```{r}
-meta_df <- setaMetadata(seurat_obj,
-                        sample_col = "Sample ID",
-                        meta_cols = c("disease", "Disease group"))
+meta_df <- setaMetadata(df,
+                        sample_col = "mouse.id",
+                        meta_cols = c("age", "sex"))
 ```
 
 ## Calculate distances between samples
@@ -90,52 +100,52 @@ dist_df <- setaDistances(clr_transformed)
 
 # Merge metadata
 merged_dist <- dist_df %>%
-  left_join(meta_df, by = c("from" = "Sample ID")) %>%
-  left_join(meta_df, by = c("to" = "Sample ID"), suffix = c(".from", ".to"))
+  left_join(meta_df, by = c("from" = "sample_id")) %>%
+  left_join(meta_df, by = c("to" = "sample_id"), suffix = c(".from", ".to"))
 
 # Create a disease-disease category for comparison
-merged_dist$disease_pair <- paste(merged_dist$disease.from,
-                                  merged_dist$disease.to,
+merged_dist$age_pair <- paste(merged_dist$age.from,
+                                  merged_dist$age.to,
                                   sep = "-")
 ```
 
 ```{r, fig.width = 6, fig.height = 4}
-ggplot(merged_dist, aes(x = disease_pair, y = distance)) +
+ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
     geom_jitter(width = 0.2, color = "black") +
     labs(title = "Aitchison Distances Between Disease Groups",
-         x = "Disease Pair", y = "Aitchison Distance") +
+         x = "Disease Pair",
+         y = "Aitchison Distance") +
     theme_minimal(base_size = 16)
 ```
-
 
 ## Perform wilcoxon rank-sum tests on CoDA transformed data
 ```{r}
 clr_long <- as.data.frame(clr_transformed$counts)
 colnames(clr_long) <- c("sample", "Celltype", "CLR")
 clr_long <- clr_long %>%
-    left_join(meta_df, by = c("sample" = "Sample ID"))
+    left_join(meta_df, by = c("sample" = "sample_id"))
 ```
 
-```{r, fig.width = 7, fig.height = 10}
+```{r, fig.width = 15, fig.height = 10}
 # Apply pairwise Wilcoxon tests and plot using ggpubr
-ggplot(clr_long, aes(x = disease, y = CLR,
-                     fill = disease, color = disease)) +
+ggplot(clr_long, aes(x = age, y = CLR,
+                     fill = age, color = age)) +
     geom_boxplot(position = position_dodge(0.8), alpha = 0.7) +
     geom_jitter(size = 1.5, shape = 21) +
-    stat_compare_means(method = "wilcox.test",
-                       label = "p.signif",
-                       comparisons = list(c("normal", "influenza"),
-                                          c("normal", "COVID-19"),
-                                          c("influenza", "COVID-19")),
-                       position = position_dodge(0.8)) +
+    # stat_compare_means(method = "wilcox.test",
+    #                    label = "p.signif",
+    #                    comparisons = list(c("normal", "influenza"),
+    #                                       c("normal", "COVID-19"),
+    #                                       c("influenza", "COVID-19")),
+    #                    position = position_dodge(0.8)) +
     facet_wrap(~ Celltype) +
     theme_minimal(base_size = 12) +
-    scale_fill_manual(values = d_palette) +
-    scale_color_manual(values = d_palette) +
+    scale_fill_manual(values = age_palette) +
+    scale_color_manual(values = age_palette) +
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 1)) +
     labs(title = "CLR by Celltype and Disease",
-         x = "Disease",
+         x = "Age",
          y = "CLR-transformed Composition")
 ```
 
@@ -146,10 +156,10 @@ clr_df <- clr_transformed$counts %>%
             as.data.frame %>% # as.data.frame converts it to long form
             pivot_wider(names_from='Var2',
                         values_from = "Freq") %>%
-            rename(`Sample ID` = Var1)
+            rename(`mouse.id` = Var1)
 
 clr_metadata <- clr_df %>%
-    left_join(meta_df, by = "Sample ID")
+    left_join(meta_df, by = "mouse.id")
 
 clr_data <- clr_metadata %>% select(where(is.numeric))
 
@@ -187,7 +197,7 @@ corrplot(full_cor_mat,
 ```{r}
 set.seed(687)
 train_df <- clr_metadata %>%
-  select(-`Sample ID`) %>%
+  select(-`mouse.id`) %>%
   mutate(disease = factor(disease))
 
 train_control <- trainControl(method = "cv", number = 5)
