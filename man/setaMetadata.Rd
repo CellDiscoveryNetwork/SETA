@@ -4,11 +4,11 @@
 \alias{setaMetadata}
 \title{Extract Sample-Level Metadata from Various Objects}
 \usage{
-setaMetadata(source_obj, sample_col = "Sample ID", meta_cols = NULL)
+setaMetadata(x, sample_col = "Sample ID", meta_cols = NULL)
 }
 \arguments{
-\item{source_obj}{An object of class Seurat, SingleCellExperiment,
-or a dataframe which contains cell-level or sample-level metadata.}
+\item{x}{An object of class dataframe which contains cell-level or
+sample-level metadata.}
 
 \item{sample_col}{Character. The sample identifier column name in source_obj.
 Default is 'sample_id'. This column is used to group the metadata.}
@@ -26,8 +26,7 @@ excluded, and a warning lists these columns.
 }
 \description{
 This function extracts sample-level metadata
-from a given source object (Seurat, SingleCellExperiment,
-or dataframe). It ensures that each metadata column contains
+from a dataframe. It ensures that each metadata column contains
 unique values per sample. If a metadata column contains
 non-unique values within any sample, that column is excluded from the output,
 and the user is notified via a warning. Useful when preparing metadata for
@@ -36,14 +35,14 @@ visualizations or analyses where sample-level inspection is required.
 \examples{
 # Using a Seurat object
 \donttest{
-meta_df <- setaMetadata(seurat_obj,
+meta_df <- setaMetadata(seurat_obj@meta.data,
                         sample_col="donor_id",
                         meta_cols=c("disease", "Severity"))
 
 # Using a SingleCellExperiment object with default parameters
-meta_df <- setaMetadata(sce_obj)
+meta_df <- setaMetadata(data.frame(colData(sce_obj)))
 
 # Using a dataframe and extracting all possible metadata columns
-meta_df <- setaMetadata(data_frame)
+meta_df <- setaMetadata(df)
 }
 }

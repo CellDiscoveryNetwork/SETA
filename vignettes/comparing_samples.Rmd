@@ -1,17 +1,37 @@
 ---
 title: "Comparing samples with SETA"
-author: "Kyle Kimler"
-date: "`r Sys.Date()`"
-output:
-  rmarkdown::html_vignette:
-    toc: true
+date: "`r BiocStyle::doc_date()`"
+author:
+- name: Kyle Kimler
+  affiliation:
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  - &UVIC-UCC University of Vic - Central University of Catalonia
+  email: kkimler@broadinstitute.org
+- name: Marc Elosua-Bayes
+  affiliation: 
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  email: marc.elosuabayes@childrens.harvard.edu
+package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
   %\VignetteIndexEntry{Comparing samples with SETA}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
+output: 
+  BiocStyle::html_document
 editor_options: 
-  chunk_output_type: inline
+  markdown: 
+    wrap: 80
 ---
+
+```{=html}
+<style type="text/css">
+.smaller {
+  font-size: 10px
+}
+</style>
+```
 
 ## Introduction
 
@@ -75,7 +95,14 @@ c_palette <- colorRampPalette(c("#3B9AB2", "#78B7C5",
                                 "#F21A00"))(100)
 ```
 
-### Extract taxa counts
+## Extracting the Taxonomic Counts Matrix
+
+The `setaCounts` function extracts a cell-type counts matrix given 
+that the object contains cell‐level metadata. For this dataset, 
+we want the cell-type annotations to come from Celltype and 
+the sample identifiers from donor_id. If necessary, 
+we reassign these columns before extraction.
+
 ```{r}
 df <- data.frame(colData(sce))
 taxa_counts <- setaCounts(
@@ -88,9 +115,10 @@ taxa_counts <- setaCounts(
 
 ### Prepare metadata
 ```{r}
-meta_df <- setaMetadata(df,
-                        sample_col = "mouse.id",
-                        meta_cols = c("age", "sex"))
+meta_df <- setaMetadata(
+    df,
+    sample_col = "mouse.id",
+    meta_cols = c("age", "sex"))
 ```
 
 ## Calculate distances between samples
@@ -159,13 +187,13 @@ clr_df <- clr_transformed$counts %>%
             rename(`mouse.id` = Var1)
 
 clr_metadata <- clr_df %>%
-    left_join(meta_df, by = "mouse.id")
+    left_join(meta_df, by = c("mouse.id" = "sample_id"))
 
 clr_data <- clr_metadata %>% select(where(is.numeric))
 
 # One-hot encode 'Disease.group'; clean column names
-oh <- model.matrix(~Disease.group - 1, data = clr_metadata)
-colnames(oh) <- sub("^Disease.group", "", colnames(oh))
+oh <- model.matrix(~age - 1, data = clr_metadata)
+colnames(oh) <- sub("^age", "", colnames(oh))
 
 # Combine CLR data and metadata
 combined <- cbind(clr_data, oh)
@@ -174,7 +202,9 @@ combined <- cbind(clr_data, oh)
 full_cor_mat <- cor(combined, method = "pearson")
 p_mat <- cor.mtest(full_cor_mat)$p
 ```
-```{r, fig.width = 8, fig.height = 8}
+
+Visualize correlations
+```{r, fig.width = 12, fig.height = 12}
 corrplot(full_cor_mat,
          method = "circle",
          type = "full",
@@ -194,22 +224,22 @@ corrplot(full_cor_mat,
 
 ## Use SETA transformed data to create predictive models with caret
 
-```{r}
+```{r warning=FALSE}
 set.seed(687)
 train_df <- clr_metadata %>%
   select(-`mouse.id`) %>%
-  mutate(disease = factor(disease))
+  mutate(disease = factor(age))
 
 train_control <- trainControl(method = "cv", number = 5)
 
-model <- train(disease ~ ., data = train_df %>% select(-Disease.group),
+model <- train(age ~ ., data = subset(train_df, select = -disease),
                method = "glmnet",
                trControl = train_control)
 
 importance <- varImp(model)
 ```
 
-```{r, fig.width = 5, fig.height = 7}
+```{r, fig.width = 12, fig.height = 12}
 plot(importance,
      main = "Cross-Validated Variable Importance",
      sub = "Caret GLMnet model"
@@ -222,6 +252,7 @@ Compositional data provides an intuitive basis for making sample-level compariso
 in scRNAseq data, as it provides a single sample x feature space within which
 to make comparisons. Let us know if you have more ideas for using CoDA! 
 
+## Session Info
 ```{r}
 sessionInfo()
 ```

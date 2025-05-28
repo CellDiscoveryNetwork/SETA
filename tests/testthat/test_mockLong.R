@@ -2,6 +2,8 @@
 set.seed(123)
 x <- mockLong()
 xc <- mockCount(x)
+
+# Test data
 test_that("mockLong returns correct structure", {
     expect_true(is.data.frame(x))
     expect_true(all(c("bc", "type", "sample", "batch") %in% colnames(x)))

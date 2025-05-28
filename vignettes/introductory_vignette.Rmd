@@ -1,16 +1,37 @@
 ---
 title: "Introduction to SETA ecological transforms and sample-level latent spaces"
-author: "Kyle Kimler"
-date: "`r Sys.Date()`"
-output:
-  rmarkdown::html_vignette:
-    toc: true
+date: "`r BiocStyle::doc_date()`"
+author:
+- name: Kyle Kimler
+  affiliation:
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  - &UVIC-UCC University of Vic - Central University of Catalonia
+  email: kkimler@broadinstitute.org
+- name: Marc Elosua-Bayes
+  affiliation: 
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  email: marc.elosuabayes@childrens.harvard.edu
+package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
   %\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output: 
+  BiocStyle::html_document
+editor_options: 
+  markdown: 
+    wrap: 80
 ---
 
+```{=html}
+<style type="text/css">
+.smaller {
+  font-size: 10px
+}
+</style>
+```
 
 ## Introduction
 
@@ -40,25 +61,42 @@ data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
 ```
 
 ```{r setup, message=FALSE, warning=FALSE, echo=TRUE}
-library(Seurat)
+library(SingleCellExperiment)
 library(SETA)
 library(ggplot2)
 library(dplyr)
+library(TabulaMurisSenisData)
+library(reshape2)
+```
 
-# Modify the file path if needed
-seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
-seurat_obj <- readRDS(seurat_file)
+## Load and prepare data
+
+```{r, message=FALSE, warning=FALSE, echo=TRUE}
+sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
+```
+
+Quick data exploration:
+
+```{r}
+table(sce$free_annotation, sce$age)
+table(sce$free_annotation, sce$sex)
+
 ```
 
 ```{r}
 # Set up a color palette for plots
-# 5-group distinct categoricals
-d_palette <- c("#3B9AB2", "#9BBDAC", "#EBCC2A", "#E98903", "#F21A00")
+# 3-group distinct categoricals
+age_palette <- c(
+    "1m" = "#90EE90",
+    "3m" = "#4CBB17",
+    "18m" = "#228B22",
+    "21m" = "#355E3B",
+    "30m" = "#023020")
 ```
 
 ## Extracting the Taxonomic Counts Matrix
 
-The setaCounts function extracts a cell-type counts matrix given 
+The `setaCounts` function extracts a cell-type counts matrix given 
 that the object contains cell‐level metadata. For this dataset, 
 we want the cell-type annotations to come from Celltype and 
 the sample identifiers from donor_id. If necessary, 
@@ -67,24 +105,29 @@ we reassign these columns before extraction.
 ```{r data wrangling, message=FALSE, warning=FALSE, echo=TRUE}
 # Extract the taxonomic counts matrix using custom metadata column names
 # (Users can specify these column names according to their dataset.)
-taxa_counts <- setaCounts(seurat_obj@meta.data,
-                          cell_type_col = "Celltype",
-                          sample_col = "Sample ID",
-                          bc_col = "rownames")
-print(head(taxa_counts))
+df <- data.frame(colData(sce))
+taxa_counts <- setaCounts(
+    df,
+    cell_type_col = "free_annotation",
+    sample_col = "mouse.id",
+    bc_col = "cell")
+head(taxa_counts)
 ```
-
 
 ## Applying Compositional Transforms
 
-Below we apply two transforms:
+Below we apply three transforms:
 
 The centered log-ratio (CLR) transform,
 
 The additive log-ratio (ALR) transform.
 
-For the ALR transform we need to choose a reference cell type.
-In this example, we assume that one of the cell types is "Bcell".
+The isometric log-ratio (ILR) transform.
+
+For the ALR transform we need to choose a reference cell type whose numbers
+remain stable across conditions pre-sampling. In an ideal scenario this could a
+spike in of a known number of cells.
+In this example, we assume that one of the reference cell types are "NK cells".
 If it does not exist in your dataset, change the reference accordingly.
 
 ```{r transformation, echo=TRUE}
@@ -93,8 +136,8 @@ clr_out <- setaCLR(taxa_counts, pseudocount = 1)
 print(head(clr_out$counts))
 
 # ALR Transformation: using "NK cell" as the reference cell type
-if ("NK cell" %in% rownames(taxa_counts)) {
-  alr_out <- setaALR(taxa_counts, ref = "NK cell", pseudocount = 1)
+if ("Natural Killer" %in% colnames(taxa_counts)) {
+  alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
   print(head(alr_out$counts))
 } else {
   message("Reference 'NK cell' not found in taxa_counts. 
@@ -119,9 +162,9 @@ print(head(lcpm_out$counts))
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
 # PCA Latent Space Coordinates:
-print(head(latent_pca$latentSpace))
+head(latent_pca$latentSpace)
 # Variance Explained:
-print(latent_pca$varExplained)
+latent_pca$varExplained
 ```
 
 ## Visualization
@@ -137,6 +180,7 @@ ve_df <- data.frame(
   VarianceExplained = cumsum(latent_pca$varExplained)
 )
 ```
+
 ```{r, fig.width = 6, fig.height = 4}
 ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
     geom_line(color = "#2ca1db", size = 1.5, stat = "identity") +
@@ -158,9 +202,10 @@ In this example, points are shaped by disease and colored by Severity.
 pca_coords <- latent_pca$latentSpace
 
 # Extract metadata
-meta_df <- setaMetadata(seurat_obj,
-                        sample_col = "Sample ID",
-                        meta_cols = c("disease", "Disease group"))
+meta_df <- setaMetadata(
+    df,
+    sample_col = "mouse.id",
+    meta_cols = c("age", "sex"))
 
 # Merge latent coordinates with metadata
 pca_plot_df <- cbind(pca_coords, meta_df)
@@ -168,14 +213,14 @@ pca_plot_df <- cbind(pca_coords, meta_df)
 
 ```{r, fig.width = 6, fig.height = 4}
 # Create the scatter plot
-ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = Disease.group)) +
-    geom_text(aes(label = `Sample ID`)) +
+ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
+    geom_text(aes(label = sample_id), size = 5) +
     scale_color_manual(
-      values = d_palette
+      values = age_palette
     ) +
     labs(title = "PCA Scatter Plot",
         x = "PC1", y = "PC2", color = "Disease Status") +
-    theme_minimal() +
+    theme_linedraw() +
     xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
     ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))
 ```
@@ -188,43 +233,26 @@ loadings_df <- as.data.frame(latent_pca$loadings)
 loadings_df$Celltype <- rownames(loadings_df)
 
 # Melt the loadings into long format for ggplot2
-library(reshape2)
 loadings_long <- melt(loadings_df, id.vars = "Celltype",
                       variable.name = "PC", value.name = "Loading")
-
-# For each PC, select top and bottom 5 based on absolute loading values
-library(dplyr)
-loadings_summary <- loadings_long %>%
-    group_by(PC) %>%
-    arrange(desc(Loading)) %>%
-    ungroup()
-```
-```{r, fig.width = 4, fig.height = 3}
-ggplot(loadings_summary %>%
-       filter(PC == "PC1") %>%
-       mutate(Celltype = factor(Celltype, levels = Celltype)),
-       aes(x = Loading, y = Celltype, label = Celltype)) +
-    geom_text(size = 3) +
-    facet_wrap(~PC, scales = "free") +
-    labs(title = "PC1 Loadings",
-         x = "Loading", y = "Cell Type") +
-    theme_minimal() +
-    expand_limits(x = c(-0.2, 0.4)) +
-    theme(axis.text.y = element_blank())
 ```
 
-```{r, fig.width = 4, fig.height = 3}
-ggplot(loadings_summary %>%
-       filter(PC == "PC2") %>%
-       mutate(Celltype = factor(Celltype, levels = Celltype)),
-       aes(x = Loading, y = Celltype, label = Celltype)) +
-    geom_text(size = 3) +
+Visualize the PC loadings for each cell
+
+```{r, fig.width = 12, fig.height = 9}
+loading_df <- loadings_long |>
+       filter(PC %in% c("PC1", "PC2"))
+
+ggplot(loading_df,
+       aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
+    geom_col() + 
     facet_wrap(~PC, scales = "free") +
-    labs(title = "PC2 Loadings",
-         x = "Loading", y = "Cell Type") +
-    theme_minimal() +
-    expand_limits(x = c(-0.2, 0.4)) +
-    theme(axis.text.y = element_blank())
+    labs(title = "PC Loadings",
+         x = "Loading",
+         y = "Cell Type") +
+    theme_linedraw() +
+    scale_fill_viridis_c() +
+    expand_limits(x = c(-0.2, 0.4))
 ```
 
 ## Conclusion
@@ -245,6 +273,7 @@ update metadata column names, or choose different parameters
 For further details, see the package documentation and 
 relevant literature on compositional data analysis (e.g., Aitchison, 1982).
 
+## Session Info
 ```{r}
 sessionInfo()
 ```

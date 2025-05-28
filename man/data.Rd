@@ -23,6 +23,8 @@ makeTypeHierarchy(type_levels)
 \item{ng, nc, nt, ns, nb}{integer scalar specifying the number
 of genes, cells, types (groups), samples, and batches to simulate.}
 
+\item{df}{data.frame in the format of `mockLong()`.}
+
 \item{type_levels}{character vector of type levels representing cell types to
 be assigned to fine, mid and broad annotations}
 }

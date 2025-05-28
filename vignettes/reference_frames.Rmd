@@ -1,16 +1,38 @@
 ---
 title: "Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA"
-author: "Kyle Kimler"
-date: "`r Sys.Date()`"
-output:
-  rmarkdown::html_vignette:
-    toc: true
+date: "`r BiocStyle::doc_date()`"
+author:
+- name: Kyle Kimler
+  affiliation:
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  - &UVIC-UCC University of Vic - Central University of Catalonia
+  email: kkimler@broadinstitute.org
+- name: Marc Elosua-Bayes
+  affiliation: 
+  - &CDN Cell Discovery Network
+  - &BCH Boston Children's Hospital
+  email: marc.elosuabayes@childrens.harvard.edu
+package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document
+editor_options: 
+  markdown: 
+    wrap: 80
+  chunk_output_type: console
 ---
 
+```{=html}
+<style type="text/css">
+.smaller {
+  font-size: 10px
+}
+</style>
+```
 
 ## Introduction
 
@@ -23,10 +45,10 @@ In this vignette, we demonstrate how to create and utilize _multi-resolution_ an
 - **Transform counts data with a chosen taxonomic reference frame**  
 - **Compare PCA latent spaces** based on different reference frames
 
-This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. The dataset contains blood samples from 17 donors (`donor_id`) with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g., `Severity`, `Comorbidity`, `development_stage`). Although the Seurat object does not inherently contain multi-resolution cell-type columns, we'll artificially define a broader “lineage” level for demonstration.
+This example uses a dataset from CELLxGENE stored in `"Covid_Flu_sceect_DF.rds"`. The dataset contains blood samples from 17 donors (`donor_id`) with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`free_annotation`), and additional metadata (e.g., `Severity`, `Comorbidity`, `development_stage`). Although the Seurat object does not inherently contain multi-resolution cell-type columns, we'll artificially define a broader “lineage” level for demonstration.
 
 ```{r setup, message=FALSE, warning=FALSE}
-library(Seurat)
+library(SingleCellExperiment)
 library(SETA)
 library(ggplot2)
 library(ggraph)
@@ -34,12 +56,7 @@ library(tidygraph)
 library(dplyr)
 library(ggplot2)
 library(patchwork)
-```
-
-```{r dirs, echo = FALSE}
-# Path to dataset (modify as needed)
-base_path <- "/Users/kylekimler/gitHub/workshops/"
-data_loc  <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
+library(TabulaMurisSenisData)
 ```
 
 ```{r}
@@ -49,15 +66,17 @@ d_palette <- c("#3B9AB2", "#6BAFAF", "#9BBDAC", "#C9C171",
                "#EBCC2A", "#E6A80F", "#E98903", "#F84C00", "#F21A00")
 ```
 
+## Load and prepare data
 
-```{r load data, warning = FALSE, message = FALSE}
-seurat_file <- paste0(data_loc, "Covid_Flu_Seurat_Object_DF.rds")
-
-seurat_obj <- readRDS(seurat_file)
-# Inspect the cell types:
-unique(seurat_obj@meta.data$Celltype)
+```{r, echo = FALSE}
+sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 ```
 
+Quick data exploration:
+
+```{r}
+table(sce$free_annotation, sce$age)
+```
 
 ## Creating a Taxonomic Data Frame
 Below, we define a custom lineage column that lumps certain cell types together:
@@ -71,71 +90,95 @@ All B cell variants → B cells
 Everything else remains as is.
 
 ```{r add lineage information}
-# We'll make a small mapping from original Celltype -> broader 'Lineage'
+# We'll make a small mapping from original free_annotation -> broader 'Lineage'
 lineage_map <- c(
-  "NK cell"               = "NK cell",
-  "CD4, EM-like"          = "T cells",
-  "CD8, non-EM-like"      = "T cells",
-  "classical Monocyte"    = "Monocytes",
-  "B cell, IgG+"          = "B cells",
-  "DC"                    = "DC",
-  "CD8, EM-like"          = "T cells",
-  "B cell, IgG-"          = "B cells",
-  "intermediate Monocyte" = "Monocytes",
-  "CD4, non-EM-like"      = "T cells",
-  "Platelet"              = "Platelet",
-  "nonclassical Monocyte" = "Monocytes",
-  "Uncategorized1"        = "Uncategorized1",
-  "RBC"                   = "RBC",
-  "Uncategorized2"        = "Uncategorized2"
+  "Adventitial Fibroblast" = "Fibroblast",
+  "Airway Smooth Muscle" = "SMC",
+  "Alveolar Epithelial Type 2" = "Epithelial",
+  "Alveolar Fibroblast" = "Fibroblast",
+  "Alveolar Macrophage" = "Myeloid",
+  "Artery" = "Endothelial",
+  "B" = "B cell",
+  "Basophil" = "Granulocyte",
+  "Ccr7+ Dendritic" = "Myeloid",
+  "CD4+ T" = "T cell",
+  "CD8+ T" = "T cell",
+  "Capillary" = "Endothelial",
+  "Capillary Aerocyte" = "Endothelial",
+  "Ciliated" = "Epithelial",
+  "Classical Monocyte" = "Myeloid",
+  "Club" = "Epithelial",
+  "Intermediate Monocyte" = "Myeloid",
+  "Interstitial Macrophage" = "Myeloid",
+  "Lympatic" = "Endothelial",
+  "Ly6g5b+ T" = "T cell",
+  "Myeloid Dendritic Type 1" = "Myeloid",
+  "Myeloid Dendritic Type 2" = "Myeloid",
+  "Myofibroblast" = "Fibroblast",
+  "Natural Killer" = "NK",
+  "Natural Killer T" = "NK",
+  "Neuroendocrine" = "Neuroendocrine",
+  "Neutrophil" = "Granulocyte",
+  "Nonclassical Monocyte" = "Myeloid",
+  "Pericyte" = "Endothelial",
+  "Plasma" = "Plasma Cell",
+  "Plasmacytoid Dendritic" = "Myeloid",
+  "Proliferating Alveolar Macrophage" = "Proliferating",
+  "Proliferating Classical Monocyte" = "Proliferating",
+  "Proliferating Dendritic" = "Proliferating",
+  "Proliferating NK" = "Proliferating",
+  "Proliferating T" = "Proliferating",
+  "Regulatory T" = "T cell",
+  "Vein" = "Endothelial",
+  "Zbtb32+ B" = "B cell"
 )
 
-# Convert factor -> character, then index
-seurat_obj@meta.data$Celltype <- as.character(seurat_obj@meta.data$Celltype)
-
-# Add a new column in @meta.data named 'Lineage'
-celltypes <- as.character(seurat_obj@meta.data$Celltype)
-seurat_obj@meta.data$Lineage <- lineage_map[celltypes]
+# Add a new column in  named 'Lineage'
+free_annotations <- as.character(sce$free_annotation)
+sce$Lineage <- lineage_map[free_annotations]
 ```
 
 Now we can build a taxonomic data frame that has two levels: 
-the fine label (Celltype) and the broad label (Lineage). 
+the fine label (free_annotation) and the broad label (Lineage). 
 
 ```{r create taxonomy DF}
 # In a Seurat Object, barcodes are in the rownames of the metadata.
 # Similar to setaCounts, taxonomy DF creation can use rownames as bc.
-# Then we ensure we have columns for 'Celltype' and 'Lineage'.
-print(head(seurat_obj@meta.data$Celltype))
-print(head(seurat_obj@meta.data$Lineage))
+# Then we ensure we have columns for 'free_annotation' and 'Lineage'.
+print(head(sce$free_annotation))
+print(head(sce$Lineage))
 
-# We want a data frame that includes bc + 'Celltype' + 'Lineage'
+# We want a data frame that includes bc + 'free_annotation' + 'Lineage'
 # Then we'll pass it to setaTaxonomyDF
 tax_df <- setaTaxonomyDF(
-  obj = seurat_obj@meta.data,
-  resolution_cols = c("Lineage", "Celltype"),
-  bc_col = "rownames"
+  obj = data.frame(colData(sce)),
+  resolution_cols = c("Lineage", "free_annotation"),
+  bc_col = "cell"
 )
-# Each row is a unique 'Celltype'.
-# The last column 'Celltype' is the finer label.
+
+# Each row is a unique 'free_annotation'.
+# The last column 'free_annotation' is the finer label.
 # cols must be entered in order of increasing resolution (broadest to finest)
 tax_df
 ```
 
 ## Visualize the Taxonomy as a Tree via ggraph
 
-We now have a 2-level taxonomy: Celltype (fine) -> Lineage (coarse). 
-For demonstration, let's build a small graph that connects each Celltype node to its Lineage node. 
+We now have a 2-level taxonomy: free_annotation (fine) -> Lineage (coarse). 
+For demonstration, let's build a small graph that connects each free_annotation node to its Lineage node. 
 We'll color edges by the lineage label:
 
 ```{r ggraph, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 6}
 # Create a tidygraph object using SETA built-in utils
-tbl_g <- taxonomy_to_tbl_graph(tax_df, columns = c("Lineage", "Celltype"))
+tbl_g <- taxonomy_to_tbl_graph(
+    tax_df,
+    columns = c("Lineage", "free_annotation"))
 
 # Plot with ggraph
 ggraph(tbl_g, layout = "dendrogram") +
     geom_edge_diagonal2(aes(color = node.Lineage)) +
     geom_node_text(aes(filter = leaf,
-                       label = Celltype, color = Lineage),
+                       label = free_annotation, color = Lineage),
                    nudge_y = 0.1, vjust = 0.5, hjust = 0, size = 5) +
     geom_node_text(aes(filter = !leaf,
                        label = Lineage),
@@ -155,28 +198,28 @@ ggraph(tbl_g, layout = "dendrogram") +
     ggtitle("SETA: Taxonomy") 
 ```
 
-Here, each Lineage is a parent node, and each Celltype is a leaf node.
+Here, each Lineage is a parent node, and each free_annotation is a leaf node.
 The edges are colored by the lineage name.
 
 
 ## Transform Counts with a Taxonomic Reference Frame
 
-We can now use setaCounts to get the sample × celltype matrix, 
+We can now use setaCounts to get the sample × free_annotation matrix, 
 then apply a within-lineage transform. 
 This lumps certain columns (cell types) into subcompositions. 
 For example, a CLR transform within each lineage:
 
 ```{r reference frame calculation}
-# Create sample x celltype counts:
+# Create sample x free_annotation counts:
 taxa_counts <- setaCounts(
-    seurat_obj@meta.data,
-    cell_type_col = "Celltype",
+    sce,
+    cell_type_col = "free_annotation",
     sample_col = "donor_id",
     bc_col = "rownames"
 )
 
 # We'll transform them with a 'Lineage' grouping.
-# The taxonomyDF uses rownames = Celltype
+# The taxonomyDF uses rownames = free_annotation
 # so that colnames(taxa_counts) align with rownames(tax_df).
 refframe_out <- setaTransform(
     counts            = taxa_counts,
@@ -210,7 +253,7 @@ pca_lineage <- latent_lineage$latentSpace
 pca_lineage$sample <- rownames(pca_lineage)
 
 # Merge with metadata
-meta_df <- setaMetadata(seurat_obj, sample_col = "Sample ID",
+meta_df <- setaMetadata(sce, sample_col = "Sample ID",
                         meta_cols = c("Disease group", "Severity"))
 pca_global <- left_join(pca_global, meta_df, by = c("sample" = "Sample ID"))
 pca_lineage <- left_join(pca_lineage, meta_df, by = c("sample" = "Sample ID"))

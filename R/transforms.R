@@ -116,6 +116,7 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
   H <- qr.Q(qr(H))  # orthonormalize via QR decomposition
   # Directly project log-values onto the orthonormal Helmert basis
   ilr_mat <- log_x %*% H
+
   list(
     method = paste0("ILR_Helmert",
                     ifelse(boxcox_p != 0, 

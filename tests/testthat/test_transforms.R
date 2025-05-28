@@ -94,3 +94,4 @@ test_that("setaTransform works with all methods", {
   res_lcpm <- setaTransform(mat, method = "logCPM", pseudocount = 1)
   expect_equal(res_lcpm$method, "logCPM")
 })
+
