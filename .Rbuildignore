@@ -6,3 +6,4 @@
 ^Meta$
 ^SETA.BiocCheck$
 ^\.Rproj\.user$
+^data-raw$

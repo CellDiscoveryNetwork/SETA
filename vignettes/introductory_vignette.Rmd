@@ -67,6 +67,7 @@ library(ggplot2)
 library(dplyr)
 library(TabulaMurisSenisData)
 library(reshape2)
+library(tidytext)
 ```
 
 ## Load and prepare data
@@ -241,18 +242,20 @@ Visualize the PC loadings for each cell
 
 ```{r, fig.width = 12, fig.height = 9}
 loading_df <- loadings_long |>
-       filter(PC %in% c("PC1", "PC2"))
+       filter(PC %in% c("PC1", "PC2")) |>
+       mutate(Celltype = tidytext::reorder_within(Celltype, Loading, PC))
 
 ggplot(loading_df,
        aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
-    geom_col() + 
-    facet_wrap(~PC, scales = "free") +
-    labs(title = "PC Loadings",
-         x = "Loading",
-         y = "Cell Type") +
-    theme_linedraw() +
-    scale_fill_viridis_c() +
-    expand_limits(x = c(-0.2, 0.4))
+  geom_col() +
+  facet_wrap(~PC, scales = "free") +
+  scale_y_reordered() +
+  labs(title = "PC Loadings",
+       x = "Loading",
+       y = "Cell Type") +
+  theme_linedraw() +
+  scale_fill_viridis_c() +
+  expand_limits(x = c(-0.2, 0.4))
 ```
 
 ## Conclusion

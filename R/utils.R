@@ -49,6 +49,15 @@ setaCounts <- function(obj,
   }
 
   df  <- unique(obj[, required])
+
+  sample_ids <- levels(df[[sample_col]])
+    invalid_ids <- grep("[^A-Za-z0-9_-]", sample_ids, value = TRUE)
+    if (length(invalid_ids) > 0) {
+        message("Warning!! Some sample IDs contain special characters: ",
+             paste(unique(invalid_ids), collapse = ", "),
+             " ... This may cause issues down the line")
+    }
+
   mat <- as.matrix(table(df[[sample_col]], df[[cell_type_col]]))
   return(mat)
 }
