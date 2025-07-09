@@ -1,5 +1,4 @@
 #' Centered Log-Ratio (CLR) Transform
-#'
 #' Applies a CLR transform to a matrix of counts.
 #' Samples should be in rows and taxa (cell types) in columns.
 #' For each sample, the transform computes
@@ -18,7 +17,7 @@
 #'
 #' @details
 #' The CLR transform is defined sample-wise as:
-#' \deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right),}{
+#' \deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}{
 #' \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
 #' where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
 #' and \(p\) is the number of taxa.
@@ -34,7 +33,7 @@
 #' colnames(mat) <- c("Taxon1", "Taxon2")
 #' out <- setaCLR(mat, pseudocount = 0)
 #' out$counts
-#'
+#' @name setaCLR
 #' @export
 setaCLR <- function(counts, pseudocount = 1) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
@@ -49,7 +48,6 @@ setaCLR <- function(counts, pseudocount = 1) {
 }
 
 #' Isometric Log-Ratio (ILR) Transform
-#'
 #' Applies the ILR transform to an integer counts matrix.
 #' For each sample (row), the data are log-transformed
 #' (with an optional Box Cox like transformation)
@@ -95,7 +93,7 @@ setaCLR <- function(counts, pseudocount = 1) {
 #' # ILR transformation reduces the dimension by 1.
 #' out <- setaILR(mat, boxcox_p = 0, pseudocount = 1)
 #' out$counts
-#'
+#' @name setaILR
 #' @export
 setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
@@ -128,7 +126,6 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
 }
 
 #' Additive Log-Ratio (ALR) Transform
-#'
 #' Applies the ALR transform to an integer matrix of counts
 #' using a specified reference taxon. Samples are in rows and taxa in columns.
 #'
@@ -162,7 +159,7 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
 #' # Using TaxonA as the reference.
 #' out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 #' out$counts
-#'
+#' @name setaALR
 #' @export
 setaALR <- function(counts, ref, pseudocount = 1) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
@@ -194,7 +191,6 @@ setaALR <- function(counts, ref, pseudocount = 1) {
 }
 
 #' Percentage Transform
-#'
 #' Converts each row (sample) of a counts matrix to percentages of its row sum.
 #'
 #' @param counts A numeric matrix with rows as samples and columns as taxa.
@@ -213,7 +209,7 @@ setaALR <- function(counts, ref, pseudocount = 1) {
 #' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 #' out <- setaPercent(mat)
 #' out$counts
-#'
+#' @name setaPercent
 #' @export
 setaPercent <- function(counts) {
   if (!is.matrix(counts)) stop("'counts' must be a matrix.")
@@ -222,7 +218,6 @@ setaPercent <- function(counts) {
 }
 
 #' log2(CPM) Transform
-#'
 #' Computes the log2 counts-per-million (CPM) for each sample.
 #' Samples are in rows and taxa in columns.
 #'
@@ -250,7 +245,7 @@ setaPercent <- function(counts) {
 #' mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
 #' out <- setaLogCPM(mat, pseudocount = 1)
 #' out$counts
-#'
+#' @name setaLogCPM
 #' @export
 setaLogCPM <- function(counts,
                        pseudocount = 1,
@@ -267,7 +262,6 @@ setaLogCPM <- function(counts,
 }
 
 #' Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
-#'
 #' A convenience function that dispatches to one of the transforms:
 #' CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
 #' should have rows as samples and columns as taxa. Optionally, you can supply
@@ -306,7 +300,6 @@ setaLogCPM <- function(counts,
 #' }
 #'
 #' @examples
-#' #### Example with lines ~80 characters ####
 #' mat <- matrix(c(1, 2, 4, 8, 3, 6, 9, 12),
 #'               nrow = 2, byrow = TRUE)
 #' colnames(mat) <- c("TaxonA1", "TaxonA2", "TaxonB1", "TaxonB2")
@@ -319,8 +312,6 @@ setaLogCPM <- function(counts,
 #'
 #' # Apply CLR transform to all columns together
 #' out1 <- setaTransform(mat, method = "CLR")
-#' out1$transform_method         # \"CLR\"
-#' out1$within_resolution       # FALSE
 #'
 #' # Apply CLR within each Lineage
 #' out2 <- setaTransform(
@@ -330,10 +321,7 @@ setaLogCPM <- function(counts,
 #'     taxonomy_col = "Lineage",
 #'     within_resolution = TRUE
 #' )
-#' out2$transform_method        # \"CLR\"
-#' out2$within_resolution       # TRUE
-#' out2$grouping_var            # \"Lineage\"
-#'
+#' @name setaTransform
 #' @export
 setaTransform <- function(
     counts,

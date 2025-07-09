@@ -34,14 +34,12 @@
 #' }
 #'
 #' @examples
-#' sce <- mockSC()
-#' spe <- mockSP(sce)
-#' mgs <- getMGS(sce)
+#' seu <- mockSC()
+#' sce <- mockSCE()
+#' hierarchy <- makeTypeHierarchy(c("Lineage", "Type", "State"))
 NULL
 
 #' @rdname data
-#' @importFrom SeuratObject CreateSeuratObject GetAssayData
-#' @importFrom SingleCellExperiment SingleCellExperiment colData
 #' @importFrom Matrix Matrix
 #' @importFrom stats rpois
 #' @export
@@ -84,7 +82,7 @@ mockSC <- function(
     )
     
     ## 4) build Seurat object (single assay, no extra layers) ---------------
-    se <- CreateSeuratObject(counts = counts, meta.data = meta)
+    se <- SeuratObject::CreateSeuratObject(counts = counts, meta.data = meta)
     
     # # light preprocessing (optional)
     # se <- NormalizeData(se, verbose = FALSE) |> 
@@ -99,27 +97,23 @@ mockSC <- function(
 #' @rdname data
 #' @export
 
-mockLong <- function(
-        nc = 50,    # cells per fine‑type
-        nt = 3,     # fine‑types
-        ns = 4,     # samples
-        nb = 2) {
-    type_levels <- paste0("type", seq_len(nt))
-    maps        <- makeTypeHierarchy(type_levels)
-    
-    df <- data.frame(
-        bc       = paste0("cell", seq_len(nc)),
-        type     = sample(type_levels, nc, TRUE),
-        sample   = sample(paste0("sample", seq_len(ns)), nc, TRUE),
-        stringsAsFactors = FALSE
-    )
-    if (nb > 1)
-        df$batch <- sample(paste0("batch", seq_len(nb)), nc, TRUE)
-    
-    df$fine_type  <- df$type
-    df$mid_type   <- maps$mid  [df$type]
-    df$broad_type <- maps$broad[df$type]
-    df
+mockLong <- function(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
+  type_levels <- paste0("type", seq_len(nt))
+  maps        <- make_type_hierarchy(type_levels)
+
+  df <- data.frame(
+    bc       = paste0("cell", seq_len(nc)),
+    type     = sample(type_levels, nc, TRUE),
+    sample   = sample(paste0("sample", seq_len(ns)), nc, TRUE),
+    stringsAsFactors = FALSE
+  )
+  if (useBatch)
+    df$batch <- sample(paste0("batch", seq_len(nb)), nc, TRUE)
+
+  df$fine_type  <- df$type
+  df$mid_type   <- maps$mid  [df$type]
+  df$broad_type <- maps$broad[df$type]
+  df
 }
 
 #' @rdname data
@@ -135,12 +129,15 @@ mockCount <- function(df = mockLong()) {
 #' @rdname data
 #' @export
 
-mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2) {
-    se <- mockSC(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2)
-    SingleCellExperiment::SingleCellExperiment(
-        assays  = list(counts = GetAssayData(se, "RNA", layer = "counts")),
-        colData = se@meta.data
-    )
+mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
+  stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
+  df  <- mockLong(nc, nt, ns, nb, useBatch)
+  mat <- matrix(stats::rpois(nc * 20, lambda = 5), 20,
+                dimnames = list(paste0("gene", seq_len(20)), df$bc))
+  SingleCellExperiment::SingleCellExperiment(
+    assays  = list(counts = mat),
+    colData = df
+  )
 }
 
 #' @rdname data

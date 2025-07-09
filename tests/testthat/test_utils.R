@@ -3,7 +3,9 @@ test_that("setaCounts returns a correctly‑shaped matrix from metadata frames",
   skip_if_not_installed("Seurat")
 
   ## build three metadata frames -------------------------------------------
-  sce_meta <- as.data.frame(SingleCellExperiment::colData(mockSCE()))
+  sce <- mockSCE()
+  sce_meta <- as.data.frame(SingleCellExperiment::colData(sce))
+  sce_meta$bc <- rownames(sce_meta)
   seu_meta <- mockSC()@meta.data
   seu_meta$bc <- rownames(seu_meta)
   long_df  <- mockLong()
@@ -36,7 +38,9 @@ test_that("setaTaxonomyDF builds one‑to‑one taxonomy frames", {
   ## resolution hierarchy (coarse to fine) ----------------------------------
   res_cols <- c("broad_type", "mid_type", "fine_type")
 
-  sce_meta <- as.data.frame(SingleCellExperiment::colData(mockSCE()))
+  sce <- mockSCE()
+  sce_meta <- as.data.frame(SingleCellExperiment::colData(sce))
+  sce_meta$bc <- rownames(sce_meta)
   seu_meta <- mockSC()@meta.data
   seu_meta$bc <- rownames(seu_meta)
   long_df  <- mockLong()

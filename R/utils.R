@@ -131,7 +131,7 @@ setaTaxonomyDF <- function(obj,
                 paste(fac_cols, collapse = ", "))
         obj[fac_cols] <- lapply(obj[fac_cols], as.character)
     }
-    
+
   if (!is.character(resolution_cols) || length(resolution_cols) < 1)
     stop("resolution_cols must be a non-empty character vector.")
 
@@ -219,12 +219,11 @@ setaTaxonomyDF <- function(obj,
 #' @examples
 #' # Minimal example with a 3-level hierarchy (broad -> mid -> fine)
 #' tax_df_example <- data.frame(
-#'     broad = c(\"Epithelial\", \"Epithelial\", \"Stromal\"),
-#'     mid   = c(\"Alveolar\", \"Alveolar\", \"Fibroblast\"),
-#'     fine  = c(\"AlveolarType1\", \"AlveolarType2\", \"Fibroblast1\"),
+#'     broad = c("Epithelial", "Epithelial", "Stromal"),
+#'     mid   = c("Alveolar", "Alveolar", "Fibroblast"),
+#'     fine  = c("AlveolarType1", "AlveolarType2", "Fibroblast1"),
 #'     stringsAsFactors = FALSE
 #' )
-#'
 #' library(tidygraph)
 #' library(ggraph)
 #' library(ggplot2)
@@ -232,22 +231,22 @@ setaTaxonomyDF <- function(obj,
 #' # Build a single-root tree and incorporate node metadata
 #' tbl_g <- taxonomy_to_tbl_graph(
 #'     tax_df_example,
-#'     columns   = c(\"broad\", \"mid\", \"fine\"),
-#'     root_name = \"AllCells\"
+#'     columns   = c("broad", "mid", "fine"),
+#'     root_name = "AllCells"
 #' )
 #'
 #' # Inspect node data (metadata for each node)
-#' as.data.frame(tbl_g, \"nodes\")
+#' as.data.frame(tbl_g, "nodes")
 #'
 #' # Visualize with ggraph, coloring by 'broad' level
-#' ggraph(tbl_g, layout = \"tree\") +
+#' ggraph(tbl_g, layout = "tree") +
 #'     geom_edge_diagonal() +
 #'     geom_node_point(aes(color = broad), size = 3) +
 #'     geom_node_text(aes(label = name), vjust = 1, hjust = 0.5) +
 #'     theme_minimal() +
-#'     labs(title = \"Single-Root Taxonomy Tree\")
+#'     labs(title = "Single-Root Taxonomy Tree")
 #'
-#' @importFrom tidygraph  activate as_tbl_graph
+#' @importFrom tidygraph activate as_tbl_graph
 #' @importFrom dplyr left_join pull
 #' @export
 taxonomy_to_tbl_graph <- function(tax_df,

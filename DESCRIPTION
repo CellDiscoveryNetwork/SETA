@@ -20,8 +20,10 @@ Suggests:
     knitr,
     rmarkdown,
     SeuratObject,
+    Seurat,
     SummarizedExperiment,
     SingleCellExperiment,
+    tidytext,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 biocViews:

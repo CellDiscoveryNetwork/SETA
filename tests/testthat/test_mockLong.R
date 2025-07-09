@@ -37,4 +37,22 @@ test_that("mockCount returns correct data", {
 })
 
 # test
-makeTypeHierarchy
+test_that("make_type_hierarchy returns correct structure", {
+  types <- c("A", "B", "C", "D")
+  result <- make_type_hierarchy(types)
+
+  expect_type(result, "list")
+  expect_named(result, c("mid", "broad"))
+  expect_length(result$mid, length(types))
+  expect_length(result$broad, length(types))
+  expect_named(result$mid, types)
+  expect_named(result$broad, types)
+})
+
+test_that("make_type_hierarchy assigns correct mid and broad levels", {
+  types <- c("X", "Y", "Z", "W")
+  result <- make_type_hierarchy(types)
+
+  expect_equal(result$mid,   c(X = "mid1", Y = "mid1", Z = "mid2", W = "mid2"))
+  expect_equal(result$broad, c(X = "broad1", Y = "broad1", Z = "broad2", W = "broad2"))
+})

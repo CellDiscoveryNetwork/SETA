@@ -2,7 +2,12 @@
 % Please edit documentation in R/transforms.R
 \name{setaILR}
 \alias{setaILR}
-\title{Isometric Log-Ratio (ILR) Transform}
+\title{Isometric Log-Ratio (ILR) Transform
+Applies the ILR transform to an integer counts matrix.
+For each sample (row), the data are log-transformed
+(with an optional Box Cox like transformation)
+then projected onto an orthonormal Helmert basis,
+reducing dimensionality by one.}
 \usage{
 setaILR(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1)
 }
@@ -28,6 +33,7 @@ A list with:
 }
 }
 \description{
+Isometric Log-Ratio (ILR) Transform
 Applies the ILR transform to an integer counts matrix.
 For each sample (row), the data are log-transformed
 (with an optional Box Cox like transformation)
@@ -52,7 +58,6 @@ colnames(mat) <- c("A", "B")
 # ILR transformation reduces the dimension by 1.
 out <- setaILR(mat, boxcox_p = 0, pseudocount = 1)
 out$counts
-
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.

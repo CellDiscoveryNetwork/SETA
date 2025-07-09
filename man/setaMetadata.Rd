@@ -4,7 +4,7 @@
 \alias{setaMetadata}
 \title{Extract Sample-Level Metadata from Various Objects}
 \usage{
-setaMetadata(x, sample_col = "Sample ID", meta_cols = NULL)
+setaMetadata(x, sample_col = "Sample ID", meta_cols)
 }
 \arguments{
 \item{x}{An object of class dataframe which contains cell-level or

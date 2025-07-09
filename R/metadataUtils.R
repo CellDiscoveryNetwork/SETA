@@ -37,38 +37,62 @@
 #' @export
 setaMetadata <- function(x,
                          sample_col = "Sample ID",
-                         meta_cols = NULL) {
-    stopifnot(
-        is.data.frame(x), !is.null(meta_cols),
-        sample_col %in% colnames(x),
-        is.character(sample_col), is.character(meta_cols)
+                         meta_cols) {
+  stopifnot(
+    is.data.frame(x),
+    length(sample_col) == 1L, is.character(sample_col),
+    sample_col %in% names(x),
+    is.character(meta_cols), length(meta_cols) > 0L
+  )
+  if (anyNA(x[[sample_col]])) stop("`", sample_col, "` contains NA.")
+  
+  meta_cols <- setdiff(unique(meta_cols), sample_col)
+  missing <- setdiff(meta_cols, names(x))
+  if (length(missing)) stop(
+    "The following meta_cols are not in your data: ",
+    paste(missing, collapse = ", "),
+    call. = FALSE
+  )
+  
+  samples <- unique(as.character(x[[sample_col]]))
+  out <- data.frame(sample_id = samples, stringsAsFactors = FALSE)
+  if (is.factor(x[[sample_col]])) {
+    out$sample_id <- factor(out$sample_id,
+                            levels = levels(x[[sample_col]]))
+  }
+  
+  for (col in meta_cols) {
+    col_data <- x[[col]]
+    vals <- sapply(samples, function(sid) {
+      v <- col_data[x[[sample_col]] == sid]
+      u <- unique(v)
+      if (length(u) != 1L) {
+        stop(
+          sprintf(
+            "Column '%s' has multiple values for sample '%s': %s.\n
+            Are your samples multiplexed? 
+            If so, please supply a sample identifier unique 
+            to each sample X pool.",
+            col, sid, paste(u, collapse = ", ")
+          ),
+          call. = FALSE
         )
-    
-    if (!all(meta_cols %in% colnames(x))) {
-        missing_cols <- setdiff(meta_cols, colnames(x))
-        stop("The following meta_cols are not in metadata: ",
-             paste(missing_cols, collapse = ", "))
-    }
-    meta_df <- x[, c(sample_col, meta_cols), drop = FALSE]
-    
-    # Group by sample_col and compute summary keeping original types
-    grouped <- split(meta_df, meta_df[[sample_col]])
-    summarized_list <- lapply(grouped, function(df) {
-        s <- lapply(df, function(x) {
-            u <- unique(x)
-            if (length(u) == 1) u else NA
-        })
-        as.data.frame(s, stringsAsFactors = FALSE)
+      }
+      u
     })
-    summarized_meta <- do.call(rbind, summarized_list)
-    # Drop columns with NA values (non-unique across the group)
-    nu_cols <- colnames(summarized_meta)[colSums(is.na(summarized_meta)) > 0]
-    if (length(nu_cols) > 1) {
-        warning("Non-unique values in: ",
-                paste(nu_cols[nu_cols != sample_col], collapse = ", "))
-        keep <- !(colnames(summarized_meta) %in% nu_cols[nu_cols != sample_col])
-        summarized_meta <- summarized_meta[, keep]
+    # preserve original type
+    if (is.factor(col_data)) {
+      out[[col]] <- factor(vals, levels = levels(col_data))
+    } else if (is.integer(col_data)) {
+      out[[col]] <- as.integer(vals)
+    } else if (is.numeric(col_data)) {
+      out[[col]] <- as.numeric(vals)
+    } else if (is.logical(col_data)) {
+      out[[col]] <- as.logical(vals)
+    } else {
+      out[[col]] <- vals
     }
-    colnames(summarized_meta)[1] <- "sample_id"
-    return(summarized_meta)
+  }
+  
+  out
 }

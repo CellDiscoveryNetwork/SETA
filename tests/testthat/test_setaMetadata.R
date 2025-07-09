@@ -1,18 +1,30 @@
 # Generate mockLong data
 set.seed(123)
 sce <- mockSCE()
-df <- setaMetadata(
-    x = data.frame(colData(sce)),
-    sample_col = "sample",
-    meta_cols = c("batch", "broad_type"))
-# Test data
-test_that("mockLong returns correct structure", {
-    expect_true(is.data.frame(x))
-    expect_true(all(c("bc", "type", "sample", "batch") %in% colnames(x)))
-    expect_equal(dim(x), c(50, 7))
-    expect_true(all(x$type %in% paste0("type", 1:3)))
-    expect_true(all(x$sample %in% paste0("sample", 1:4)))
-    expect_true(all(x$batch %in% paste0("batch", 1:2)))
+
+test_that("setaMetadata errors on multiplexed samples", {
+  df <- as.data.frame(SingleCellExperiment::colData(sce))
+  expect_error(
+    setaMetadata(df,
+                 sample_col = "sample",
+                 meta_cols = c("batch")),
+    "Are your samples multiplexed"
+  )
 })
 
+meta_df <- as.data.frame(SingleCellExperiment::colData(sce))
+meta_df$sample_batch <- paste(meta_df$sample, meta_df$batch, sep = "_")
 
+df2 <- setaMetadata(
+  x          = meta_df,
+  sample_col = "sample_batch",
+  meta_cols  = c("batch")
+)
+
+# Test data
+test_that("setaMetadata returns correct structure", {
+  expect_true(is.data.frame(df2))
+  expect_true(all(c("sample_id", "batch") %in% colnames(df2)))
+  expect_equal(dim(df2), c(8, 2))
+  expect_true(all(df2$batch  %in% paste0("batch", 1:2)))
+})

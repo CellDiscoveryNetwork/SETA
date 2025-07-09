@@ -60,7 +60,8 @@ test_that("Transforms work on mock SCE, Seurat, and long data", {
   sce <- mockSCE()
   seu <- mockSC()
   df  <- mockLong()
-  matSCE <- setaCounts(as.data.frame(SummarizedExperiment::colData(sce)))
+  matSCE <- setaCounts(as.data.frame(SummarizedExperiment::colData(sce)),
+                       bc = "bc")
   matSeurat <- setaCounts(seu@meta.data, bc = "rownames")
   matDF <- setaCounts(df)
   outSCE <- setaCLR(matSCE)

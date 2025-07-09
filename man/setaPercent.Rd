@@ -2,7 +2,8 @@
 % Please edit documentation in R/transforms.R
 \name{setaPercent}
 \alias{setaPercent}
-\title{Percentage Transform}
+\title{Percentage Transform
+Converts each row (sample) of a counts matrix to percentages of its row sum.}
 \usage{
 setaPercent(counts)
 }
@@ -18,6 +19,7 @@ A list with:
 }
 }
 \description{
+Percentage Transform
 Converts each row (sample) of a counts matrix to percentages of its row sum.
 }
 \details{
@@ -27,5 +29,4 @@ Useful for simplified comparisons and as an input to non-parametric tests.
 mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 out <- setaPercent(mat)
 out$counts
-
 }

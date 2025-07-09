@@ -2,7 +2,9 @@
 % Please edit documentation in R/transforms.R
 \name{setaALR}
 \alias{setaALR}
-\title{Additive Log-Ratio (ALR) Transform}
+\title{Additive Log-Ratio (ALR) Transform
+Applies the ALR transform to an integer matrix of counts
+using a specified reference taxon. Samples are in rows and taxa in columns.}
 \usage{
 setaALR(counts, ref, pseudocount = 1)
 }
@@ -26,6 +28,7 @@ A list with:
 }
 }
 \description{
+Additive Log-Ratio (ALR) Transform
 Applies the ALR transform to an integer matrix of counts
 using a specified reference taxon. Samples are in rows and taxa in columns.
 }
@@ -44,5 +47,4 @@ colnames(mat) <- c("TaxonA", "TaxonB")
 # Using TaxonA as the reference.
 out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 out$counts
-
 }

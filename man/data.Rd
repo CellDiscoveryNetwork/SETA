@@ -11,11 +11,11 @@
 \usage{
 mockSC(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2)
 
-mockLong(nc = 50, nt = 3, ns = 4, nb = 2)
+mockLong(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE)
 
 mockCount(df = mockLong())
 
-mockSCE(nc = 500, nt = 3, ns = 4, nb = 2)
+mockSCE(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE)
 
 makeTypeHierarchy(type_levels)
 }
@@ -56,7 +56,7 @@ unit-testing, and to demonstrate \code{SETA}'s general functionality.
 Please don't use it in real life.
 }
 \examples{
-sce <- mockSC()
-spe <- mockSP(sce)
-mgs <- getMGS(sce)
+seu <- mockSC()
+sce <- mockSCE()
+hierarchy <- makeTypeHierarchy(c("Lineage", "Type", "State"))
 }

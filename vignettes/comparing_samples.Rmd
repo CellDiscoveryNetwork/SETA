@@ -54,6 +54,14 @@ Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) a
 *This vignette is modular; users can update or replace the dataset-specific settings*
 *(e.g., metadata column names, reference cell type) as appropriate for their own data.*
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+
+if (!requireNamespace("SeuratObject", quietly = TRUE) ||
+    !requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+  knitr::knit_exit()  # Skip vignette gracefully
+}
+```
 
 ## Load libraries 
 

@@ -2,7 +2,12 @@
 % Please edit documentation in R/transforms.R
 \name{setaTransform}
 \alias{setaTransform}
-\title{Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions}
+\title{Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
+A convenience function that dispatches to one of the transforms:
+CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
+should have rows as samples and columns as taxa. Optionally, you can supply
+a taxonomy data frame to perform a within-lineage transform at a specified
+resolution.}
 \usage{
 setaTransform(
   counts,
@@ -58,6 +63,7 @@ A list with the following elements:
 }
 }
 \description{
+Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
 A convenience function that dispatches to one of the transforms:
 CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
 should have rows as samples and columns as taxa. Optionally, you can supply
@@ -65,7 +71,6 @@ a taxonomy data frame to perform a within-lineage transform at a specified
 resolution.
 }
 \examples{
-#### Example with lines ~80 characters ####
 mat <- matrix(c(1, 2, 4, 8, 3, 6, 9, 12),
               nrow = 2, byrow = TRUE)
 colnames(mat) <- c("TaxonA1", "TaxonA2", "TaxonB1", "TaxonB2")
@@ -78,8 +83,6 @@ df_lineage <- data.frame(
 
 # Apply CLR transform to all columns together
 out1 <- setaTransform(mat, method = "CLR")
-out1$transform_method         # \"CLR\"
-out1$within_resolution       # FALSE
 
 # Apply CLR within each Lineage
 out2 <- setaTransform(
@@ -89,8 +92,4 @@ out2 <- setaTransform(
     taxonomy_col = "Lineage",
     within_resolution = TRUE
 )
-out2$transform_method        # \"CLR\"
-out2$within_resolution       # TRUE
-out2$grouping_var            # \"Lineage\"
-
 }

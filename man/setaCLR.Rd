@@ -2,7 +2,12 @@
 % Please edit documentation in R/transforms.R
 \name{setaCLR}
 \alias{setaCLR}
-\title{Centered Log-Ratio (CLR) Transform}
+\title{Centered Log-Ratio (CLR) Transform
+Applies a CLR transform to a matrix of counts.
+Samples should be in rows and taxa (cell types) in columns.
+For each sample, the transform computes
+\eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
+where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.}
 \usage{
 setaCLR(counts, pseudocount = 1)
 }
@@ -20,6 +25,7 @@ A list with:
 }
 }
 \description{
+Centered Log-Ratio (CLR) Transform
 Applies a CLR transform to a matrix of counts.
 Samples should be in rows and taxa (cell types) in columns.
 For each sample, the transform computes
@@ -28,7 +34,7 @@ where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
 }
 \details{
 The CLR transform is defined sample-wise as:
-\deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right),}{
+\deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}{
 \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
 where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
 and \(p\) is the number of taxa.
@@ -39,7 +45,6 @@ mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
 colnames(mat) <- c("Taxon1", "Taxon2")
 out <- setaCLR(mat, pseudocount = 0)
 out$counts
-
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.

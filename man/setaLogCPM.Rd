@@ -2,7 +2,9 @@
 % Please edit documentation in R/transforms.R
 \name{setaLogCPM}
 \alias{setaLogCPM}
-\title{log2(CPM) Transform}
+\title{log2(CPM) Transform
+Computes the log2 counts-per-million (CPM) for each sample.
+Samples are in rows and taxa in columns.}
 \usage{
 setaLogCPM(counts, pseudocount = 1, size_factors = NULL, scale_factor = 1e+06)
 }
@@ -27,6 +29,7 @@ A list with:
 }
 }
 \description{
+log2(CPM) Transform
 Computes the log2 counts-per-million (CPM) for each sample.
 Samples are in rows and taxa in columns.
 }
@@ -40,5 +43,4 @@ where the library size is computed per sample.
 mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
 out <- setaLogCPM(mat, pseudocount = 1)
 out$counts
-
 }

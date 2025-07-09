@@ -4,11 +4,14 @@ mockSC <- function(ng = 200,   # genes
                    ns = 4,     # # samples
                    nb = 2) {   # # batches
   stopifnot(requireNamespace("Seurat",  quietly = TRUE),
+            requireNamespace("SeuratObject",  quietly = TRUE),
             requireNamespace("Matrix",  quietly = TRUE))
-
+  if (!requireNamespace("SeuratObject", quietly = TRUE)) {
+    skip("SeuratObject not available for mock object")
+  }
   ## 1) create global IDs --------------------------------------------------
   type_levels <- paste0("type",  seq_len(nt))
-  maps        <- make_type_hierarchy(type_levels)
+  maps        <- makeTypeHierarchy(type_levels)
 
   cell_ids <- unlist(lapply(seq_len(nt), function(t)
     paste0("cell", seq_len(nc), "_t", t)))         # unique over all types
@@ -49,9 +52,9 @@ mockSC <- function(ng = 200,   # genes
   se
 }
 
-mockLong <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
+mockLong <- function(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
   type_levels <- paste0("type", seq_len(nt))
-  maps        <- make_type_hierarchy(type_levels)
+  maps        <- makeTypeHierarchy(type_levels)
 
   df <- data.frame(
     bc       = paste0("cell", seq_len(nc)),
@@ -67,6 +70,7 @@ mockLong <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
   df$broad_type <- maps$broad[df$type]
   df
 }
+
 
 mockCount <- function(df = mockLong()) {
   groupVars <- c("type", "sample")
@@ -85,11 +89,11 @@ mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
   )
 }
 
-make_type_hierarchy <- function(type_levels) {
-  n  <- length(type_levels)
-  i  <- seq_along(type_levels)
-  list(
-    mid   = setNames(paste0("mid",   ceiling(i / 2)),           type_levels),
-    broad = setNames(paste0("broad", ifelse(i <= n / 2, 1, 2)), type_levels)
-  )
+makeTypeHierarchy <- function(type_levels) {
+    n  <- length(type_levels)
+    i  <- seq_along(type_levels)
+    list(
+        mid   = setNames(paste0("mid",   ceiling(i / 2)),           type_levels),
+        broad = setNames(paste0("broad", ifelse(i <= n / 2, 1, 2)), type_levels)
+    )
 }
