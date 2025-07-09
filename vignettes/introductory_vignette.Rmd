@@ -43,8 +43,10 @@ In this vignette we show how to:
 - **Apply compositional transforms** such as CLR and ALR
 - **Compute a latent space** using PCA (with options for PCoA or NMDS)
 
-This example uses a dataset from CELLxGENE stored in `"Covid_Flu_Seurat_Object_DF.rds"`. 
-The dataset contains blood samples from 17 donors (`donor_id`), with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g. `Severity`, `Comorbidity`, and `development_stage`).
+This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
+It contains lung single-cell profiles from 14 donor mice (mouse_id). 
+Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
+Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
 *This vignette is modular; users can update or replace the dataset-specific settings*
 *(e.g., metadata column names, reference cell type) as appropriate for their own data.*
@@ -74,6 +76,10 @@ library(tidytext)
 
 ```{r, message=FALSE, warning=FALSE, echo=TRUE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
+
+# Two samples in this dataset have had certain celltype lineages depleted. 
+# For compositional comparisons, we remove these for simplicity.
+sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
 ```
 
 Quick data exploration:
@@ -107,6 +113,10 @@ we reassign these columns before extraction.
 # Extract the taxonomic counts matrix using custom metadata column names
 # (Users can specify these column names according to their dataset.)
 df <- data.frame(colData(sce))
+
+# Fix special characters in mouse.id before working with the data
+df$mouse.id <- gsub("/", "", df$mouse.id)
+
 taxa_counts <- setaCounts(
     df,
     cell_type_col = "free_annotation",
@@ -184,7 +194,7 @@ ve_df <- data.frame(
 
 ```{r, fig.width = 6, fig.height = 4}
 ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
-    geom_line(color = "#2ca1db", size = 1.5, stat = "identity") +
+    geom_line(color = "#2ca1db", size = 1.5, group = 1) +
     geom_point(color = "#f44323", size = 3) +
     labs(title = "Cumulative Variance Explained by Principal Components",
          x = "Principal Component", y = "Cumulative Variance Explained (%)") +
@@ -196,7 +206,7 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
 ### PCA Scatter plot
 We overlay the PCA latent space coordinates (using the CLR transform) 
 with metadata from the Seurat object. 
-In this example, points are shaped by disease and colored by Severity. 
+In this example, points are colored by age. 
 
 ```{r, PCA scatter}
 # Extract latent space coordinates from PCA result.
@@ -220,7 +230,7 @@ ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
       values = age_palette
     ) +
     labs(title = "PCA Scatter Plot",
-        x = "PC1", y = "PC2", color = "Disease Status") +
+        x = "PC1", y = "PC2", color = "Age") +
     theme_linedraw() +
     xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
     ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))

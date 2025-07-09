@@ -36,6 +36,13 @@ setaCounts <- function(obj,
           convert these to a dataframe and input them directly.")
   }
 
+  fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
+    if (length(fac_cols)) {
+        message("Converting factor class columns to character: ",
+                paste(fac_cols, collapse = ", "))
+        obj[fac_cols] <- lapply(obj[fac_cols], as.character)
+    }
+
   # Handle special case for rownames
   if (identical(bc_col, "rownames")) {
     obj$.__barcodes__ <- rownames(obj)
@@ -118,6 +125,13 @@ setaTaxonomyDF <- function(obj,
   if (!is.data.frame(obj))
     stop("obj must be a data.frame. Extract metadata first.")
 
+  fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
+    if (length(fac_cols)) {
+        message("Converting factor columns to character: ",
+                paste(fac_cols, collapse = ", "))
+        obj[fac_cols] <- lapply(obj[fac_cols], as.character)
+    }
+    
   if (!is.character(resolution_cols) || length(resolution_cols) < 1)
     stop("resolution_cols must be a non-empty character vector.")
 
@@ -245,6 +259,11 @@ taxonomy_to_tbl_graph <- function(tax_df,
     if (length(columns) < 1) {
         stop("Need at least one column in 'columns'.")
     }
+
+    # if (any(lapply(tax_df, class) != "character")) {
+    #     message("tax_df columns are not character class. Coercing...")
+    #     tax_df[] <- lapply(tax_df, as.character)
+    # }
 
     ############################
     ## 1) Build the edge list ##

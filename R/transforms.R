@@ -350,6 +350,7 @@ setaTransform <- function(
     if (!is.matrix(counts)) {
         stop("'counts' must be a matrix with samples in rows and taxa in columns.")
     }
+
     # If not reference-frame grouping, a single transform
     if (!within_resolution || is.null(taxonomyDF) || is.null(taxonomy_col)) {
       result <- switch(

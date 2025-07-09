@@ -46,8 +46,10 @@ In this vignette we show how to:
 - **Correlate celltype compositions and metadata** 
 - **Create predictive models** using popular statistical modeling methods
 
-This example uses a dataset from CELLxGENE stored in `"Covid_Flu_sceect_DF.rds"`. 
-The dataset contains blood samples from 17 donors (`donor_id`), with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`Celltype`), and additional metadata (e.g. `Severity`, `Comorbidity`, and `development_stage`).
+This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
+It contains lung single-cell profiles from 14 donor mice (mouse_id). 
+Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
+Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
 *This vignette is modular; users can update or replace the dataset-specific settings*
 *(e.g., metadata column names, reference cell type) as appropriate for their own data.*
@@ -72,6 +74,9 @@ library(TabulaMurisSenisData)
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
+
+sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
+
 ```
 
 Quick data exploration:
@@ -106,6 +111,9 @@ we reassign these columns before extraction.
 
 ```{r}
 df <- data.frame(colData(sce))
+
+df$mouse.id <- gsub("/", "", df$mouse.id)
+
 taxa_counts <- setaCounts(
     df,
     cell_type_col = "free_annotation",
@@ -132,7 +140,7 @@ merged_dist <- dist_df |>
   left_join(meta_df, by = c("from" = "sample_id")) |>
   left_join(meta_df, by = c("to" = "sample_id"), suffix = c(".from", ".to"))
 
-# Create a disease-disease category for comparison
+# Create a age-age category for comparison
 merged_dist$age_pair <- paste(merged_dist$age.from,
                                   merged_dist$age.to,
                                   sep = "-")
@@ -142,10 +150,11 @@ merged_dist$age_pair <- paste(merged_dist$age.from,
 ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
     geom_jitter(width = 0.2, color = "black") +
-    labs(title = "Aitchison Distances Between Disease Groups",
-         x = "Disease Pair",
+    labs(title = "Aitchison Distances Between Age Groups",
+         x = "Age Pair",
          y = "Aitchison Distance") +
-    theme_minimal(base_size = 16)
+    theme_minimal(base_size = 16) + 
+    theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
 
 ## Perform wilcoxon rank-sum tests on CoDA transformed data
@@ -173,7 +182,7 @@ ggplot(clr_long, aes(x = age, y = CLR,
     scale_fill_manual(values = age_palette) +
     scale_color_manual(values = age_palette) +
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 1)) +
-    labs(title = "CLR by Celltype and Disease",
+    labs(title = "CLR by Celltype and Age",
          x = "Age",
          y = "CLR-transformed Composition")
 ```
@@ -192,7 +201,7 @@ clr_metadata <- clr_df |>
 
 clr_data <- clr_metadata |> select(where(is.numeric))
 
-# One-hot encode 'Disease.group'; clean column names
+# One-hot encode 'age' and clean column names
 oh <- model.matrix(~age - 1, data = clr_metadata)
 colnames(oh) <- sub("^age", "", colnames(oh))
 
@@ -229,11 +238,11 @@ corrplot(full_cor_mat,
 set.seed(687)
 train_df <- clr_metadata |>
   select(-`mouse.id`) |>
-  mutate(disease = factor(age))
+  mutate(age = factor(age))
 
 train_control <- trainControl(method = "cv", number = 5)
 
-model <- train(age ~ ., data = subset(train_df, select = -disease),
+model <- train(age ~ ., data = subset(train_df),
                method = "glmnet",
                trControl = train_control)
 

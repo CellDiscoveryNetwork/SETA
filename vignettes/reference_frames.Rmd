@@ -45,7 +45,10 @@ In this vignette, we demonstrate how to create and utilize _multi-resolution_ an
 - **Transform counts data with a chosen taxonomic reference frame**  
 - **Compare PCA latent spaces** based on different reference frames
 
-This example uses a dataset from CELLxGENE stored in `"Covid_Flu_sceect_DF.rds"`. The dataset contains blood samples from 17 donors (`donor_id`) with disease annotations (`disease`: influenza, COVID-19, or normal), cell-type annotations (`free_annotation`), and additional metadata (e.g., `Severity`, `Comorbidity`, `development_stage`). Although the Seurat object does not inherently contain multi-resolution cell-type columns, we'll artificially define a broader “lineage” level for demonstration.
+This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
+It contains lung single-cell profiles from 14 donor mice (mouse_id). 
+Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
+Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(SingleCellExperiment)
@@ -63,13 +66,19 @@ library(TabulaMurisSenisData)
 # Set up a color palette for plots
 # 9-group distinct categoricals
 d_palette <- c("#3B9AB2", "#6BAFAF", "#9BBDAC", "#C9C171",
-               "#EBCC2A", "#E6A80F", "#E98903", "#F84C00", "#F21A00")
+               "#EBCC2A", "#E6A80F", "#E98903", "#F84C00", "#F21A00",
+               "#B10026", "#67000D")
 ```
 
 ## Load and prepare data
 
 ```{r, echo = FALSE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
+
+sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
+
+sce$mouse.id <- gsub("/", "", sce$mouse.id)
+
 ```
 
 Quick data exploration:
@@ -195,7 +204,7 @@ ggraph(tbl_g, layout = "dendrogram") +
     theme(axis.text.y = element_blank()) +
     expand_limits(y = -5) +
     coord_flip() +
-    ggtitle("SETA: Taxonomy") 
+    ggtitle("SETA: Taxonomy")
 ```
 
 Here, each Lineage is a parent node, and each free_annotation is a leaf node.
@@ -212,9 +221,9 @@ For example, a CLR transform within each lineage:
 ```{r reference frame calculation}
 # Create sample x free_annotation counts:
 taxa_counts <- setaCounts(
-    sce,
+    data.frame(colData(sce)),
     cell_type_col = "free_annotation",
-    sample_col = "donor_id",
+    sample_col = "mouse.id",
     bc_col = "rownames"
 )
 
@@ -228,6 +237,7 @@ refframe_out <- setaTransform(
     taxonomy_col      = "Lineage",
     within_resolution = TRUE
 )
+
 refframe_out$within_resolution
 refframe_out$grouping_var
 
@@ -239,33 +249,33 @@ global_out <- setaTransform(taxa_counts, method = "CLR")
 ## Visualize Latent Spaces With Different Reference Frames
 
 Below we show how to do PCA on the sample-level coordinates from either the global CLR or the lineage-based CLR. 
-We color points by disease to see if the subcompositional approach changes clustering.
+We color points by age to see if the subcompositional approach changes clustering.
 
 ```{r latent reference frames, fig.width = 10, fig.height = 6}
 # A) Global CLR
 latent_global <- setaLatent(global_out, method = "PCA", dims = 2)
 pca_global <- latent_global$latentSpace
-pca_global$sample <- rownames(pca_global)
+pca_global$sample_id <- rownames(pca_global)
 
 # B) Within-Lineage CLR
 latent_lineage <- setaLatent(refframe_out, method = "PCA", dims = 2)
 pca_lineage <- latent_lineage$latentSpace
-pca_lineage$sample <- rownames(pca_lineage)
+pca_lineage$sample_id <- rownames(pca_lineage)
 
 # Merge with metadata
-meta_df <- setaMetadata(sce, sample_col = "Sample ID",
-                        meta_cols = c("Disease group", "Severity"))
-pca_global <- left_join(pca_global, meta_df, by = c("sample" = "Sample ID"))
-pca_lineage <- left_join(pca_lineage, meta_df, by = c("sample" = "Sample ID"))
+meta_df <- setaMetadata(data.frame(colData(sce)), sample_col = "mouse.id",
+                        meta_cols = c("age", "sex"))
+pca_global <- left_join(pca_global, meta_df)
+pca_lineage <- left_join(pca_lineage, meta_df)
 
 # Plot side by side
-p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = Disease.group)) +
-    geom_text(aes(label = sample)) +
+p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = age)) +
+    geom_text(aes(label = sample_id)) +
     scale_color_manual(
         values = d_palette
     ) +
     labs(title = "Global CLR PCA",
-        x = "PC1", y = "PC2", color = "Disease Status") +
+        x = "PC1", y = "PC2", color = "Age (Months)") +
     theme_minimal() +
     xlab(sprintf("PC1 (%s%%)",
                  signif(latent_global$varExplained[1], 4) * 100)) +
@@ -273,13 +283,13 @@ p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = Disease.group)) +
                  signif(latent_global$varExplained[2], 4) * 100)) +
     theme(legend.position = 'none')
 
-p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = Disease.group)) +
-    geom_text(aes(label = sample)) +
+p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = age)) +
+    geom_text(aes(label = sample_id)) +
     scale_color_manual(
         values = d_palette
     ) +
     labs(title = "Within-Lineage CLR PCA",
-        x = "PC1", y = "PC2", color = "Disease Status") +
+        x = "PC1", y = "PC2", color = "Age (Months)") +
     theme_minimal() +
     xlab(sprintf("PC1 (%s%%)",
                  signif(latent_lineage$varExplained[1], 4) * 100)) +
