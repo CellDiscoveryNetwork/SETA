@@ -32,35 +32,29 @@ editor_options:
 }
 </style>
 ```
-
 ## Introduction
 
-`SETA` provides a set of functions for compositional analysis of single-cell RNA-seq data.
+`SETA` provides a set of functions for compositional analysis of single-cell
+RNA-seq data.
 
 In this vignette we show how to:
-  
-- **Extract a taxonomic counts matrix** from various objects (e.g. a Seurat object)
-- **Apply compositional transforms** such as CLR and ALR
-- **Compute a latent space** using PCA (with options for PCoA or NMDS)
 
-This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
-It contains lung single-cell profiles from 14 donor mice (mouse_id). 
-Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
-Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
+-   **Extract a taxonomic counts matrix** from various objects (e.g. a Seurat
+    object)
+-   **Apply compositional transforms** such as CLR and ALR
+-   **Compute a latent space** using PCA (with options for PCoA or NMDS)
 
-*This vignette is modular; users can update or replace the dataset-specific settings*
-*(e.g., metadata column names, reference cell type) as appropriate for their own data.*
+This example works with the Tabula Muris Senis lung dataset which can be
+downloaded directly with bioconductor It contains lung single-cell profiles from
+14 donor mice (mouse_id). Each mouse is assigned to one of five age groups—from
+young adult to old—recorded in the age column. Standard cell-type labels
+(free_annotation) and additional metadata (e.g. sex) are also included.
 
+*This vignette is modular; users can update or replace the dataset-specific
+settings* *(e.g., metadata column names, reference cell type) as appropriate for
+their own data.*
 
 ## Loading the Data
-
-In this example we assume the Seurat object is stored as an RDS file.
-We load the object along with the required package (`Seurat`) and our package (`SETA`).
-
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-base_path <- "/Users/kylekimler/gitHub/workshops/"
-data_loc <- paste0(base_path, "beginners-guide-to-analyzing-scRNAseq/data/")
-```
 
 ```{r setup, message=FALSE, warning=FALSE, echo=TRUE}
 library(SingleCellExperiment)
@@ -103,11 +97,10 @@ age_palette <- c(
 
 ## Extracting the Taxonomic Counts Matrix
 
-The `setaCounts` function extracts a cell-type counts matrix given 
-that the object contains cell‐level metadata. For this dataset, 
-we want the cell-type annotations to come from Celltype and 
-the sample identifiers from donor_id. If necessary, 
-we reassign these columns before extraction.
+The `setaCounts` function extracts a cell-type counts matrix given that the
+object contains cell‐level metadata. For this dataset, we want the cell-type
+annotations to come from Celltype and the sample identifiers from donor_id. If
+necessary, we reassign these columns before extraction.
 
 ```{r data wrangling, message=FALSE, warning=FALSE, echo=TRUE}
 # Extract the taxonomic counts matrix using custom metadata column names
@@ -129,23 +122,25 @@ head(taxa_counts)
 
 Below we apply three transforms:
 
-The centered log-ratio (CLR) transform,
+-   The centered log-ratio (CLR) transform,
 
-The additive log-ratio (ALR) transform.
+-   The additive log-ratio (ALR) transform.
 
-The isometric log-ratio (ILR) transform.
+-   The isometric log-ratio (ILR) transform.
 
-For the ALR transform we need to choose a reference cell type whose numbers
-remain stable across conditions pre-sampling. In an ideal scenario this could a
-spike in of a known number of cells.
-In this example, we assume that one of the reference cell types are "NK cells".
-If it does not exist in your dataset, change the reference accordingly.
-
+CLR Transformation
 ```{r transformation, echo=TRUE}
 # CLR Transformation with a pseudocount of 1 (default)
 clr_out <- setaCLR(taxa_counts, pseudocount = 1)
 print(head(clr_out$counts))
+```
 
+For the ALR transform we need to choose a reference cell type whose numbers
+remain stable across conditions pre-sampling. In an ideal scenario this could a
+spike-in of a known number of cells. In this example, we assume that one of the
+reference cell types are "NK cells". If it does not exist in your dataset,
+change the reference accordingly or use CLR.
+```{r}
 # ALR Transformation: using "NK cell" as the reference cell type
 if ("Natural Killer" %in% colnames(taxa_counts)) {
   alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
@@ -154,22 +149,29 @@ if ("Natural Killer" %in% colnames(taxa_counts)) {
   message("Reference 'NK cell' not found in taxa_counts. 
             Please choose an available cell type.")
 }
+```
 
-# ILR Transform using Helmert basis (boxcox_p = 0 for standard ILR)
-# This is the method used by Cacoa (Viktor Petukhov & Kharchenko Lab)
+ILR Transform using Helmert basis (boxcox_p = 0 for standard ILR)
+This is the method used by Cacoa (Viktor Petukhov & Kharchenko Lab)
+```{r}
 ilr_out <- setaILR(taxa_counts, boxcox_p = 0, pseudocount = 1)
 print(head(ilr_out$counts))
+```
 
-# Simple Percentage Transform
+Simple Percentage Transform
+```{r}
 pct_out <- setaPercent(taxa_counts)
 print(head(pct_out$counts))
+```
 
-# LogCPM (counts per 10k) Transform
+LogCPM (counts per 10k) Transform
+```{r}
 lcpm_out <- setaLogCPM(taxa_counts, pseudocount = 1)
 print(head(lcpm_out$counts))
 ```
 
 ## Latent Space Analysis
+
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
 # PCA Latent Space Coordinates:
@@ -179,9 +181,11 @@ latent_pca$varExplained
 ```
 
 ## Visualization
+
 Below we show how to create basic visualizations of SETA latent spaces
 
 ### Variance Explained Plot
+
 Plot the variance explained by the first few principal components.
 
 ```{r variance explained, message=FALSE, warning=FALSE, echo=TRUE}
@@ -204,9 +208,9 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
 ```
 
 ### PCA Scatter plot
-We overlay the PCA latent space coordinates (using the CLR transform) 
-with metadata from the Seurat object. 
-In this example, points are colored by age. 
+
+We overlay the PCA latent space coordinates (using the CLR transform) with
+metadata from the Seurat object. In this example, points are colored by age.
 
 ```{r, PCA scatter}
 # Extract latent space coordinates from PCA result.
@@ -237,6 +241,7 @@ ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
 ```
 
 ### Loadings Plot
+
 Plot the variance explained by interesting principal components.
 
 ```{r loadings, message=FALSE, warning=FALSE, echo=TRUE}
@@ -251,15 +256,20 @@ loadings_long <- melt(loadings_df, id.vars = "Celltype",
 Visualize the PC loadings for each cell
 
 ```{r, fig.width = 12, fig.height = 9}
-loading_df <- loadings_long |>
-       filter(PC %in% c("PC1", "PC2")) |>
-       mutate(Celltype = tidytext::reorder_within(Celltype, Loading, PC))
+# Subset rows where PC is "PC1" or "PC2"
+loading_df <- loadings_long[loadings_long$PC %in% c("PC1", "PC2"), ]
+
+# Append PC to Celltype to mimic tidytext::reorder_within()
+loading_df$Celltype_PC <- paste(loading_df$Celltype, loading_df$PC, sep = "___")
+
+# Reorder by Loading *within each PC*
+loading_df$Celltype_PC <- with(loading_df, reorder(Celltype_PC, Loading))
 
 ggplot(loading_df,
        aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
   geom_col() +
   facet_wrap(~PC, scales = "free") +
-  scale_y_reordered() +
+  # scale_y_reordered() +
   labs(title = "PC Loadings",
        x = "Loading",
        y = "Cell Type") +
@@ -269,24 +279,26 @@ ggplot(loading_df,
 ```
 
 ## Conclusion
+
 This vignette illustrated a basic workflow using the SETA package:
 
-1. Extracting a taxonomic counts matrix from a Seurat Object with setaCounts
+1.  Extracting a taxonomic counts matrix from a Seurat Object with setaCounts
 
-2. Applying compositional transforms (CLR, ALR, ILR, and simple transforms)
+2.  Applying compositional transforms (CLR, ALR, ILR, and simple transforms)
 
-3. Performing latent space analysis (PCA)
+3.  Performing latent space analysis (PCA)
 
-4. Visualizing sample-level latent spaces
+4.  Visualizing sample-level latent spaces
 
-Each step is modular, so you can easily swap in your own data, 
-update metadata column names, or choose different parameters 
-(e.g., pseudocount, reference cell type) to suit your analysis needs.
+Each step is modular, so you can easily swap in your own data, update metadata
+column names, or choose different parameters (e.g., pseudocount, reference cell
+type) to suit your analysis needs.
 
-For further details, see the package documentation and 
-relevant literature on compositional data analysis (e.g., Aitchison, 1982).
+For further details, see the package documentation and relevant literature on
+compositional data analysis (e.g., Aitchison, 1982).
 
 ## Session Info
+
 ```{r}
 sessionInfo()
 ```
