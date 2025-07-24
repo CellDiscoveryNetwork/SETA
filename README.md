@@ -10,47 +10,30 @@ SETA aims to make compositional analysis user friendly and easy to understand wi
 
 ## Project Status
 
-**Under Construction**
+**In Development**
 
 - Based on a non-Bioconductor-compliant package, [SETA](https://github.com/jo-m-lab/SETA)
 
 ## Planned Features
 
-- Import functions for `SingleCellExperiment` or `Seurat` objects
-- Utilities for compositional analysis: proportionality, compositional analysis, sample-level trajectories
-- Modular architecture to integrate readily with standard scRNA-seq toolchains
+- proportionality networks
+- sample-level trajectories
+- vegan ecological latent space methods and metrics (like unifrac)
 
 # To Do List
 
-- Bioconductor Guidelines
-  - Organize code into R/, man/, vignettes/
-  - Include unit tests and pass R CMD check --as-cran
-  - Provide comprehensive documentation and examples
-- Versioning
-  - Adopt Bioconductor versioning scheme (e.g., x.y.z) 
-  - Increment version on each commit to reflect development milestones
-- Continuous Integration
-  - Configure GitHub Actions or similar for automated checks
-  - Validate R CMD check, test coverage, and code style
-- Compositional Space Calculation (done)
-  - Implement reference frames for normalization (done)
-  - Latent space methods (PCA, PCoA, NMDS, RDA, PLS-DA, tensors!) - first 3 are implemented
+- Compositional Space Calculation
+  - Latent space methods (RDA, PLS-DA, tensors!) - vegan and otherwise
   - Add trajectory capabilities
 - Compositional Transforms
-  - ALR (done)
-  - CLR (done)
-  - ILR (with or without balances) (done without balances)
+  - ILR with balances
+  - ideas welcome
 - Methods for Cell Type Trees
-  - Build hierarchical or phylogenetic structures from input counts (done)
+  - Addition of metadata to tree objects
 - Analysis Methods
-  - Compare distances in latent or full space (Aitchison, Euclidean) (done)
-  - Compare loadings of different latent spaces (done)
-  - Compare results of rank-based tests (Wilcoxon/MWU) (done)
   - Build proportionality or Pearson correlation networks of cell type compositions
+  - Tensors and complex modeling
 - Vignettes
-  - Introductory vignette on transforms and sample-level latent spaces
-  - Comparing samples with SETA
-  - Analyzing CoDA with Reference Frames
   - Proportionality Networks
   - Multi-view tensor sample-level analysis
 

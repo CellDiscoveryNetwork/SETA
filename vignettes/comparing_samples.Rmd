@@ -149,7 +149,12 @@ clr_transformed <- setaTransform(taxa_counts, method = "CLR")
 ```
 
 Compute distance in the CLR space 
-##TODO TKTK setaDistances uses `dist` -- is it OK to call it aitchison distances? see -> https://search.r-project.org/CRAN/refmans/robCompositions/html/aDist.html
+
+In compositional analysis, the Euclidean distance is the preferred metric
+once the bounding problem is solved, in other words, once we transform the data. 
+John Aitchison, who wrote "The Statistical Analysis of Compositional Data" preferred
+the Euclidean distance of CLR transformed data, and this distance is now 
+referred to as "Aitchison Distance"
 ```{r}
 dist_df <- setaDistances(clr_transformed)
 
