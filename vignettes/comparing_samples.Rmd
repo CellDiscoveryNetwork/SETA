@@ -84,7 +84,6 @@ library(TabulaMurisSenisData)
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 
 sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
-
 ```
 
 Quick data exploration:
@@ -127,20 +126,31 @@ taxa_counts <- setaCounts(
     cell_type_col = "free_annotation",
     sample_col = "mouse.id",
     bc_col = "cell")
+
+taxa_counts[1:5, 1:5]
 ```
 
-
 ### Prepare metadata
+Extract sample-level metadata from a dataframe. It ensures that each metadata column contains unique values per sample. If a metadata column contains non-unique values within any sample, that column is excluded from the output, and the user is notified via a warning.
 ```{r}
 meta_df <- setaMetadata(
     df,
     sample_col = "mouse.id",
     meta_cols = c("age", "sex"))
+
+meta_df[1:5, ]
 ```
 
 ## Calculate distances between samples
+
+Normalize the data using Centered Log Ratio transformation (CLR)
 ```{r}
 clr_transformed <- setaTransform(taxa_counts, method = "CLR")
+```
+
+Compute distance in the CLR space 
+##TODO TKTK setaDistances uses `dist` -- is it OK to call it aitchison distances? see -> https://search.r-project.org/CRAN/refmans/robCompositions/html/aDist.html
+```{r}
 dist_df <- setaDistances(clr_transformed)
 
 # Merge metadata
@@ -154,6 +164,7 @@ merged_dist$age_pair <- paste(merged_dist$age.from,
                                   sep = "-")
 ```
 
+Visualize distances
 ```{r, fig.width = 9, fig.height = 6}
 ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
@@ -236,7 +247,6 @@ corrplot(full_cor_mat,
          tl.col = "black",
          order = "hclust",
          diag = FALSE)
-
 ```
 
 
