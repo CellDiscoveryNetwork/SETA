@@ -11,14 +11,16 @@ resolution.}
 \usage{
 setaTransform(
   counts,
-  method = c("CLR", "ALR", "ILR", "percent", "logCPM"),
+  method = c("CLR", "ALR", "ILR", "percent", "logCPM", "balance"),
   ref = NULL,
   taxTree = NULL,
   pseudocount = 1,
   size_factors = NULL,
   taxonomyDF = NULL,
   taxonomy_col = NULL,
-  within_resolution = FALSE
+  within_resolution = FALSE,
+  balances = NULL,
+  normalize_to_parent = FALSE
 )
 }
 \arguments{
@@ -26,7 +28,7 @@ setaTransform(
 
 \item{method}{A character string specifying which transform to apply.
 One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
-or \code{"logCPM"}.}
+\code{"logCPM"} or \code {"balance"}.}
 
 \item{ref}{Reference taxon (only used if \code{method = "ALR"}). This can be
 a taxon name or a column index.}
@@ -47,7 +49,11 @@ each taxon belongs to. Only used if \code{within_resolution = TRUE}.}
 \item{within_resolution}{Logical. If \code{TRUE}, applies the transform
 within each lineage of taxa defined by \code{taxonomyDF[[taxonomy_col]]}
 separately, then merges them back into the original matrix structure.
-Default is \code{FALSE}.}
+Default is \code{FALSE}. Ignored for `"balance"`.}
+
+\item{balances}{For `"balance"`: a single balance list or a named list;}
+
+\item{normalize_to_parent}{Logical, passed to [setaBalance()].}
 }
 \value{
 A list with the following elements:

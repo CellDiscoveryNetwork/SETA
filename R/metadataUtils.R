@@ -24,15 +24,19 @@
 #' @examples
 #' # Using a Seurat object
 #' \donttest{
+#' if (requireNamespace("SeuratObject", quietly = TRUE)) {
 #' meta_df <- setaMetadata(seurat_obj@meta.data,
 #'                         sample_col="donor_id",
 #'                         meta_cols=c("disease", "Severity"))
+#' }
 #'
 #' # Using a SingleCellExperiment object with default parameters
-#' meta_df <- setaMetadata(data.frame(colData(sce_obj)))
+#'  if (requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+#'  meta_df <- setaMetadata(data.frame(colData(sce_obj)))
 #'
-#' # Using a dataframe and extracting all possible metadata columns
-#' meta_df <- setaMetadata(df)
+#'  # Using a dataframe and extracting all possible metadata columns
+#'  meta_df <- setaMetadata(df)
+#'  }
 #' }
 #' @export
 setaMetadata <- function(x,

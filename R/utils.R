@@ -342,3 +342,75 @@ taxonomy_to_tbl_graph <- function(tax_df,
 
     tg
 }
+
+
+#' `resolveGroup()` converts a user–supplied *group specification* into the
+#' column indices of the corresponding leaves in a **counts** taxa matrix.
+#' A group specification can be:
+#'
+#' * **character vector of leaf names** present in `colnames(counts)`
+#' * **character vector of higher‑level labels** that appear in a column of
+#'   `taxonomyDF` (`taxonomy_col`)
+#' * **numeric vector of column indices**
+#'
+#' If higher‑level labels are supplied, the function returns *all leaves*
+#' (finest‑level labels = `rownames(taxonomyDF)`) whose `taxonomy_col` entry
+#' matches the requested label(s).
+#'
+#' @param spec A character or numeric vector specifying a group. See *Details*.
+#' @param counts Numeric matrix: samples × taxa.  Column names are treated as
+#'        leaf (finest‑level) labels.
+#' @param taxonomyDF `data.frame` returned by [setaTaxonomyDF()] (optional).
+#' @param taxonomy_col Character.  Which column of `taxonomyDF` to search when
+#'        `spec` contains higher‑level labels (optional).
+#'
+#' @return An integer vector of column indices inside `counts`.
+#'
+#' @examples
+#' ## Mini counts matrix
+#' mat <- matrix(1, 3, 4, dimnames = list(NULL,
+#'              c("AT1", "AT2", "Fib1", "Fib2")))
+#'
+#' ## Taxonomy table
+#' taxDF <- data.frame(
+#'   broad_type = c("Epi","Epi","Stroma","Stroma"),
+#'   row.names  = c("AT1","AT2","Fib1","Fib2")
+#' )
+#'
+#' ## Resolve by leaf names
+#' resolveGroup(c("AT1","AT2"), mat, taxDF, "broad_type")
+#'
+#' ## Resolve by higher‑level label
+#' resolveGroup("Stroma", mat, taxDF, "broad_type")
+#' @export
+resolveGroup <- function(spec, counts, taxonomyDF = NULL, taxonomy_col = NULL) {
+  ## numeric indices
+  if (is.numeric(spec)) {
+    if (any(spec < 1 | spec > ncol(counts)))
+      stop("Numeric group spec out of range.")
+    return(spec)
+  }
+  if (!is.character(spec))
+    stop("Group spec must be character or numeric.")
+  leaves   <- colnames(counts)
+  # direct leaf matches
+  hit      <- spec[spec %in% leaves]
+
+  ## higher‑level label expansion
+  if (!is.null(taxonomyDF) && !is.null(taxonomy_col)) {
+    hi <- spec[spec %in% taxonomyDF[[taxonomy_col]]]
+    if (length(hi)) {
+      hit <- c(hit,
+               unlist(lapply(hi,
+                             function(l) 
+                    rownames(taxonomyDF)[taxonomyDF[[taxonomy_col]] == l])))
+    }
+  }
+  idx <- match(unique(hit), leaves)
+  if (anyNA(idx))
+    stop("Unresolved taxa/labels: ",
+         paste(spec[is.na(match(spec, leaves))], collapse = ", "))
+
+  idx
+}
+

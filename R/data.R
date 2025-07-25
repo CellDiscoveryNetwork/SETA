@@ -99,7 +99,7 @@ mockSC <- function(
 
 mockLong <- function(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
   type_levels <- paste0("type", seq_len(nt))
-  maps        <- make_type_hierarchy(type_levels)
+  maps        <- makeTypeHierarchy(type_levels)
 
   df <- data.frame(
     bc       = paste0("cell", seq_len(nc)),

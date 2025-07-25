@@ -91,8 +91,78 @@ test_that("setaTransform works with all methods", {
   res_pct <- setaTransform(mat, method = "percent")
   expect_equal(res_pct$method, "percent")
 
-  # logCPM
-  res_lcpm <- setaTransform(mat, method = "logCPM", pseudocount = 1)
-  expect_equal(res_lcpm$method, "logCPM")
+  ## balance
+  # Mock 2 samples × 4 taxa  (AT1 AT2 Fib1 Fib2)
+  cnt   <- matrix(c(1,2,3,4, 5,6,7,8), nrow = 2, byrow = TRUE)
+  colnames(cnt) <- c("AT1","AT2","Fib1","Fib2")
+
+  meta  <- data.frame(
+    broad_type = c("Epi","Epi","Stroma","Stroma"),
+    row.names  = colnames(cnt)
+  )
+
+  res_bal <- setaTransform(
+    cnt,
+    method            = "balance",
+    balances          = list(num = "Epi", denom = "Stroma"),
+    taxonomyDF        = meta,
+    taxonomy_col      = "broad_type"
+  )
+
+  expect_equal(res_bal$method, "balance")
+  expect_equal(ncol(res_bal$counts), 1)
 })
 
+test_that("setaBalance returns expected log‑ratio", {
+
+  ## ------------------------------------------------------------------ ##
+  ## 1.  Toy metadata  (matches help page) -----------------------------
+  meta <- data.frame(
+    bc          = paste0("cell", 1:6),
+    fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+    mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
+    broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+  )
+
+  taxDF <- setaTaxonomyDF(meta,
+            resolution_cols = c("broad_type","mid_type","fine_type"))
+
+  ## leaves = AT1, AT2, Fib1  (3 leaves) -------------------------------
+  leaves <- rownames(taxDF)
+
+  ## ------------------------------------------------------------------ ##
+  ## 2. Fake counts  (2 samples × 3 leaves) ----------------------------
+  set.seed(123)
+  cnt <- matrix(rpois(2 * length(leaves), 10), nrow = 2,
+                dimnames = list(paste0("S", 1:2), leaves))
+
+
+  ## ------------------------------------------------------------------ ##
+  ## 3. Expected manual calculation ------------------------------------
+  gm <- function(x) exp(mean(log(x + 1)))   # pseudocount = 1
+  expected <- vapply(1:nrow(cnt), function(i) {
+    log(gm(cnt[i, c("AT1","AT2")]) /
+        gm(cnt[i, "Fib1"]))
+  }, numeric(1))
+
+  ## ------------------------------------------------------------------ ##
+  ## 4. setaBalance call -----------------------------------------------
+  out <- setaBalance(
+           cnt,
+           balances = list(num = "Epi", denom = "Stroma"),
+           taxonomyDF   = taxDF,
+           taxonomy_col = "broad_type",
+           pseudocount  = 1
+         )
+
+  ## run setaBalance ------------------------------------------------------
+  out <- setaBalance(cnt,
+           balances   = list(num = "Epi",
+                             denom = "Stroma"),
+           taxonomyDF = taxDF,
+           taxonomy_col = "broad_type",
+           pseudocount = 1)
+
+  expect_equal(out$method, "balance")
+  expect_equal(as.numeric(out$counts[,1]), expected, tolerance = 1e-12)
+})

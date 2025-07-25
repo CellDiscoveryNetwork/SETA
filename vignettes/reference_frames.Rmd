@@ -215,6 +215,56 @@ ggraph(tbl_g, layout = "dendrogram") +
 Here, each Lineage is a parent node, and each free_annotation is a leaf node.
 The edges are colored by the lineage name.
 
+## Taxonomic Balances with SETA
+
+Balances can be calculated between clades and species among the taxonomic tree. 
+Currently, SETA supports user-specified balances with the transform "balance",
+where balances are calculated as log-ratios between these clades or species. 
+The choice of numerator and denominator groups determine which direction the resulting
+balance points. If the composition is weighted towards the numerator, the log-ratio
+will be positive, and negative if towards the denominator. 
+
+```{r}
+bal_out <- setaTransform(
+  counts     = taxa_counts,
+  method     = "balance",
+  balances   = list(
+                    epi_vs_myeloid = list(
+                    num   = "Epithelial",
+                    denom = "Myeloid"
+                   )
+               ),
+  taxonomyDF   = tax_df,
+  taxonomy_col = "Lineage"
+)
+
+# merge the balances with sample-level metadata
+bal_df <- data.frame(
+          sample_id       = rownames(bal_out$counts),
+          epi_vs_myeloid  = as.numeric(bal_out$counts[, "epi_vs_myeloid"]),
+          stringsAsFactors = FALSE
+  ) |>
+  dplyr::left_join(meta_df, by = "sample_id")
+
+# Compare age groups by epithelial to myeloid ratios
+library(ggplot2)
+ggplot(bal_df, aes(x = age, y = epi_vs_myeloid, fill = age)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+  geom_jitter(width = 0.15, size = 2) +
+  scale_fill_manual(values = d_palette) +
+  labs(title = "Epithelial / Myeloid balance across age groups",
+       y = "log GM(Epithelial) – log GM(Myeloid)",
+       x = "Age (months)") +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+The y‑axis shows the log‑ratio of the geometric means of Epithelial versus
+Myeloid counts for each mouse. Positive values indicate epithelial enrichment
+relative to myeloid cells, while negative values indicate the opposite. Because
+this is a standard log‑ratio, the statistic is fully compositional and can be
+compared directly across groups.
+
 
 ## Transform Counts with a Taxonomic Reference Frame
 
