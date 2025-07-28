@@ -260,8 +260,8 @@ ggplot(bal_df, aes(x = age, y = epi_vs_myeloid, fill = age)) +
 ```
 
 The y‑axis shows the log‑ratio of the geometric means of Epithelial versus
-Myeloid counts for each mouse. Positive values indicate epithelial enrichment
-relative to myeloid cells, while negative values indicate the opposite. Because
+Myeloid counts for each mouse. Positive values indicate epithelial enrichment
+relative to myeloid cells, while negative values indicate the opposite. Because
 this is a standard log‑ratio, the statistic is fully compositional and can be
 compared directly across groups.
 
