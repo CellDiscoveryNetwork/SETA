@@ -9,12 +9,16 @@ License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.0)
 Imports:
+    caret,
+    corrplot,
     dplyr,
+    ggraph,
     ggplot2,
     MASS,
     Matrix,
     methods,
     stats,
+    TabulaMurisSenisData,
     tidygraph
 Suggests:
     knitr,

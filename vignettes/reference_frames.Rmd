@@ -252,8 +252,8 @@ ggplot(bal_df, aes(x = age, y = epi_vs_myeloid, fill = age)) +
   geom_boxplot(outlier.shape = NA, alpha = 0.4) +
   geom_jitter(width = 0.15, size = 2) +
   scale_fill_manual(values = d_palette) +
-  labs(title = "Epithelial / Myeloid balance across age groups",
-       y = "log GM(Epithelial) – log GM(Myeloid)",
+  labs(title = "Epithelial / Myeloid balance across age groups",
+       y = "log GM(Epithelial) – log GM(Myeloid)",
        x = "Age (months)") +
   theme_minimal(base_size = 14) +
   theme(legend.position = "none")

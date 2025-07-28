@@ -63,7 +63,7 @@ library(ggplot2)
 library(dplyr)
 library(TabulaMurisSenisData)
 library(reshape2)
-library(tidytext)
+# library(tidytext)
 ```
 
 ## Load and prepare data
@@ -132,7 +132,7 @@ CLR Transformation
 ```{r transformation, echo=TRUE}
 # CLR Transformation with a pseudocount of 1 (default)
 clr_out <- setaCLR(taxa_counts, pseudocount = 1)
-print(head(clr_out$counts))
+print(clr_out$counts[1:5, 1:5])
 ```
 
 For the ALR transform we need to choose a reference cell type whose numbers
@@ -144,7 +144,7 @@ change the reference accordingly or use CLR.
 # ALR Transformation: using "NK cell" as the reference cell type
 if ("Natural Killer" %in% colnames(taxa_counts)) {
   alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
-  print(head(alr_out$counts))
+  print(alr_out$counts[1:5, 1:5])
 } else {
   message("Reference 'NK cell' not found in taxa_counts. 
             Please choose an available cell type.")
@@ -155,23 +155,24 @@ ILR Transform using Helmert basis (boxcox_p = 0 for standard ILR)
 This is the method used by Cacoa (Viktor Petukhov & Kharchenko Lab)
 ```{r}
 ilr_out <- setaILR(taxa_counts, boxcox_p = 0, pseudocount = 1)
-print(head(ilr_out$counts))
+print(ilr_out$counts[1:5, 1:5])
 ```
 
 Simple Percentage Transform
 ```{r}
 pct_out <- setaPercent(taxa_counts)
-print(head(pct_out$counts))
+print(pct_out$counts[1:5, 1:5])
 ```
 
 LogCPM (counts per 10k) Transform
 ```{r}
 lcpm_out <- setaLogCPM(taxa_counts, pseudocount = 1)
-print(head(lcpm_out$counts))
+print(lcpm_out$counts[1:5, 1:5])
 ```
 
 ## Latent Space Analysis
 
+Once we have our compositional data transformed we can compute a latent space using `PCA`, `PCoA` or `NMDS`. 
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
 # PCA Latent Space Coordinates:
