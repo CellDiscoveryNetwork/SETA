@@ -225,6 +225,15 @@ balance points. If the composition is weighted towards the numerator, the log-ra
 will be positive, and negative if towards the denominator. 
 
 ```{r}
+# Create sample x free_annotation counts:
+taxa_counts <- setaCounts(
+    data.frame(colData(sce)),
+    cell_type_col = "free_annotation",
+    sample_col = "mouse.id",
+    bc_col = "rownames"
+)
+
+
 bal_out <- setaTransform(
   counts     = taxa_counts,
   method     = "balance",
@@ -274,14 +283,6 @@ This lumps certain columns (cell types) into subcompositions.
 For example, a CLR transform within each lineage:
 
 ```{r reference frame calculation}
-# Create sample x free_annotation counts:
-taxa_counts <- setaCounts(
-    data.frame(colData(sce)),
-    cell_type_col = "free_annotation",
-    sample_col = "mouse.id",
-    bc_col = "rownames"
-)
-
 # We'll transform them with a 'Lineage' grouping.
 # The taxonomyDF uses rownames = free_annotation
 # so that colnames(taxa_counts) align with rownames(tax_df).
