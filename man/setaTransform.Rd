@@ -28,7 +28,7 @@ setaTransform(
 
 \item{method}{A character string specifying which transform to apply.
 One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
-\code{"logCPM"} or \code {"balance"}.}
+\code{"logCPM"} or \code{"balance"}.}
 
 \item{ref}{Reference taxon (only used if \code{method = "ALR"}). This can be
 a taxon name or a column index.}

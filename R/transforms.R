@@ -386,7 +386,7 @@ setaBalance <- function(counts,
 #' @param counts A numeric matrix with rows as samples and columns as taxa.
 #' @param method A character string specifying which transform to apply.
 #'     One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
-#'     \code{"logCPM"} or \code {"balance"}.
+#'     \code{"logCPM"} or \code{"balance"}.
 #' @param ref Reference taxon (only used if \code{method = "ALR"}). This can be
 #'     a taxon name or a column index.
 #' @param taxTree Optional tree for ILR (not yet implemented).
