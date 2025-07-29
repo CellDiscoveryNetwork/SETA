@@ -43,21 +43,21 @@
 #' @importFrom stats dist
 #' @export
 setaDistances <- function(transformed_counts, method = "euclidean") {
-  if (!is.matrix(transformed_counts$counts)) {
-    stop("'transformed_counts' must be a numeric matrix 
+    if (!is.matrix(transformed_counts$counts)) {
+        stop("'transformed_counts' must be a numeric matrix 
             from setaTransform or other seta methods
             with samples in rows and taxa in columns.")
-  }
-
-  dist_mat <- dist(transformed_counts$counts, method = method)
-
-  # Convert distance matrix to a long-form dataframe
-  dist_df <- as.data.frame(as.table(as.matrix(dist_mat)))
-  colnames(dist_df) <- c("from", "to", "distance")
-
-  # Remove self-distances and duplicated pairs
-  dist_df <- dist_df[as.character(dist_df$from) < as.character(dist_df$to), ]
-
-  rownames(dist_df) <- NULL
-  dist_df
+    }
+    
+    dist_mat <- dist(transformed_counts$counts, method = method)
+    
+    # Convert distance matrix to a long-form dataframe
+    dist_df <- as.data.frame(as.table(as.matrix(dist_mat)))
+    colnames(dist_df) <- c("from", "to", "distance")
+    
+    # Remove self-distances and duplicated pairs
+    dist_df <- dist_df[as.character(dist_df$from) < as.character(dist_df$to), ]
+    
+    rownames(dist_df) <- NULL
+    dist_df
 }

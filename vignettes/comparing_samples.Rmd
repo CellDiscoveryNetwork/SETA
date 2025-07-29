@@ -15,10 +15,10 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-  %\VignetteIndexEntry{Comparing samples with SETA}
+%\VignetteIndexEntry{Comparing samples with SETA}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-output: 
+  output: 
   BiocStyle::html_document
 editor_options: 
   markdown: 
@@ -29,7 +29,7 @@ editor_options:
 ```{=html}
 <style type="text/css">
 .smaller {
-  font-size: 10px
+font-size: 10px
 }
 </style>
 ```
@@ -40,7 +40,7 @@ With compositional data analysis (CoDA), we can make sample-level comparisons of
 based on the relative abundance celltypes that compose them.
 
 In this vignette we show how to:
-  
+
 - **Calculate compositional distances** between samples
 - **Perform statistical tests** with a focus on rank-based methods, which are amenable to relative data
 - **Correlate celltype compositions and metadata** 
@@ -149,13 +149,13 @@ dist_df <- setaDistances(clr_transformed)
 
 # Merge metadata
 merged_dist <- dist_df |>
-  left_join(meta_df, by = c("from" = "sample_id")) |>
-  left_join(meta_df, by = c("to" = "sample_id"), suffix = c(".from", ".to"))
+    left_join(meta_df, by = c("from" = "sample_id")) |>
+    left_join(meta_df, by = c("to" = "sample_id"), suffix = c(".from", ".to"))
 
 # Create a age-age category for comparison
 merged_dist$age_pair <- paste(merged_dist$age.from,
-                                  merged_dist$age.to,
-                                  sep = "-")
+                              merged_dist$age.to,
+                              sep = "-")
 ```
 
 Visualize distances
@@ -204,10 +204,10 @@ ggplot(clr_long, aes(x = age, y = CLR,
 
 ```{r}
 clr_df <- clr_transformed$counts |>
-            data.frame() |> # as.data.frame converts it to long form
-            pivot_wider(names_from='Var2',
-                        values_from = "Freq") |>
-            rename(`mouse.id` = Var1)
+    data.frame() |> # as.data.frame converts it to long form
+    pivot_wider(names_from='Var2',
+                values_from = "Freq") |>
+    rename(`mouse.id` = Var1)
 
 clr_metadata <- clr_df |>
     left_join(meta_df, by = c("mouse.id" = "sample_id"))
@@ -249,8 +249,8 @@ corrplot(full_cor_mat,
 ```{r warning=FALSE}
 set.seed(687)
 train_df <- clr_metadata |>
-  select(-`mouse.id`) |>
-  mutate(age = factor(age))
+    select(-`mouse.id`) |>
+    mutate(age = factor(age))
 
 train_control <- trainControl(method = "cv", number = 5)
 
@@ -265,7 +265,7 @@ importance <- varImp(model)
 plot(importance,
      main = "Cross-Validated Variable Importance",
      sub = "Caret GLMnet model"
-     )
+)
 ```
 
 

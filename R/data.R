@@ -99,22 +99,22 @@ mockSC <- function(
 #' @export
 
 mockLong <- function(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
-  type_levels <- paste0("type", seq_len(nt))
-  maps        <- makeTypeHierarchy(type_levels)
-
-  df <- data.frame(
-    bc       = paste0("cell", seq_len(nc)),
-    type     = sample(type_levels, nc, TRUE),
-    sample   = sample(paste0("sample", seq_len(ns)), nc, TRUE),
-    stringsAsFactors = FALSE
-  )
-  if (useBatch)
-    df$batch <- sample(paste0("batch", seq_len(nb)), nc, TRUE)
-
-  df$fine_type  <- df$type
-  df$mid_type   <- maps$mid  [df$type]
-  df$broad_type <- maps$broad[df$type]
-  df
+    type_levels <- paste0("type", seq_len(nt))
+    maps        <- makeTypeHierarchy(type_levels)
+    
+    df <- data.frame(
+        bc       = paste0("cell", seq_len(nc)),
+        type     = sample(type_levels, nc, TRUE),
+        sample   = sample(paste0("sample", seq_len(ns)), nc, TRUE),
+        stringsAsFactors = FALSE
+    )
+    if (useBatch)
+        df$batch <- sample(paste0("batch", seq_len(nb)), nc, TRUE)
+    
+    df$fine_type  <- df$type
+    df$mid_type   <- maps$mid  [df$type]
+    df$broad_type <- maps$broad[df$type]
+    df
 }
 
 #' @rdname data
@@ -129,17 +129,19 @@ mockCount <- function(df = mockLong()) {
 }
 
 #' @rdname data
+#' @importFrom stats rpois
+#' @importFrom SingleCellExperiment SingleCellExperiment
 #' @export
 
 mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
-  stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
-  df  <- mockLong(nc, nt, ns, nb, useBatch)
-  mat <- matrix(stats::rpois(nc * 20, lambda = 5), 20,
-                dimnames = list(paste0("gene", seq_len(20)), df$bc))
-  SingleCellExperiment::SingleCellExperiment(
-    assays  = list(counts = mat),
-    colData = df
-  )
+    stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
+    df  <- mockLong(nc, nt, ns, nb, useBatch)
+    mat <- matrix(rpois(nc * 20, lambda = 5), 20,
+                  dimnames = list(paste0("gene", seq_len(20)), df$bc))
+    SingleCellExperiment(
+        assays  = list(counts = mat),
+        colData = df
+    )
 }
 
 #' @rdname data

@@ -30,43 +30,43 @@ setaCounts <- function(obj,
                        cell_type_col = "type",
                        sample_col   = "sample",
                        bc_col       = "bc") {
-  if (!is.data.frame(obj)) {
-    stop("Input must be a data.frame.
+    if (!is.data.frame(obj)) {
+        stop("Input must be a data.frame.
           If you want to use Seurat metadata or SCE colData,
           convert these to a dataframe and input them directly.")
-  }
-
-  fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
+    }
+    
+    fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
     if (length(fac_cols)) {
         message("Converting factor class columns to character: ",
                 paste(fac_cols, collapse = ", "))
         obj[fac_cols] <- lapply(obj[fac_cols], as.character)
     }
-
-  # Handle special case for rownames
-  if (identical(bc_col, "rownames")) {
-    obj$.__barcodes__ <- rownames(obj)
-    bc_col <- ".__barcodes__"
-  }
-
-  required <- c(bc_col, cell_type_col, sample_col)
-  missing  <- setdiff(required, colnames(obj))
-  if (length(missing) > 0) {
-    stop("Missing required column(s): ", paste(missing, collapse = ", "))
-  }
-
-  df  <- unique(obj[, required])
-
-  sample_ids <- levels(df[[sample_col]])
+    
+    # Handle special case for rownames
+    if (identical(bc_col, "rownames")) {
+        obj$.__barcodes__ <- rownames(obj)
+        bc_col <- ".__barcodes__"
+    }
+    
+    required <- c(bc_col, cell_type_col, sample_col)
+    missing  <- setdiff(required, colnames(obj))
+    if (length(missing) > 0) {
+        stop("Missing required column(s): ", paste(missing, collapse = ", "))
+    }
+    
+    df  <- unique(obj[, required])
+    
+    sample_ids <- levels(df[[sample_col]])
     invalid_ids <- grep("[^A-Za-z0-9_-]", sample_ids, value = TRUE)
     if (length(invalid_ids) > 0) {
         message("Warning!! Some sample IDs contain special characters: ",
-             paste(unique(invalid_ids), collapse = ", "),
-             " ... This may cause issues down the line")
+                paste(unique(invalid_ids), collapse = ", "),
+                " ... This may cause issues down the line")
     }
-
-  mat <- as.matrix(table(df[[sample_col]], df[[cell_type_col]]))
-  return(mat)
+    
+    mat <- as.matrix(table(df[[sample_col]], df[[cell_type_col]]))
+    return(mat)
 }
 
 #' Build a taxonomy data frame at multiple resolutions
@@ -120,55 +120,55 @@ setaTaxonomyDF <- function(obj,
                                                "mid_type",
                                                "broad_type"),
                            bc_col = "bc") {
-
-  ## --------------------------------------------------------------------- ##
-  ## 0) Basic argument sanity -------------------------------------------- ##
-  if (!is.data.frame(obj))
-    stop("obj must be a data.frame. Extract metadata first.")
-
-  fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
+    
+    ## --------------------------------------------------------------------- ##
+    ## 0) Basic argument sanity -------------------------------------------- ##
+    if (!is.data.frame(obj))
+        stop("obj must be a data.frame. Extract metadata first.")
+    
+    fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
     if (length(fac_cols)) {
         message("Converting factor columns to character: ",
                 paste(fac_cols, collapse = ", "))
         obj[fac_cols] <- lapply(obj[fac_cols], as.character)
     }
-
-  if (!is.character(resolution_cols) || length(resolution_cols) < 1)
-    stop("resolution_cols must be a non-empty character vector.")
-
-  ## --------------------------------------------------------------------- ##
-  ## 1) Handle barcode column (incl. 'rownames' shortcut) ---------------- ##
-  if (identical(bc_col, "rownames")) {
-    obj$.__bc__ <- rownames(obj)
-    bc_col <- ".__bc__"
-  }
-
-  req_cols <- c(bc_col, resolution_cols)
-  miss     <- setdiff(req_cols, names(obj))
-  if (length(miss))
-    stop("Missing required column(s): ", paste(miss, collapse = ", "))
-
-  meta <- obj[, req_cols, drop = FALSE]
-
-  ## --------------------------------------------------------------------- ##
-  ## 2) Validate the finest label ---------------------------------------- ##
-  fine_label <- tail(resolution_cols, 1)
-  if (anyNA(meta[[fine_label]]))
-    stop("Some cells have NA in the finest label column ('", fine_label, "').")
-
-  ## --------------------------------------------------------------------- ##
-  ## 3) Unique combos & one to one mapping check ------------------------- ##
-  combos <- unique(meta[, resolution_cols, drop = FALSE])
-
-  bad <- names(which(table(combos[[fine_label]]) > 1))
-  if (length(bad))
-    stop("Finest labels mapping to >1 coarser combo: ",
-         paste(bad, collapse = ", "))
-
-  ## --------------------------------------------------------------------- ##
-  ## 4) Return taxonomy frame ------------------------------------------- ##
-  rownames(combos) <- combos[[fine_label]]
-  return(combos)
+    
+    if (!is.character(resolution_cols) || length(resolution_cols) < 1)
+        stop("resolution_cols must be a non-empty character vector.")
+    
+    ## --------------------------------------------------------------------- ##
+    ## 1) Handle barcode column (incl. 'rownames' shortcut) ---------------- ##
+    if (identical(bc_col, "rownames")) {
+        obj$.__bc__ <- rownames(obj)
+        bc_col <- ".__bc__"
+    }
+    
+    req_cols <- c(bc_col, resolution_cols)
+    miss     <- setdiff(req_cols, names(obj))
+    if (length(miss))
+        stop("Missing required column(s): ", paste(miss, collapse = ", "))
+    
+    meta <- obj[, req_cols, drop = FALSE]
+    
+    ## --------------------------------------------------------------------- ##
+    ## 2) Validate the finest label ---------------------------------------- ##
+    fine_label <- tail(resolution_cols, 1)
+    if (anyNA(meta[[fine_label]]))
+        stop("Some cells have NA in the finest label column ('", fine_label, "').")
+    
+    ## --------------------------------------------------------------------- ##
+    ## 3) Unique combos & one to one mapping check ------------------------- ##
+    combos <- unique(meta[, resolution_cols, drop = FALSE])
+    
+    bad <- names(which(table(combos[[fine_label]]) > 1))
+    if (length(bad))
+        stop("Finest labels mapping to >1 coarser combo: ",
+             paste(bad, collapse = ", "))
+    
+    ## --------------------------------------------------------------------- ##
+    ## 4) Return taxonomy frame ------------------------------------------- ##
+    rownames(combos) <- combos[[fine_label]]
+    return(combos)
 }
 
 #' Convert Multi-Column Taxonomy to a Single-Root tbl_graph (with node metadata)
@@ -259,12 +259,12 @@ taxonomy_to_tbl_graph <- function(tax_df,
     if (length(columns) < 1) {
         stop("Need at least one column in 'columns'.")
     }
-
+    
     # if (any(lapply(tax_df, class) != "character")) {
     #     message("tax_df columns are not character class. Coercing...")
     #     tax_df[] <- lapply(tax_df, as.character)
     # }
-
+    
     ############################
     ## 1) Build the edge list ##
     ############################
@@ -273,11 +273,11 @@ taxonomy_to_tbl_graph <- function(tax_df,
         to   = character(0),
         stringsAsFactors = FALSE
     )
-
+    
     for (i in seq_len(nrow(tax_df))) {
         path <- c(root_name, as.character(tax_df[i, columns, drop = TRUE]))
         # e.g. c("AllCells", "Epithelial", "Alveolar", "AlveolarType1")
-
+        
         # Build edges between consecutive elements in path
         for (j in seq_along(path)[-length(path)]) {
             edge_list <- rbind(
@@ -289,10 +289,10 @@ taxonomy_to_tbl_graph <- function(tax_df,
     }
     # Remove duplicates
     edge_list <- unique(edge_list)
-
+    
     # Create tbl_graph
     tg <- as_tbl_graph(edge_list, directed = TRUE)
-
+    
     ###############################
     ## 2) Add node-level metadata
     ###############################
@@ -300,11 +300,11 @@ taxonomy_to_tbl_graph <- function(tax_df,
     #  - if x == root_name, we store NA or "Root"
     #  - else find all rows of tax_df where x appears in row's columns,
     #    gather distinct values for each col, combine with '|'.
-
+    
     node_names <- tg |> activate("nodes") |> pull(.data[["name"]])
     # We'll build a data frame with the same number of rows as node_names
     node_info <- data.frame(name = node_names, stringsAsFactors = FALSE)
-
+    
     for (col in columns) {
         node_info[[col]] <- vapply(
             node_info$name,
@@ -317,7 +317,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
                 # Which rows contain 'x' in column set?
                 # E.g., if x == "AlveolarType1" or "Epithelial"
                 idx <- which(apply(tax_df[, columns, drop=FALSE], 1,
-                                  function(rowvals) x %in% rowvals))
+                                   function(rowvals) x %in% rowvals))
                 if (length(idx) == 0) {
                     # Possibly an error or leftover node that wasn't in tax_df
                     return(NA_character_)
@@ -332,7 +332,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
             }
         )
     }
-
+    
     # Bind these columns into the node data of tbl_graph
     # We'll do: tg <- tg %>% tidygraph::left_join(node_info, by="name")
     # But 'left_join' is from dplyr, so we can do it with 'bind_nodes'
@@ -340,7 +340,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
     tg <- tg |>
         activate("nodes") |>
         left_join(node_info, by="name")
-
+    
     tg
 }
 
@@ -385,33 +385,33 @@ taxonomy_to_tbl_graph <- function(tax_df,
 #' resolveGroup("Stroma", mat, taxDF, "broad_type")
 #' @export
 resolveGroup <- function(spec, counts, taxonomyDF = NULL, taxonomy_col = NULL) {
-  ## numeric indices
-  if (is.numeric(spec)) {
-    if (any(spec < 1 | spec > ncol(counts)))
-      stop("Numeric group spec out of range.")
-    return(spec)
-  }
-  if (!is.character(spec))
-    stop("Group spec must be character or numeric.")
-  leaves   <- colnames(counts)
-  # direct leaf matches
-  hit      <- spec[spec %in% leaves]
-
-  ## higher‑level label expansion
-  if (!is.null(taxonomyDF) && !is.null(taxonomy_col)) {
-    hi <- spec[spec %in% taxonomyDF[[taxonomy_col]]]
-    if (length(hi)) {
-      hit <- c(hit,
-               unlist(lapply(hi,
-                             function(l) 
-                    rownames(taxonomyDF)[taxonomyDF[[taxonomy_col]] == l])))
+    ## numeric indices
+    if (is.numeric(spec)) {
+        if (any(spec < 1 | spec > ncol(counts)))
+            stop("Numeric group spec out of range.")
+        return(spec)
     }
-  }
-  idx <- match(unique(hit), leaves)
-  if (anyNA(idx))
-    stop("Unresolved taxa/labels: ",
-         paste(spec[is.na(match(spec, leaves))], collapse = ", "))
-
-  idx
+    if (!is.character(spec))
+        stop("Group spec must be character or numeric.")
+    leaves   <- colnames(counts)
+    # direct leaf matches
+    hit      <- spec[spec %in% leaves]
+    
+    ## higher‑level label expansion
+    if (!is.null(taxonomyDF) && !is.null(taxonomy_col)) {
+        hi <- spec[spec %in% taxonomyDF[[taxonomy_col]]]
+        if (length(hi)) {
+            hit <- c(hit,
+                     unlist(lapply(hi,
+                                   function(l) 
+                                       rownames(taxonomyDF)[taxonomyDF[[taxonomy_col]] == l])))
+        }
+    }
+    idx <- match(unique(hit), leaves)
+    if (anyNA(idx))
+        stop("Unresolved taxa/labels: ",
+             paste(spec[is.na(match(spec, leaves))], collapse = ", "))
+    
+    idx
 }
 

@@ -15,10 +15,10 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-  %\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
+%\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-output: 
+  output: 
   BiocStyle::html_document
 editor_options: 
   markdown: 
@@ -28,7 +28,7 @@ editor_options:
 ```{=html}
 <style type="text/css">
 .smaller {
-  font-size: 10px
+font-size: 10px
 }
 </style>
 ```
@@ -40,7 +40,7 @@ RNA-seq data.
 In this vignette we show how to:
 
 -   **Extract a taxonomic counts matrix** from various objects (e.g. a Seurat
-    object)
+object)
 -   **Apply compositional transforms** such as CLR and ALR
 -   **Compute a latent space** using PCA (with options for PCoA or NMDS)
 
@@ -143,10 +143,10 @@ change the reference accordingly or use CLR.
 ```{r}
 # ALR Transformation: using "NK cell" as the reference cell type
 if ("Natural Killer" %in% colnames(taxa_counts)) {
-  alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
-  print(alr_out$counts[1:5, 1:5])
+    alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
+    print(alr_out$counts[1:5, 1:5])
 } else {
-  message("Reference 'NK cell' not found in taxa_counts. 
+    message("Reference 'NK cell' not found in taxa_counts. 
             Please choose an available cell type.")
 }
 ```
@@ -191,9 +191,9 @@ Plot the variance explained by the first few principal components.
 
 ```{r variance explained, message=FALSE, warning=FALSE, echo=TRUE}
 ve_df <- data.frame(
-  PC = factor(seq_along(latent_pca$varExplained), 
-              levels = seq_along(latent_pca$varExplained)),
-  VarianceExplained = cumsum(latent_pca$varExplained)
+    PC = factor(seq_along(latent_pca$varExplained), 
+                levels = seq_along(latent_pca$varExplained)),
+    VarianceExplained = cumsum(latent_pca$varExplained)
 )
 ```
 
@@ -232,10 +232,10 @@ pca_plot_df <- cbind(pca_coords, meta_df)
 ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
     geom_text(aes(label = sample_id), size = 5) +
     scale_color_manual(
-      values = age_palette
+        values = age_palette
     ) +
     labs(title = "PCA Scatter Plot",
-        x = "PC1", y = "PC2", color = "Age") +
+         x = "PC1", y = "PC2", color = "Age") +
     theme_linedraw() +
     xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
     ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))
@@ -268,15 +268,15 @@ loading_df$Celltype_PC <- with(loading_df, reorder(Celltype_PC, Loading))
 
 ggplot(loading_df,
        aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
-  geom_col() +
-  facet_wrap(~PC, scales = "free") +
-  # scale_y_reordered() +
-  labs(title = "PC Loadings",
-       x = "Loading",
-       y = "Cell Type") +
-  theme_linedraw() +
-  scale_fill_viridis_c() +
-  expand_limits(x = c(-0.2, 0.4))
+    geom_col() +
+    facet_wrap(~PC, scales = "free") +
+    # scale_y_reordered() +
+    labs(title = "PC Loadings",
+         x = "Loading",
+         y = "Cell Type") +
+    theme_linedraw() +
+    scale_fill_viridis_c() +
+    expand_limits(x = c(-0.2, 0.4))
 ```
 
 ## Conclusion

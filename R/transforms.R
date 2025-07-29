@@ -36,15 +36,15 @@
 #' @name setaCLR
 #' @export
 setaCLR <- function(counts, pseudocount = 1) {
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  counts <- counts + pseudocount
-  # Compute geometric mean for each sample (row)
-  gm <- exp(apply(log(counts), 1, mean))
-  # Subtract log(geometric mean) from each log-transformed element in each row
-  clr_mat <- sweep(log(counts), 1, log(gm), FUN = "-")
-  # Restore column names
-  colnames(clr_mat) <- colnames(counts)
-  list(method = "CLR", counts = clr_mat)
+    if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+    counts <- counts + pseudocount
+    # Compute geometric mean for each sample (row)
+    gm <- exp(apply(log(counts), 1, mean))
+    # Subtract log(geometric mean) from each log-transformed element in each row
+    clr_mat <- sweep(log(counts), 1, log(gm), FUN = "-")
+    # Restore column names
+    colnames(clr_mat) <- colnames(counts)
+    list(method = "CLR", counts = clr_mat)
 }
 
 #' Isometric Log-Ratio (ILR) Transform
@@ -96,33 +96,33 @@ setaCLR <- function(counts, pseudocount = 1) {
 #' @name setaILR
 #' @export
 setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  if (!is.null(taxTree)) {
-    message("A taxTree was provided but is not yet supported. 
+    if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+    if (!is.null(taxTree)) {
+        message("A taxTree was provided but is not yet supported. 
              Defaulting to Helmert basis.")
-  }
-  counts <- counts + pseudocount
-  log_x <- log(counts)
-  if (boxcox_p != 0) {
-    log_x <- (exp(boxcox_p * log_x) - 1) / boxcox_p
-  }
-  n_taxa <- ncol(counts)
-  if (n_taxa < 2) stop("ILR requires at least 2 taxa (columns).")
-
-  # Compute orthonormal Helmert basis
-  H <- stats::contr.helmert(n_taxa)
-  H <- qr.Q(qr(H))  # orthonormalize via QR decomposition
-  # Directly project log-values onto the orthonormal Helmert basis
-  ilr_mat <- log_x %*% H
-
-  list(
-    method = paste0("ILR_Helmert",
-                    ifelse(boxcox_p != 0, 
-                           paste0(" (boxcox_p=", boxcox_p, ")"),
-                           "")
-                   ),
-    counts = ilr_mat
-  )
+    }
+    counts <- counts + pseudocount
+    log_x <- log(counts)
+    if (boxcox_p != 0) {
+        log_x <- (exp(boxcox_p * log_x) - 1) / boxcox_p
+    }
+    n_taxa <- ncol(counts)
+    if (n_taxa < 2) stop("ILR requires at least 2 taxa (columns).")
+    
+    # Compute orthonormal Helmert basis
+    H <- stats::contr.helmert(n_taxa)
+    H <- qr.Q(qr(H))  # orthonormalize via QR decomposition
+    # Directly project log-values onto the orthonormal Helmert basis
+    ilr_mat <- log_x %*% H
+    
+    list(
+        method = paste0("ILR_Helmert",
+                        ifelse(boxcox_p != 0, 
+                               paste0(" (boxcox_p=", boxcox_p, ")"),
+                               "")
+        ),
+        counts = ilr_mat
+    )
 }
 
 #' Additive Log-Ratio (ALR) Transform
@@ -162,32 +162,32 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
 #' @name setaALR
 #' @export
 setaALR <- function(counts, ref, pseudocount = 1) {
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  if (missing(ref)) stop("Please specify a reference taxon (by name or index).")
-  if (is.character(ref)) {
-    if (!(ref %in% colnames(counts))) {
-      stop("Reference taxon not found in colnames(counts).")
+    if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+    if (missing(ref)) stop("Please specify a reference taxon (by name or index).")
+    if (is.character(ref)) {
+        if (!(ref %in% colnames(counts))) {
+            stop("Reference taxon not found in colnames(counts).")
+        }
+        refCol <- which(colnames(counts) == ref)
+    } else if (is.numeric(ref)) {
+        if (ref < 1 || ref > ncol(counts)) {
+            stop("Reference taxon index out of range.")
+        }
+        refCol <- ref
+    } else {
+        stop("'ref' must be a character or numeric.")
     }
-    refCol <- which(colnames(counts) == ref)
-  } else if (is.numeric(ref)) {
-    if (ref < 1 || ref > ncol(counts)) {
-      stop("Reference taxon index out of range.")
-    }
-    refCol <- ref
-  } else {
-    stop("'ref' must be a character or numeric.")
-  }
-  counts <- counts + pseudocount
-  # For each sample, subtract log(value at reference taxon) from log(counts)
-  alr_mat <- sweep(log(counts), 1, log(counts[, refCol]), FUN = "-")
-  # Remove the reference taxon column from output
-  alr_mat <- alr_mat[, -refCol, drop = FALSE]
-  list(method = paste0("ALR_ref=",
-                       ifelse(is.character(ref),
-                              ref,
-                              colnames(counts)[refCol])
-                      ),
-       counts = alr_mat)
+    counts <- counts + pseudocount
+    # For each sample, subtract log(value at reference taxon) from log(counts)
+    alr_mat <- sweep(log(counts), 1, log(counts[, refCol]), FUN = "-")
+    # Remove the reference taxon column from output
+    alr_mat <- alr_mat[, -refCol, drop = FALSE]
+    list(method = paste0("ALR_ref=",
+                         ifelse(is.character(ref),
+                                ref,
+                                colnames(counts)[refCol])
+    ),
+    counts = alr_mat)
 }
 
 #' Percentage Transform
@@ -212,9 +212,9 @@ setaALR <- function(counts, ref, pseudocount = 1) {
 #' @name setaPercent
 #' @export
 setaPercent <- function(counts) {
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  pct_counts <- sweep(counts, 1, rowSums(counts), FUN = "/") * 100
-  list(method = "percent", counts = pct_counts)
+    if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+    pct_counts <- sweep(counts, 1, rowSums(counts), FUN = "/") * 100
+    list(method = "percent", counts = pct_counts)
 }
 
 #' log2(CPM) Transform
@@ -251,14 +251,14 @@ setaLogCPM <- function(counts,
                        pseudocount = 1,
                        size_factors = NULL,
                        scale_factor = 1e6) {
-  if (!is.matrix(counts)) stop("'counts' must be a matrix.")
-  if (is.null(size_factors)) size_factors <- rowSums(counts)
-  cpm <- sweep(counts + pseudocount,
-               1, 
-               size_factors + pseudocount,
-               FUN = "/") * scale_factor
-  log_cpm <- log2(cpm)
-  list(method = "logCPM", counts = log_cpm)
+    if (!is.matrix(counts)) stop("'counts' must be a matrix.")
+    if (is.null(size_factors)) size_factors <- rowSums(counts)
+    cpm <- sweep(counts + pseudocount,
+                 1, 
+                 size_factors + pseudocount,
+                 FUN = "/") * scale_factor
+    log_cpm <- log2(cpm)
+    list(method = "logCPM", counts = log_cpm)
 }
 
 #' User‑defined balance transform (geometric‑mean log‑ratio)
@@ -332,48 +332,48 @@ setaBalance <- function(counts,
                         taxonomy_col        = NULL,
                         normalize_to_parent = FALSE,
                         pseudocount         = 1) {
-
-  if (!is.matrix(counts))
-    stop("'counts' must be a matrix (samples x taxa).")
-  if (!is.list(balances) || length(balances) == 0)
-    stop("'balances' must be a list.")
-
-  ## Allow single unnamed balance ----------------------------------------
-  single <- (!is.null(balances$num) && !is.null(balances$denom))
-  if (single) balances <- list(balance = balances)
-
-  bal_names <- names(balances)
-  if (is.null(bal_names) || any(bal_names == ""))
-    bal_names <- paste0("Balance", seq_along(balances))
-
-  log_counts <- log(counts + pseudocount)
-  out        <- matrix(NA_real_, nrow = nrow(counts), ncol = length(balances),
-                       dimnames = list(rownames(counts), bal_names))
-
-  for (i in seq_along(balances)) {
-
-    b <- balances[[i]]
-    if (is.null(b$num) || is.null(b$denom))
-      stop("Each balance must have 'num' and 'denom' elements.")
-
-    num_idx <- resolveGroup(b$num,   counts, taxonomyDF, taxonomy_col)
-    den_idx <- resolveGroup(b$denom, counts, taxonomyDF, taxonomy_col)
-
-    if (length(intersect(num_idx, den_idx)))
-      stop("Numerator and denominator overlap in balance '", bal_names[i], "'")
-
-    if (normalize_to_parent) {
-      parent_idx <- c(num_idx, den_idx)
-      parent_sum <- rowSums(counts[, parent_idx, drop = FALSE])
-      log_counts[, parent_idx] <-
-        log(counts[, parent_idx, drop = FALSE] / parent_sum + pseudocount)
+    
+    if (!is.matrix(counts))
+        stop("'counts' must be a matrix (samples x taxa).")
+    if (!is.list(balances) || length(balances) == 0)
+        stop("'balances' must be a list.")
+    
+    ## Allow single unnamed balance ----------------------------------------
+    single <- (!is.null(balances$num) && !is.null(balances$denom))
+    if (single) balances <- list(balance = balances)
+    
+    bal_names <- names(balances)
+    if (is.null(bal_names) || any(bal_names == ""))
+        bal_names <- paste0("Balance", seq_along(balances))
+    
+    log_counts <- log(counts + pseudocount)
+    out        <- matrix(NA_real_, nrow = nrow(counts), ncol = length(balances),
+                         dimnames = list(rownames(counts), bal_names))
+    
+    for (i in seq_along(balances)) {
+        
+        b <- balances[[i]]
+        if (is.null(b$num) || is.null(b$denom))
+            stop("Each balance must have 'num' and 'denom' elements.")
+        
+        num_idx <- resolveGroup(b$num,   counts, taxonomyDF, taxonomy_col)
+        den_idx <- resolveGroup(b$denom, counts, taxonomyDF, taxonomy_col)
+        
+        if (length(intersect(num_idx, den_idx)))
+            stop("Numerator and denominator overlap in balance '", bal_names[i], "'")
+        
+        if (normalize_to_parent) {
+            parent_idx <- c(num_idx, den_idx)
+            parent_sum <- rowSums(counts[, parent_idx, drop = FALSE])
+            log_counts[, parent_idx] <-
+                log(counts[, parent_idx, drop = FALSE] / parent_sum + pseudocount)
+        }
+        
+        out[, i] <- rowMeans(log_counts[, num_idx, drop = FALSE]) -
+            rowMeans(log_counts[, den_idx, drop = FALSE])
     }
-
-    out[, i] <- rowMeans(log_counts[, num_idx, drop = FALSE]) -
-                rowMeans(log_counts[, den_idx, drop = FALSE])
-  }
-
-  list(method = "balance", counts = out)
+    
+    list(method = "balance", counts = out)
 }
 
 #' Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
@@ -441,99 +441,99 @@ setaBalance <- function(counts,
 #' @name setaTransform
 #' @export
 setaTransform <- function(
-    counts,
-    method         = c("CLR", "ALR", "ILR", "percent", "logCPM", "balance"),
-    ref            = NULL,
-    taxTree        = NULL,
-    pseudocount    = 1,
-    size_factors   = NULL,
-    taxonomyDF     = NULL,
-    taxonomy_col   = NULL,
-    within_resolution   = FALSE,
-    balances            = NULL,
-    normalize_to_parent = FALSE
+        counts,
+        method         = c("CLR", "ALR", "ILR", "percent", "logCPM", "balance"),
+        ref            = NULL,
+        taxTree        = NULL,
+        pseudocount    = 1,
+        size_factors   = NULL,
+        taxonomyDF     = NULL,
+        taxonomy_col   = NULL,
+        within_resolution   = FALSE,
+        balances            = NULL,
+        normalize_to_parent = FALSE
 ) {
-  method <- match.arg(method)
-
-  if (!is.matrix(counts))
-    stop("'counts' must be a matrix with samples in rows and taxa in columns.")
-
-  ##  Balances require their own block - balances can exist btwn clades, so
-  ##  partitioning as below doesn't work
-  if (method == "balance") {
-    if (is.null(balances))
-      stop("For method = 'balance' please supply the 'balances' argument.")
-
-    res <- setaBalance(counts,
-                       balances            = balances,
-                       taxonomyDF          = taxonomyDF,
-                       taxonomy_col        = taxonomy_col,
-                       normalize_to_parent = normalize_to_parent,
-                       pseudocount         = pseudocount)
-
-    return(list(
-      method            = res$method,
-      within_resolution = FALSE,
-      grouping_var      = NULL,
-      counts            = res$counts
-    ))
-  }
-
-  # All other methods
-  if (!within_resolution || is.null(taxonomyDF) || is.null(taxonomy_col)) {
-    result <- switch(
-      method,
-      "CLR"     = setaCLR(counts, pseudocount = pseudocount),
-      "ALR"     = setaALR(counts, ref = ref, pseudocount = pseudocount),
-      "ILR"     = setaILR(counts, taxTree = taxTree, pseudocount = pseudocount),
-      "percent" = setaPercent(counts),
-      "logCPM"  = setaLogCPM(counts,
-                             pseudocount  = pseudocount,
-                             size_factors = size_factors)
+    method <- match.arg(method)
+    
+    if (!is.matrix(counts))
+        stop("'counts' must be a matrix with samples in rows and taxa in columns.")
+    
+    ##  Balances require their own block - balances can exist btwn clades, so
+    ##  partitioning as below doesn't work
+    if (method == "balance") {
+        if (is.null(balances))
+            stop("For method = 'balance' please supply the 'balances' argument.")
+        
+        res <- setaBalance(counts,
+                           balances            = balances,
+                           taxonomyDF          = taxonomyDF,
+                           taxonomy_col        = taxonomy_col,
+                           normalize_to_parent = normalize_to_parent,
+                           pseudocount         = pseudocount)
+        
+        return(list(
+            method            = res$method,
+            within_resolution = FALSE,
+            grouping_var      = NULL,
+            counts            = res$counts
+        ))
+    }
+    
+    # All other methods
+    if (!within_resolution || is.null(taxonomyDF) || is.null(taxonomy_col)) {
+        result <- switch(
+            method,
+            "CLR"     = setaCLR(counts, pseudocount = pseudocount),
+            "ALR"     = setaALR(counts, ref = ref, pseudocount = pseudocount),
+            "ILR"     = setaILR(counts, taxTree = taxTree, pseudocount = pseudocount),
+            "percent" = setaPercent(counts),
+            "logCPM"  = setaLogCPM(counts,
+                                   pseudocount  = pseudocount,
+                                   size_factors = size_factors)
+        )
+        return(list(
+            method            = result$method,
+            within_resolution = FALSE,
+            grouping_var      = NULL,
+            counts            = result$counts
+        ))
+    }
+    
+    ## Reference‑frames
+    if (!all(colnames(counts) %in% rownames(taxonomyDF)))
+        stop("Some colnames(counts) are not in rownames(taxonomyDF).")
+    
+    taxonomyDF   <- taxonomyDF[colnames(counts), , drop = FALSE]
+    group_vector <- taxonomyDF[[taxonomy_col]]
+    unique_groups <- unique(group_vector)
+    
+    newCounts    <- counts
+    final_method <- NULL
+    
+    for (grp in unique_groups) {
+        idx        <- which(group_vector == grp)
+        subCounts  <- counts[, idx, drop = FALSE]
+        
+        result <- switch(
+            method,
+            "CLR"     = setaCLR(subCounts, pseudocount = pseudocount),
+            "ALR"     = setaALR(subCounts, ref = ref, pseudocount = pseudocount),
+            "ILR"     = setaILR(subCounts,
+                                taxTree = taxTree,
+                                pseudocount = pseudocount),
+            "percent" = setaPercent(subCounts),
+            "logCPM"  = setaLogCPM(subCounts,
+                                   pseudocount  = pseudocount,
+                                   size_factors = size_factors)
+        )
+        newCounts[, idx] <- result$counts
+        if (is.null(final_method)) final_method <- result$method
+    }
+    
+    list(
+        method            = final_method,
+        within_resolution = TRUE,
+        grouping_var      = taxonomy_col,
+        counts            = newCounts
     )
-    return(list(
-      method            = result$method,
-      within_resolution = FALSE,
-      grouping_var      = NULL,
-      counts            = result$counts
-    ))
-  }
-
-  ## Reference‑frames
-  if (!all(colnames(counts) %in% rownames(taxonomyDF)))
-    stop("Some colnames(counts) are not in rownames(taxonomyDF).")
-
-  taxonomyDF   <- taxonomyDF[colnames(counts), , drop = FALSE]
-  group_vector <- taxonomyDF[[taxonomy_col]]
-  unique_groups <- unique(group_vector)
-
-  newCounts    <- counts
-  final_method <- NULL
-
-  for (grp in unique_groups) {
-    idx        <- which(group_vector == grp)
-    subCounts  <- counts[, idx, drop = FALSE]
-
-    result <- switch(
-      method,
-      "CLR"     = setaCLR(subCounts, pseudocount = pseudocount),
-      "ALR"     = setaALR(subCounts, ref = ref, pseudocount = pseudocount),
-      "ILR"     = setaILR(subCounts,
-                          taxTree = taxTree,
-                          pseudocount = pseudocount),
-      "percent" = setaPercent(subCounts),
-      "logCPM"  = setaLogCPM(subCounts,
-                             pseudocount  = pseudocount,
-                             size_factors = size_factors)
-    )
-    newCounts[, idx] <- result$counts
-    if (is.null(final_method)) final_method <- result$method
-  }
-
-  list(
-    method            = final_method,
-    within_resolution = TRUE,
-    grouping_var      = taxonomy_col,
-    counts            = newCounts
-  )
 }

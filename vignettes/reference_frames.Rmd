@@ -15,10 +15,10 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-  %\VignetteEncoding{UTF-8}
+%\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA}
   %\VignetteEngine{knitr::rmarkdown}
-output: 
+  output: 
   BiocStyle::html_document
 editor_options: 
   markdown: 
@@ -29,7 +29,7 @@ editor_options:
 ```{=html}
 <style type="text/css">
 .smaller {
-  font-size: 10px
+font-size: 10px
 }
 </style>
 ```
@@ -101,45 +101,45 @@ Everything else remains as is.
 ```{r add lineage information}
 # We'll make a small mapping from original free_annotation -> broader 'Lineage'
 lineage_map <- c(
-  "Adventitial Fibroblast" = "Fibroblast",
-  "Airway Smooth Muscle" = "SMC",
-  "Alveolar Epithelial Type 2" = "Epithelial",
-  "Alveolar Fibroblast" = "Fibroblast",
-  "Alveolar Macrophage" = "Myeloid",
-  "Artery" = "Endothelial",
-  "B" = "B cell",
-  "Basophil" = "Granulocyte",
-  "Ccr7+ Dendritic" = "Myeloid",
-  "CD4+ T" = "T cell",
-  "CD8+ T" = "T cell",
-  "Capillary" = "Endothelial",
-  "Capillary Aerocyte" = "Endothelial",
-  "Ciliated" = "Epithelial",
-  "Classical Monocyte" = "Myeloid",
-  "Club" = "Epithelial",
-  "Intermediate Monocyte" = "Myeloid",
-  "Interstitial Macrophage" = "Myeloid",
-  "Lympatic" = "Endothelial",
-  "Ly6g5b+ T" = "T cell",
-  "Myeloid Dendritic Type 1" = "Myeloid",
-  "Myeloid Dendritic Type 2" = "Myeloid",
-  "Myofibroblast" = "Fibroblast",
-  "Natural Killer" = "NK",
-  "Natural Killer T" = "NK",
-  "Neuroendocrine" = "Neuroendocrine",
-  "Neutrophil" = "Granulocyte",
-  "Nonclassical Monocyte" = "Myeloid",
-  "Pericyte" = "Endothelial",
-  "Plasma" = "Plasma Cell",
-  "Plasmacytoid Dendritic" = "Myeloid",
-  "Proliferating Alveolar Macrophage" = "Proliferating",
-  "Proliferating Classical Monocyte" = "Proliferating",
-  "Proliferating Dendritic" = "Proliferating",
-  "Proliferating NK" = "Proliferating",
-  "Proliferating T" = "Proliferating",
-  "Regulatory T" = "T cell",
-  "Vein" = "Endothelial",
-  "Zbtb32+ B" = "B cell"
+    "Adventitial Fibroblast" = "Fibroblast",
+    "Airway Smooth Muscle" = "SMC",
+    "Alveolar Epithelial Type 2" = "Epithelial",
+    "Alveolar Fibroblast" = "Fibroblast",
+    "Alveolar Macrophage" = "Myeloid",
+    "Artery" = "Endothelial",
+    "B" = "B cell",
+    "Basophil" = "Granulocyte",
+    "Ccr7+ Dendritic" = "Myeloid",
+    "CD4+ T" = "T cell",
+    "CD8+ T" = "T cell",
+    "Capillary" = "Endothelial",
+    "Capillary Aerocyte" = "Endothelial",
+    "Ciliated" = "Epithelial",
+    "Classical Monocyte" = "Myeloid",
+    "Club" = "Epithelial",
+    "Intermediate Monocyte" = "Myeloid",
+    "Interstitial Macrophage" = "Myeloid",
+    "Lympatic" = "Endothelial",
+    "Ly6g5b+ T" = "T cell",
+    "Myeloid Dendritic Type 1" = "Myeloid",
+    "Myeloid Dendritic Type 2" = "Myeloid",
+    "Myofibroblast" = "Fibroblast",
+    "Natural Killer" = "NK",
+    "Natural Killer T" = "NK",
+    "Neuroendocrine" = "Neuroendocrine",
+    "Neutrophil" = "Granulocyte",
+    "Nonclassical Monocyte" = "Myeloid",
+    "Pericyte" = "Endothelial",
+    "Plasma" = "Plasma Cell",
+    "Plasmacytoid Dendritic" = "Myeloid",
+    "Proliferating Alveolar Macrophage" = "Proliferating",
+    "Proliferating Classical Monocyte" = "Proliferating",
+    "Proliferating Dendritic" = "Proliferating",
+    "Proliferating NK" = "Proliferating",
+    "Proliferating T" = "Proliferating",
+    "Regulatory T" = "T cell",
+    "Vein" = "Endothelial",
+    "Zbtb32+ B" = "B cell"
 )
 
 # Add a new column in  named 'Lineage'
@@ -160,9 +160,9 @@ print(head(sce$Lineage))
 # We want a data frame that includes bc + 'free_annotation' + 'Lineage'
 # Then we'll pass it to setaTaxonomyDF
 tax_df <- setaTaxonomyDF(
-  obj = data.frame(colData(sce)),
-  resolution_cols = c("Lineage", "free_annotation"),
-  bc_col = "cell"
+    obj = data.frame(colData(sce)),
+    resolution_cols = c("Lineage", "free_annotation"),
+    bc_col = "cell"
 )
 
 # Each row is a unique 'free_annotation'.
@@ -235,37 +235,37 @@ meta_df <- setaMetadata(data.frame(colData(sce)), sample_col = "mouse.id",
 
 
 bal_out <- setaTransform(
-  counts     = taxa_counts,
-  method     = "balance",
-  balances   = list(
-                    epi_vs_myeloid = list(
-                    num   = "Epithelial",
-                    denom = "Myeloid"
-                   )
-               ),
-  taxonomyDF   = tax_df,
-  taxonomy_col = "Lineage"
+    counts     = taxa_counts,
+    method     = "balance",
+    balances   = list(
+        epi_vs_myeloid = list(
+            num   = "Epithelial",
+            denom = "Myeloid"
+        )
+    ),
+    taxonomyDF   = tax_df,
+    taxonomy_col = "Lineage"
 )
 
 # merge the balances with sample-level metadata
 bal_df <- data.frame(
-          sample_id       = rownames(bal_out$counts),
-          epi_vs_myeloid  = as.numeric(bal_out$counts[, "epi_vs_myeloid"]),
-          stringsAsFactors = FALSE
-  ) |>
-  dplyr::left_join(meta_df, by = "sample_id")
+    sample_id       = rownames(bal_out$counts),
+    epi_vs_myeloid  = as.numeric(bal_out$counts[, "epi_vs_myeloid"]),
+    stringsAsFactors = FALSE
+) |>
+    dplyr::left_join(meta_df, by = "sample_id")
 
 # Compare age groups by epithelial to myeloid ratios
 library(ggplot2)
 ggplot(bal_df, aes(x = age, y = epi_vs_myeloid, fill = age)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.4) +
-  geom_jitter(width = 0.15, size = 2) +
-  scale_fill_manual(values = d_palette) +
-  labs(title = "Epithelial / Myeloid balance across age groups",
-       y = "log GM(Epithelial) – log GM(Myeloid)",
-       x = "Age (months)") +
-  theme_minimal(base_size = 14) +
-  theme(legend.position = "none")
+    geom_boxplot(outlier.shape = NA, alpha = 0.4) +
+    geom_jitter(width = 0.15, size = 2) +
+    scale_fill_manual(values = d_palette) +
+    labs(title = "Epithelial / Myeloid balance across age groups",
+         y = "log GM(Epithelial) – log GM(Myeloid)",
+         x = "Age (months)") +
+    theme_minimal(base_size = 14) +
+    theme(legend.position = "none")
 ```
 
 The y‑axis shows the log‑ratio of the geometric means of Epithelial versus
@@ -329,7 +329,7 @@ p1 <- ggplot(pca_global, aes(x = PC1, y = PC2, color = age)) +
         values = d_palette
     ) +
     labs(title = "Global CLR PCA",
-        x = "PC1", y = "PC2", color = "Age (Months)") +
+         x = "PC1", y = "PC2", color = "Age (Months)") +
     theme_minimal() +
     xlab(sprintf("PC1 (%s%%)",
                  signif(latent_global$varExplained[1], 4) * 100)) +
@@ -343,7 +343,7 @@ p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = age)) +
         values = d_palette
     ) +
     labs(title = "Within-Lineage CLR PCA",
-        x = "PC1", y = "PC2", color = "Age (Months)") +
+         x = "PC1", y = "PC2", color = "Age (Months)") +
     theme_minimal() +
     xlab(sprintf("PC1 (%s%%)",
                  signif(latent_lineage$varExplained[1], 4) * 100)) +
