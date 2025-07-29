@@ -9,24 +9,27 @@ License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.0)
 Imports:
-    caret,
-    corrplot,
     dplyr,
-    ggraph,
-    ggplot2,
     MASS,
     Matrix,
-    methods,
     stats,
-    TabulaMurisSenisData,
     tidygraph
 Suggests:
+    caret,
+    corrplot,
+    ggplot2,
+    ggraph,
     knitr,
+    methods,
+    patchwork,
+    reshape2,
     rmarkdown,
     SeuratObject,
     Seurat,
     SummarizedExperiment,
     SingleCellExperiment,
+    TabulaMurisSenisData,
+    tidyr,
     tidytext,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
