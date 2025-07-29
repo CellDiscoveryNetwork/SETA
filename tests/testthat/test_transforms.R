@@ -1,3 +1,5 @@
+set.seed(687)
+
 test_that("setaCLR returns correct known results", {
   mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
   # Hand-calculated CLR for this 2x2:
