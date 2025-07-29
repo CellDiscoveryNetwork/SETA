@@ -1,5 +1,5 @@
 # Generate mockLong data
-set.seed(687)
+set.seed(123)
 x <- mockLong()
 xc <- mockCount(x)
 
