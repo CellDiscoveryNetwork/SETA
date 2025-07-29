@@ -179,10 +179,6 @@ We'll color edges by the lineage label:
 
 ```{r ggraph, message=FALSE, warning=FALSE, fig.width = 8, fig.height = 6}
 # Create a tidygraph object using SETA built-in utils
-# TKTK error here
-# Error in vapply(node_info$name, FUN.VALUE = character(1), FUN = function(x) { : 
- #  values must be type 'character',
- # but FUN(X[[11]]) result is type 'integer'
 
 tbl_g <- taxonomy_to_tbl_graph(
     tax_df,
@@ -232,6 +228,10 @@ taxa_counts <- setaCounts(
     sample_col = "mouse.id",
     bc_col = "rownames"
 )
+
+# Create SETA sample-level metadata
+meta_df <- setaMetadata(data.frame(colData(sce)), sample_col = "mouse.id",
+                        meta_cols = c("age", "sex"))
 
 
 bal_out <- setaTransform(
@@ -319,8 +319,6 @@ pca_lineage <- latent_lineage$latentSpace
 pca_lineage$sample_id <- rownames(pca_lineage)
 
 # Merge with metadata
-meta_df <- setaMetadata(data.frame(colData(sce)), sample_col = "mouse.id",
-                        meta_cols = c("age", "sex"))
 pca_global <- left_join(pca_global, meta_df)
 pca_lineage <- left_join(pca_lineage, meta_df)
 
