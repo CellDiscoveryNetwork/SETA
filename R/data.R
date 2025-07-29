@@ -12,7 +12,8 @@
 #'
 #' @param ng,nc,nt,ns,nb integer scalar specifying the number
 #'   of genes, cells, types (groups), samples, and batches to simulate.
-#'
+#' @param useBatch logical scalar indicating whether to include a batch metadata
+#'   column
 #' @return
 #' \itemize{
 #' \item{\code{mockSC} returns a \code{Seurat} object
