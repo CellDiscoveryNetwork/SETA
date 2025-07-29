@@ -1,3 +1,5 @@
+set.seed(617)
+
 test_that("PCA returns expected output structure", {
   counts_mat <- matrix(rpois(30, 10), ncol = 3)
   x <- setaTransform(counts_mat, method = "CLR")

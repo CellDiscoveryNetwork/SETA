@@ -1,5 +1,5 @@
 # Test mock single cell data
-set.seed(123)
+set.seed(687)
 se <- mockSC() # create Seurat object
 sc <- mockSCE() # Create SingleCellExperiment object
 

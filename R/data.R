@@ -119,6 +119,7 @@ mockLong <- function(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
 
 #' @rdname data
 #' @param df data.frame in the format of `mockLong()`.
+#' @importFrom stats aggregate
 #' @export
 
 mockCount <- function(df = mockLong()) {
@@ -144,6 +145,7 @@ mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
 #' @rdname data
 #' @param type_levels character vector of type levels representing cell types to
 #' be assigned to fine, mid and broad annotations
+#' @importFrom stats setNames
 #' @export
 
 makeTypeHierarchy <- function(type_levels) {

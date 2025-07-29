@@ -56,7 +56,7 @@ setaDistances <- function(transformed_counts, method = "euclidean") {
   colnames(dist_df) <- c("from", "to", "distance")
 
   # Remove self-distances and duplicated pairs
-  dist_df <- subset(dist_df, as.character(from) < as.character(to))
+  dist_df <- dist_df[as.character(dist_df$from) < as.character(dist_df$to), ]
 
   rownames(dist_df) <- NULL
   dist_df

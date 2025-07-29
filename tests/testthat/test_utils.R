@@ -1,3 +1,5 @@
+set.seed(687)
+
 test_that("setaCounts returns a correctly‑shaped matrix from metadata frames", {
   skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("Seurat")

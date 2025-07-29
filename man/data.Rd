@@ -23,6 +23,9 @@ makeTypeHierarchy(type_levels)
 \item{ng, nc, nt, ns, nb}{integer scalar specifying the number
 of genes, cells, types (groups), samples, and batches to simulate.}
 
+\item{useBatch}{logical scalar indicating whether to include a batch metadata
+column}
+
 \item{df}{data.frame in the format of `mockLong()`.}
 
 \item{type_levels}{character vector of type levels representing cell types to

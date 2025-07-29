@@ -113,6 +113,7 @@ setaCounts <- function(obj,
 #' setaTaxonomyDF(meta,
 #'                resolution_cols = c("broad_type","mid_type","fine_type"),
 #'                bc_col = "rownames")
+#' @importFrom utils tail
 #' @export
 setaTaxonomyDF <- function(obj,
                            resolution_cols = c("fine_type",
@@ -300,7 +301,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
     #  - else find all rows of tax_df where x appears in row's columns,
     #    gather distinct values for each col, combine with '|'.
 
-    node_names <- tg |> activate("nodes") |> pull(name)
+    node_names <- tg |> activate("nodes") |> pull(.data[["name"]])
     # We'll build a data frame with the same number of rows as node_names
     node_info <- data.frame(name = node_names, stringsAsFactors = FALSE)
 

@@ -1,5 +1,5 @@
 # Generate mockLong data
-set.seed(123)
+set.seed(687)
 sce <- mockSCE()
 
 test_that("setaMetadata errors on multiplexed samples", {
