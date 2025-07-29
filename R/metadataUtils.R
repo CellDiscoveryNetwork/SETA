@@ -39,9 +39,8 @@
 #' # }
 #' }
 #' @export
-setaMetadata <- function(x,
-                         sample_col = "Sample ID",
-                         meta_cols) {
+
+setaMetadata <- function(x, sample_col = "Sample ID", meta_cols) {
     stopifnot(
         is.data.frame(x),
         length(sample_col) == 1L, is.character(sample_col),
@@ -49,7 +48,6 @@ setaMetadata <- function(x,
         is.character(meta_cols), length(meta_cols) > 0L
     )
     if (anyNA(x[[sample_col]])) stop("`", sample_col, "` contains NA.")
-    
     meta_cols <- setdiff(unique(meta_cols), sample_col)
     missing <- setdiff(meta_cols, names(x))
     if (length(missing)) stop(
@@ -57,7 +55,7 @@ setaMetadata <- function(x,
         paste(missing, collapse = ", "),
         call. = FALSE
     )
-    
+
     samples <- unique(as.character(x[[sample_col]]))
     out <- data.frame(sample_id = samples, stringsAsFactors = FALSE)
     if (is.factor(x[[sample_col]])) {
