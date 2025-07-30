@@ -15,7 +15,7 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-%\VignetteEncoding{UTF-8}
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{Multi-Resolution Compositional Analysis in scRNA-seq: Reference Frames with SETA}
   %\VignetteEngine{knitr::rmarkdown}
   output: 

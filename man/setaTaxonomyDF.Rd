@@ -19,6 +19,13 @@ indicating hierarchical taxonomy (from broad to fine).}
 \item{bc_col}{Optional. The name of the column containing barcodes,
 or "rownames" if they are row names.}
 }
+\value{
+A `data.frame` with one row per unique value of the finest label
+        (the last entry in `resolution_cols`), and one column for each
+        resolution level. The row names are set to the finest label values.
+        If any finest label maps to more than one combination of coarser
+        labels, the function stops with an informative error.
+}
 \description{
 setaTaxonomyDF() converts **one long-form metadata data.frame**-typically
 colData(sce), seu@meta.data, or any frame you already have, into a tidy

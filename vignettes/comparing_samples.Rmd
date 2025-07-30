@@ -15,7 +15,7 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-%\VignetteIndexEntry{Comparing samples with SETA}
+  %\VignetteIndexEntry{Comparing samples with SETA}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
   output: 

@@ -57,12 +57,12 @@ setaCounts <- function(obj,
     
     df  <- unique(obj[, required])
     
-    sample_ids <- levels(df[[sample_col]])
+    sample_ids <- unique(df[[sample_col]])
     invalid_ids <- grep("[^A-Za-z0-9_-]", sample_ids, value = TRUE)
     if (length(invalid_ids) > 0) {
-        message("Warning!! Some sample IDs contain special characters: ",
-                paste(unique(invalid_ids), collapse = ", "),
-                " ... This may cause issues down the line")
+        warning("Some sample IDs contain special characters: ",
+            paste(unique(invalid_ids), collapse = ", "),
+            " ... This may cause issues down the line")
     }
     
     mat <- as.matrix(table(df[[sample_col]], df[[cell_type_col]]))
@@ -96,7 +96,13 @@ setaCounts <- function(obj,
 #'        indicating hierarchical taxonomy (from broad to fine).
 #' @param bc_col Optional. The name of the column containing barcodes,
 #'                         or "rownames" if they are row names.
-#'
+#' 
+#' @return A `data.frame` with one row per unique value of the finest label
+#'         (the last entry in `resolution_cols`), and one column for each
+#'         resolution level. The row names are set to the finest label values.
+#'         If any finest label maps to more than one combination of coarser
+#'         labels, the function stops with an informative error.
+#' 
 #' @examples
 #' meta <- data.frame(
 #'   bc          = paste0("cell", 1:6),

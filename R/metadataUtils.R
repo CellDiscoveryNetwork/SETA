@@ -39,8 +39,9 @@
 #' # }
 #' }
 #' @export
-
-setaMetadata <- function(x, sample_col = "Sample ID", meta_cols) {
+setaMetadata <- function(x,
+                         sample_col = "Sample ID",
+                         meta_cols) {
     stopifnot(
         is.data.frame(x),
         length(sample_col) == 1L, is.character(sample_col),
@@ -48,6 +49,7 @@ setaMetadata <- function(x, sample_col = "Sample ID", meta_cols) {
         is.character(meta_cols), length(meta_cols) > 0L
     )
     if (anyNA(x[[sample_col]])) stop("`", sample_col, "` contains NA.")
+    
     meta_cols <- setdiff(unique(meta_cols), sample_col)
     missing <- setdiff(meta_cols, names(x))
     if (length(missing)) stop(
@@ -55,7 +57,7 @@ setaMetadata <- function(x, sample_col = "Sample ID", meta_cols) {
         paste(missing, collapse = ", "),
         call. = FALSE
     )
-
+    
     samples <- unique(as.character(x[[sample_col]]))
     out <- data.frame(sample_id = samples, stringsAsFactors = FALSE)
     if (is.factor(x[[sample_col]])) {
@@ -65,23 +67,20 @@ setaMetadata <- function(x, sample_col = "Sample ID", meta_cols) {
     
     for (col in meta_cols) {
         col_data <- x[[col]]
-        vals <- sapply(samples, function(sid) {
+        vals <- vapply(samples, function(sid) {
             v <- col_data[x[[sample_col]] == sid]
             u <- unique(v)
             if (length(u) != 1L) {
-                stop(
-                    sprintf(
-                        "Column '%s' has multiple values for sample '%s': %s.\n
-            Are your samples multiplexed? 
-            If so, please supply a sample identifier unique 
-            to each sample X pool.",
-                        col, sid, paste(u, collapse = ", ")
-                    ),
-                    call. = FALSE
-                )
+                stop(sprintf(
+                    "Column '%s' has multiple values for sample '%s': %s.\n
+                    Are your samples multiplexed? 
+                    If so, please supply a sample identifier unique 
+                    to each sample X pool.",
+                    col, sid, paste(u, collapse = ", ")
+                ), call. = FALSE)
             }
-            u
-        })
+            as.character(u)
+        }, FUN.VALUE = character(1))
         # preserve original type
         if (is.factor(col_data)) {
             out[[col]] <- factor(vals, levels = levels(col_data))

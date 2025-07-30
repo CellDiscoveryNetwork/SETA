@@ -15,7 +15,7 @@ author:
   email: marc.elosuabayes@childrens.harvard.edu
 package: "`r BiocStyle::pkg_ver('SETA')`"
 vignette: >
-%\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
+  %\VignetteIndexEntry{Introduction to SETA ecological transforms and sample-level latent spaces}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
   output: 

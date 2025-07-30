@@ -130,7 +130,6 @@ mockCount <- function(df = mockLong()) {
 
 #' @rdname data
 #' @importFrom stats rpois
-#' @importFrom SingleCellExperiment SingleCellExperiment
 #' @export
 
 mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
@@ -138,7 +137,7 @@ mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
     df  <- mockLong(nc, nt, ns, nb, useBatch)
     mat <- matrix(rpois(nc * 20, lambda = 5), 20,
                   dimnames = list(paste0("gene", seq_len(20)), df$bc))
-    SingleCellExperiment(
+    SingleCellExperiment::SingleCellExperiment(
         assays  = list(counts = mat),
         colData = df
     )
