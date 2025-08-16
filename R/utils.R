@@ -106,9 +106,9 @@ setaCounts <- function(obj,
 #' @examples
 #' meta <- data.frame(
 #'   bc          = paste0("cell", 1:6),
-#'   fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+#'   broad_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
 #'   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
-#'   broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+#'   fine_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
 #' )
 #' setaTaxonomyDF(meta,
 #'                resolution_cols = c("broad_type","mid_type","fine_type"))
@@ -122,9 +122,9 @@ setaCounts <- function(obj,
 #' @importFrom utils tail
 #' @export
 setaTaxonomyDF <- function(obj,
-                           resolution_cols = c("fine_type",
+                           resolution_cols = c("broad_type",
                                                "mid_type",
-                                               "broad_type"),
+                                               "fine_type"),
                            bc_col = "bc") {
     
     ## --------------------------------------------------------------------- ##
@@ -256,6 +256,7 @@ setaTaxonomyDF <- function(obj,
 #' @importFrom tidygraph activate as_tbl_graph
 #' @importFrom dplyr left_join pull
 #' @export
+
 taxonomy_to_tbl_graph <- function(tax_df,
                                   columns   = NULL,
                                   root_name = "AllCells") {
@@ -329,12 +330,12 @@ taxonomy_to_tbl_graph <- function(tax_df,
                     return(NA_character_)
                 }
                 # Gather distinct values of tax_df[idx, col]
-                vals <- unique(tax_df[idx, col])
+                vals <- unique(tax_df[[col]][idx])
                 if (length(vals) > 1) {
                     # If node is used in multiple places with different col entries
                     return(paste(vals, collapse = "|"))
                 }
-                vals
+                as.character(vals[1])
             }
         )
     }
@@ -349,7 +350,6 @@ taxonomy_to_tbl_graph <- function(tax_df,
     
     tg
 }
-
 
 #' `resolveGroup()` converts a user–supplied *group specification* into the
 #' column indices of the corresponding leaves in a **counts** taxa matrix.

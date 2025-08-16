@@ -6,7 +6,7 @@
 \usage{
 setaTaxonomyDF(
   obj,
-  resolution_cols = c("fine_type", "mid_type", "broad_type"),
+  resolution_cols = c("broad_type", "mid_type", "fine_type"),
   bc_col = "bc"
 )
 }
@@ -51,9 +51,9 @@ informative error.
 \examples{
 meta <- data.frame(
   bc          = paste0("cell", 1:6),
-  fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+  broad_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
-  broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+  fine_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
 )
 setaTaxonomyDF(meta,
                resolution_cols = c("broad_type","mid_type","fine_type"))

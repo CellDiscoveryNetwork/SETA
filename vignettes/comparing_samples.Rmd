@@ -217,6 +217,8 @@ clr_data <- clr_metadata |> select(where(is.numeric))
 # One-hot encode 'age' and clean column names
 oh <- model.matrix(~age - 1, data = clr_metadata)
 colnames(oh) <- sub("^age", "", colnames(oh))
+rownames(clr_data) <- clr_metadata$mouse.id
+
 
 # Combine CLR data and metadata
 combined <- cbind(clr_data, oh)
