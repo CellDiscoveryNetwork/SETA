@@ -48,7 +48,7 @@ In this vignette we show how to:
 
 This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
 It contains lung single-cell profiles from 14 donor mice (mouse_id). 
-Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
+Each mouse is assigned to one of five age groups, from young adult to old, recorded in the age column. 
 Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
 *This vignette is modular; users can update or replace the dataset-specific settings*
@@ -100,7 +100,7 @@ c_palette <- colorRampPalette(c("#3B9AB2", "#78B7C5",
 ## Extracting the Taxonomic Counts Matrix
 
 The `setaCounts` function extracts a cell-type counts matrix given 
-that the object contains cell‐level metadata. For this dataset, 
+that the object contains cell-level metadata. For this dataset, 
 we want the cell-type annotations to come from Celltype and 
 the sample identifiers from donor_id. If necessary, 
 we reassign these columns before extraction.

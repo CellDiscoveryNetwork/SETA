@@ -38,7 +38,7 @@ font-size: 10px
 
 `SETA` provides a set of functions for compositional analysis of single-cell RNA-seq data. In earlier vignettes, we introduced the basics of compositional transforms (`setaCLR`, `setaALR`, etc.) and distance/metadata handling. 
 
-In this vignette, we demonstrate how to create and utilize _multi-resolution_ annotations—here referred to as **reference frames**—for hierarchical or subcompositional analysis. Our outline:
+In this vignette, we demonstrate how to create and utilize _multi-resolution_ annotations, here referred to as **reference frames**, for hierarchical or subcompositional analysis. Our outline:
 
 - **Extract a taxonomic data frame** of differing cell-type resolutions  
 - **Visualize the taxonomy as a tree** using `ggraph`  
@@ -47,7 +47,7 @@ In this vignette, we demonstrate how to create and utilize _multi-resolution_ an
 
 This example works with the Tabula Muris Senis lung dataset which can be downloaded directly with bioconductor
 It contains lung single-cell profiles from 14 donor mice (mouse_id). 
-Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
+Each mouse is assigned to one of five age groups, from young adult to old, recorded in the age column. 
 Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
 ```{r load packages, message=FALSE, warning=FALSE}
@@ -262,16 +262,16 @@ ggplot(bal_df, aes(x = age, y = epi_vs_myeloid, fill = age)) +
     geom_jitter(width = 0.15, size = 2) +
     scale_fill_manual(values = d_palette) +
     labs(title = "Epithelial / Myeloid balance across age groups",
-         y = "log GM(Epithelial) – log GM(Myeloid)",
+         y = "log GM(Epithelial) - log GM(Myeloid)",
          x = "Age (months)") +
     theme_minimal(base_size = 14) +
     theme(legend.position = "none")
 ```
 
-The y‑axis shows the log‑ratio of the geometric means of Epithelial versus
+The y-axis shows the log-ratio of the geometric means of Epithelial versus
 Myeloid counts for each mouse. Positive values indicate epithelial enrichment
 relative to myeloid cells, while negative values indicate the opposite. Because
-this is a standard log‑ratio, the statistic is fully compositional and can be
+this is a standard log-ratio, the statistic is fully compositional and can be
 compared directly across groups.
 
 
