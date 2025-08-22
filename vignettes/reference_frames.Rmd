@@ -50,7 +50,7 @@ It contains lung single-cell profiles from 14 donor mice (mouse_id).
 Each mouse is assigned to one of five age groups—from young adult to old—recorded in the age column. 
 Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) are also included.
 
-```{r setup, message=FALSE, warning=FALSE}
+```{r load packages, message=FALSE, warning=FALSE}
 library(SingleCellExperiment)
 library(SETA)
 library(ggplot2)
@@ -62,7 +62,7 @@ library(patchwork)
 library(TabulaMurisSenisData)
 ```
 
-```{r}
+```{r palettes}
 # Set up a color palette for plots
 # 9-group distinct categoricals
 d_palette <- c("#3B9AB2", "#6BAFAF", "#9BBDAC", "#C9C171",
@@ -72,7 +72,7 @@ d_palette <- c("#3B9AB2", "#6BAFAF", "#9BBDAC", "#C9C171",
 
 ## Load and prepare data
 
-```{r, echo = FALSE}
+```{r load data, echo = FALSE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 
 sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
@@ -83,7 +83,7 @@ sce$mouse.id <- gsub("/", "", sce$mouse.id)
 
 Quick data exploration:
 
-```{r}
+```{r tabular data exploration}
 table(sce$free_annotation, sce$age)
 ```
 
@@ -220,7 +220,7 @@ The choice of numerator and denominator groups determine which direction the res
 balance points. If the composition is weighted towards the numerator, the log-ratio
 will be positive, and negative if towards the denominator. 
 
-```{r}
+```{r counts and metadata}
 # Create sample x free_annotation counts:
 taxa_counts <- setaCounts(
     data.frame(colData(sce)),
@@ -354,6 +354,6 @@ p2 <- ggplot(pca_lineage, aes(x = PC1, y = PC2, color = age)) +
 p1 + p2
 ```
 
-```{r}
+```{r libraries used}
 sessionInfo()
 ```

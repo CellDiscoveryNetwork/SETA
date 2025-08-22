@@ -47,27 +47,27 @@ NULL
 #' 
 mockSC <- function(
         ng = 200,   # genes
-        nc = 50,    # cells per fine‑type
-        nt = 3,     # fine‑types
+        nc = 50,    # cells per fine type
+        nt = 3,     # fine types
         ns = 4,     # samples
         nb = 2) {   # batches
     
-    ## 1) create global IDs --------------------------------------------------
+    ## 1) create global IDs
     type_levels <- paste0("type",  seq_len(nt))
     maps        <- makeTypeHierarchy(type_levels)
     
     cell_ids <- unlist(lapply(seq_len(nt), function(t)
-        paste0("cell", seq_len(nc), "_t", t)))         # unique over all types
+        paste0("cell", seq_len(nc), "_t", t))) # unique over all types
     gene_ids <- paste0("gene", seq_len(ng))
     
-    ## 2) counts matrix ------------------------------------------------------
+    ## 2) counts matrix
     counts_vec <- rpois(length(gene_ids) * length(cell_ids), lambda = 10)
     counts     <- Matrix(
         matrix(counts_vec, nrow = ng, dimnames = list(gene_ids, cell_ids)),
         sparse = TRUE)
     
-    ## 3) per‑cell metadata --------------------------------------------------
-    fine_type <- rep(type_levels, each = nc)               # length == length(cell_ids)
+    ## 3) per cell metadata 
+    fine_type <- rep(type_levels, each = nc) # length == length(cell_ids)
     mid_type  <- maps$mid  [fine_type]
     broad_type<- maps$broad[fine_type]
     
@@ -136,7 +136,7 @@ mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
     stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
     df  <- mockLong(nc, nt, ns, nb, useBatch)
     mat <- matrix(rpois(nc * 20, lambda = 5), 20,
-                  dimnames = list(paste0("gene", seq_len(20)), df$bc))
+                    dimnames = list(paste0("gene", seq_len(20)), df$bc))
     SingleCellExperiment::SingleCellExperiment(
         assays  = list(counts = mat),
         colData = df

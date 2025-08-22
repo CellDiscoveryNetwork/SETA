@@ -6,22 +6,21 @@
 Applies a CLR transform to a matrix of counts.
 Samples should be in rows and taxa (cell types) in columns.
 For each sample, the transform computes
-\eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
-where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.}
+\eqn{\mathrm{CLR}(x)_i = \log \big( (x_i + c) / g(x + c) \big)},
+where \eqn{g(x + c)} is the geometric mean of the row.}
 \usage{
 setaCLR(counts, pseudocount = 1)
 }
 \arguments{
-\item{counts}{An integer matrix of celltype counts with samples in rows.}
+\item{counts}{An integer matrix of cell-type counts with samples in rows.}
 
-\item{pseudocount}{Numeric.
-Added to all entries to avoid \code{log(0)}. Default is 1.}
+\item{pseudocount}{Numeric. Added to all entries to avoid \code{log(0)}. Default is 1.}
 }
 \value{
 A list with:
 \describe{
-  \item{method}{A string indicating the transform ("CLR").}
-  \item{counts}{A matrix of the same dimensions as the input after CLR transform.}
+  \item{method}{A string indicating the transform (\code{"CLR"}).}
+  \item{counts}{A matrix of the same dimensions as the input after the CLR transform.}
 }
 }
 \description{
@@ -29,25 +28,23 @@ Centered Log-Ratio (CLR) Transform
 Applies a CLR transform to a matrix of counts.
 Samples should be in rows and taxa (cell types) in columns.
 For each sample, the transform computes
-\eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
-where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
+\eqn{\mathrm{CLR}(x)_i = \log \big( (x_i + c) / g(x + c) \big)},
+where \eqn{g(x + c)} is the geometric mean of the row.
 }
 \details{
-The CLR transform is defined sample-wise as:
-\deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}{
-\log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
-where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
-and \(p\) is the number of taxa.
+The CLR transform is defined sample-wise as
+\deqn{\mathrm{CLR}(x)_{ij} = \log \big( (x_{ij} + c) / g_i \big),}
+where
+\deqn{g_i = \exp \big( \tfrac{1}{p} \sum_{j=1}^{p} \log (x_{ij} + c) \big)}
+for sample \eqn{i}, and \eqn{p} is the number of taxa. Here \eqn{c} is the pseudocount.
 }
 \examples{
-# Example matrix with 2 samples and 2 taxa:
-mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
 colnames(mat) <- c("Taxon1", "Taxon2")
 out <- setaCLR(mat, pseudocount = 0)
 out$counts
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-\emph{Journal of the Royal Statistical Society.
-Series B (Methodological)}, 44(2), 139-177.
+\emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139--177.
 }

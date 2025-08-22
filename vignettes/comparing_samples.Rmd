@@ -56,7 +56,7 @@ Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) a
 
 ## Load libraries 
 
-```{r, message=FALSE, warning=FALSE, echo=TRUE}
+```{r load libraries, message=FALSE, warning=FALSE, echo=TRUE}
 library(SingleCellExperiment)
 library(SETA)
 library(ggplot2)
@@ -69,7 +69,7 @@ library(TabulaMurisSenisData)
 
 ## Load and prepare data
 
-```{r, message=FALSE, warning=FALSE, echo = FALSE}
+```{r load data, message=FALSE, warning=FALSE, echo = FALSE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 
 sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
@@ -77,11 +77,11 @@ sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
 
 Quick data exploration:
 
-```{r}
+```{r tabular data exploration}
 table(sce$free_annotation, sce$age)
 ```
 
-```{r}
+```{r palettes}
 # Set up a color palette for plots
 # 3-group distinct categoricals
 age_palette <- c(
@@ -105,7 +105,7 @@ we want the cell-type annotations to come from Celltype and
 the sample identifiers from donor_id. If necessary, 
 we reassign these columns before extraction.
 
-```{r}
+```{r setaCounts}
 df <- data.frame(colData(sce))
 
 df$mouse.id <- gsub("/", "", df$mouse.id)
@@ -121,7 +121,7 @@ taxa_counts[1:5, 1:5]
 
 ### Prepare metadata
 Extract sample-level metadata from a dataframe. It ensures that each metadata column contains unique values per sample. If a metadata column contains non-unique values within any sample, that column is excluded from the output, and the user is notified via a warning.
-```{r}
+```{r setaMetadata}
 meta_df <- setaMetadata(
     df,
     sample_col = "mouse.id",
@@ -133,7 +133,7 @@ meta_df[1:5, ]
 ## Calculate distances between samples
 
 Normalize the data using Centered Log Ratio transformation (CLR)
-```{r}
+```{r setaTransform}
 clr_transformed <- setaTransform(taxa_counts, method = "CLR")
 ```
 
@@ -144,7 +144,7 @@ once the bounding problem is solved, in other words, once we transform the data.
 John Aitchison, who wrote "The Statistical Analysis of Compositional Data" preferred
 the Euclidean distance of CLR transformed data, and this distance is now 
 referred to as "Aitchison Distance"
-```{r}
+```{r setaDistances}
 dist_df <- setaDistances(clr_transformed)
 
 # Merge metadata
@@ -159,7 +159,7 @@ merged_dist$age_pair <- paste(merged_dist$age.from,
 ```
 
 Visualize distances
-```{r, fig.width = 9, fig.height = 6}
+```{r viz distances, fig.width = 9, fig.height = 6}
 ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
     geom_jitter(width = 0.2, color = "black") +
@@ -171,14 +171,14 @@ ggplot(merged_dist, aes(x = age_pair, y = distance)) +
 ```
 
 ## Perform wilcoxon rank-sum tests on CoDA transformed data
-```{r}
+```{r preprocess for comparisons}
 clr_long <- as.data.frame(clr_transformed$counts)
 colnames(clr_long) <- c("sample", "Celltype", "CLR")
 clr_long <- clr_long |>
     left_join(meta_df, by = c("sample" = "sample_id"))
 ```
 
-```{r, fig.width = 15, fig.height = 10}
+```{r viz pairwise distances, fig.width = 15, fig.height = 10}
 # Apply pairwise Wilcoxon tests and plot using ggpubr
 ggplot(clr_long, aes(x = age, y = CLR,
                      fill = age, color = age)) +
@@ -202,7 +202,7 @@ ggplot(clr_long, aes(x = age, y = CLR,
 
 ## Correlate celltype compositions with metadata
 
-```{r}
+```{r metadata corr}
 clr_df <- clr_transformed$counts |>
     data.frame() |> # as.data.frame converts it to long form
     pivot_wider(names_from='Var2',
@@ -229,7 +229,7 @@ p_mat <- cor.mtest(full_cor_mat)$p
 ```
 
 Visualize correlations
-```{r, fig.width = 12, fig.height = 12}
+```{r corr viz, fig.width = 12, fig.height = 12}
 corrplot(full_cor_mat,
          method = "circle",
          type = "full",
@@ -248,7 +248,7 @@ corrplot(full_cor_mat,
 
 ## Use SETA transformed data to create predictive models with caret
 
-```{r warning=FALSE}
+```{r caret, warning=FALSE}
 set.seed(687)
 train_df <- clr_metadata |>
     select(-`mouse.id`) |>
@@ -263,7 +263,7 @@ model <- train(age ~ ., data = subset(train_df),
 importance <- varImp(model)
 ```
 
-```{r, fig.width = 12, fig.height = 12}
+```{r plot caret, fig.width = 12, fig.height = 12}
 plot(importance,
      main = "Cross-Validated Variable Importance",
      sub = "Caret GLMnet model"
@@ -277,6 +277,6 @@ in scRNAseq data, as it provides a single sample x feature space within which
 to make comparisons. Let us know if you have more ideas for using CoDA! 
 
 ## Session Info
-```{r}
+```{r packages used}
 sessionInfo()
 ```

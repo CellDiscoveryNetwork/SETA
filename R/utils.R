@@ -106,9 +106,9 @@ setaCounts <- function(obj,
 #' @examples
 #' meta <- data.frame(
 #'   bc          = paste0("cell", 1:6),
-#'   broad_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+#'   broad_type   = c("Epi","Epi","Epi","Stroma","Stroma","Epi"),
 #'   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
-#'   fine_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+#'   fine_type  = c("AT1","AT2","AT1","Fib1","Fib1","AT2")
 #' )
 #' setaTaxonomyDF(meta,
 #'                resolution_cols = c("broad_type","mid_type","fine_type"))
@@ -255,6 +255,7 @@ setaTaxonomyDF <- function(obj,
 #'
 #' @importFrom tidygraph activate as_tbl_graph
 #' @importFrom dplyr left_join pull
+#' @importFrom rlang .data
 #' @export
 
 taxonomy_to_tbl_graph <- function(tax_df,
@@ -351,25 +352,25 @@ taxonomy_to_tbl_graph <- function(tax_df,
     tg
 }
 
-#' `resolveGroup()` converts a user–supplied *group specification* into the
+#' `resolveGroup()` converts a user supplied *group specification* into the
 #' column indices of the corresponding leaves in a **counts** taxa matrix.
 #' A group specification can be:
 #'
 #' * **character vector of leaf names** present in `colnames(counts)`
-#' * **character vector of higher‑level labels** that appear in a column of
+#' * **character vector of higher level labels** that appear in a column of
 #'   `taxonomyDF` (`taxonomy_col`)
 #' * **numeric vector of column indices**
 #'
-#' If higher‑level labels are supplied, the function returns *all leaves*
-#' (finest‑level labels = `rownames(taxonomyDF)`) whose `taxonomy_col` entry
+#' If higher level labels are supplied, the function returns *all leaves*
+#' (finest level labels = `rownames(taxonomyDF)`) whose `taxonomy_col` entry
 #' matches the requested label(s).
 #'
-#' @param spec A character or numeric vector specifying a group. See *Details*.
-#' @param counts Numeric matrix: samples × taxa.  Column names are treated as
-#'        leaf (finest‑level) labels.
-#' @param taxonomyDF `data.frame` returned by [setaTaxonomyDF()] (optional).
-#' @param taxonomy_col Character.  Which column of `taxonomyDF` to search when
-#'        `spec` contains higher‑level labels (optional).
+#' @param spec A character or numeric vector specifying a group. See \emph{Details}.
+#' @param counts Numeric matrix: samples \eqn{\times} taxa. Column names are treated as
+#'   leaf (finest level) labels.
+#' @param taxonomyDF A \code{data.frame} returned by \code{\link{setaTaxonomyDF}} (optional).
+#' @param taxonomy_col Character. Which column of \code{taxonomyDF} to search when
+#'   \code{spec} contains higher level labels (optional).
 #'
 #' @return An integer vector of column indices inside `counts`.
 #'
@@ -387,7 +388,7 @@ taxonomy_to_tbl_graph <- function(tax_df,
 #' ## Resolve by leaf names
 #' resolveGroup(c("AT1","AT2"), mat, taxDF, "broad_type")
 #'
-#' ## Resolve by higher‑level label
+#' ## Resolve by higher level label
 #' resolveGroup("Stroma", mat, taxDF, "broad_type")
 #' @export
 resolveGroup <- function(spec, counts, taxonomyDF = NULL, taxonomy_col = NULL) {
@@ -403,7 +404,7 @@ resolveGroup <- function(spec, counts, taxonomyDF = NULL, taxonomy_col = NULL) {
     # direct leaf matches
     hit      <- spec[spec %in% leaves]
     
-    ## higher‑level label expansion
+    ## higher level label expansion
     if (!is.null(taxonomyDF) && !is.null(taxonomy_col)) {
         hi <- spec[spec %in% taxonomyDF[[taxonomy_col]]]
         if (length(hi)) {

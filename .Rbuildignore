@@ -7,3 +7,7 @@
 ^SETA.BiocCheck$
 ^\.Rproj\.user$
 ^data-raw$
+^\.github$
+^LICENSE\.md$
+^\.pre-commit-config\.yaml$
+^\.lintr$

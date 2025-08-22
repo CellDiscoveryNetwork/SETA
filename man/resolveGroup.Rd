@@ -2,35 +2,35 @@
 % Please edit documentation in R/utils.R
 \name{resolveGroup}
 \alias{resolveGroup}
-\title{`resolveGroup()` converts a user–supplied *group specification* into the
+\title{`resolveGroup()` converts a user supplied *group specification* into the
 column indices of the corresponding leaves in a **counts** taxa matrix.
 A group specification can be:}
 \usage{
 resolveGroup(spec, counts, taxonomyDF = NULL, taxonomy_col = NULL)
 }
 \arguments{
-\item{spec}{A character or numeric vector specifying a group. See *Details*.}
+\item{spec}{A character or numeric vector specifying a group. See \emph{Details}.}
 
-\item{counts}{Numeric matrix: samples × taxa.  Column names are treated as
-leaf (finest‑level) labels.}
+\item{counts}{Numeric matrix: samples \eqn{\times} taxa. Column names are treated as
+leaf (finest level) labels.}
 
-\item{taxonomyDF}{`data.frame` returned by [setaTaxonomyDF()] (optional).}
+\item{taxonomyDF}{A \code{data.frame} returned by \code{\link{setaTaxonomyDF}} (optional).}
 
-\item{taxonomy_col}{Character.  Which column of `taxonomyDF` to search when
-`spec` contains higher‑level labels (optional).}
+\item{taxonomy_col}{Character. Which column of \code{taxonomyDF} to search when
+\code{spec} contains higher level labels (optional).}
 }
 \value{
 An integer vector of column indices inside `counts`.
 }
 \description{
 * **character vector of leaf names** present in `colnames(counts)`
-* **character vector of higher‑level labels** that appear in a column of
+* **character vector of higher level labels** that appear in a column of
   `taxonomyDF` (`taxonomy_col`)
 * **numeric vector of column indices**
 }
 \details{
-If higher‑level labels are supplied, the function returns *all leaves*
-(finest‑level labels = `rownames(taxonomyDF)`) whose `taxonomy_col` entry
+If higher level labels are supplied, the function returns *all leaves*
+(finest level labels = `rownames(taxonomyDF)`) whose `taxonomy_col` entry
 matches the requested label(s).
 }
 \examples{
@@ -47,6 +47,6 @@ taxDF <- data.frame(
 ## Resolve by leaf names
 resolveGroup(c("AT1","AT2"), mat, taxDF, "broad_type")
 
-## Resolve by higher‑level label
+## Resolve by higher level label
 resolveGroup("Stroma", mat, taxDF, "broad_type")
 }

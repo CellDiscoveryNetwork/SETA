@@ -2,34 +2,31 @@
 #' Applies a CLR transform to a matrix of counts.
 #' Samples should be in rows and taxa (cell types) in columns.
 #' For each sample, the transform computes
-#' \eqn{\mathrm{CLR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{g(x + \text{pseudocount})}\right)},
-#' where \eqn{g(x + \text{pseudocount})} is the geometric mean of the row.
+#' \eqn{\mathrm{CLR}(x)_i = \log \big( (x_i + c) / g(x + c) \big)},
+#' where \eqn{g(x + c)} is the geometric mean of the row.
 #'
-#' @param counts An integer matrix of celltype counts with samples in rows.
-#' @param pseudocount Numeric.
-#'        Added to all entries to avoid \code{log(0)}. Default is 1.
+#' @param counts An integer matrix of cell-type counts with samples in rows.
+#' @param pseudocount Numeric. Added to all entries to avoid \code{log(0)}. Default is 1.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{A string indicating the transform ("CLR").}
-#'   \item{counts}{A matrix of the same dimensions as the input after CLR transform.}
+#'   \item{method}{A string indicating the transform (\code{"CLR"}).}
+#'   \item{counts}{A matrix of the same dimensions as the input after the CLR transform.}
 #' }
 #'
 #' @details
-#' The CLR transform is defined sample-wise as:
-#' \deqn{\mathrm{CLR}(x)_{ij} = \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}{
-#' \log\left(\frac{x_{ij} + \text{pseudocount}}{g_i}\right)}
-#' where \eqn{g_i = \exp\left(\frac{1}{p}\sum_{j=1}^{p}\log(x_{ij} + \text{pseudocount})\right)} for sample \(i\)
-#' and \(p\) is the number of taxa.
+#' The CLR transform is defined sample-wise as
+#' \deqn{\mathrm{CLR}(x)_{ij} = \log \big( (x_{ij} + c) / g_i \big),}
+#' where
+#' \deqn{g_i = \exp \big( \tfrac{1}{p} \sum_{j=1}^{p} \log (x_{ij} + c) \big)}
+#' for sample \eqn{i}, and \eqn{p} is the number of taxa. Here \eqn{c} is the pseudocount.
 #'
 #' @references
 #' Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
-#' \emph{Journal of the Royal Statistical Society.
-#' Series B (Methodological)}, 44(2), 139-177.
+#' \emph{Journal of the Royal Statistical Society. Series B (Methodological)}, 44(2), 139--177.
 #'
 #' @examples
-#' # Example matrix with 2 samples and 2 taxa:
-#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+#' mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
 #' colnames(mat) <- c("Taxon1", "Taxon2")
 #' out <- setaCLR(mat, pseudocount = 0)
 #' out$counts
@@ -126,39 +123,35 @@ setaILR <- function(counts, boxcox_p = 0, taxTree = NULL, pseudocount = 1) {
 }
 
 #' Additive Log-Ratio (ALR) Transform
-#' Applies the ALR transform to an integer matrix of counts
-#' using a specified reference taxon. Samples are in rows and taxa in columns.
+#' 
+#' Applies the ALR transform to an integer matrix of counts using a specified
+#' reference taxon. Samples are in rows and taxa in columns.
 #'
 #' @param counts A numeric matrix with rows as samples and columns as taxa.
-#' @param ref Either the reference taxon name (a character string,
-#'            which must appear in \code{colnames(counts)})
-#'            or the column index of the reference.
-#' @param pseudocount Numeric.
-#'        Added to every count to avoid \code{log(0)}. Default is 1.
+#' @param ref Either the reference taxon name (a character string, which must
+#'   appear in \code{colnames(counts)}) or the column index of the reference.
+#' @param pseudocount Numeric. Added to every count to avoid \code{log(0)}.
+#'   Default is 1.
 #'
 #' @return A list with:
 #' \describe{
-#'   \item{method}{A string indicating the ALR transform
-#'                 with the reference taxon.}
-#'   \item{counts}{A matrix with one row per sample
-#'                 and \eqn{(\text{n_taxa} - 1)} columns.}
+#'   \item{method}{A string indicating the ALR transform with the reference taxon.}
+#'   \item{counts}{A matrix with one row per sample and \code{(n_taxa - 1)} columns.}
 #' }
 #'
 #' @details
-#' Applies the ALR transform to an integer matrix of counts
-#' using a specified reference taxon. Samples are in rows and taxa in columns.
-#' For each sample, the transform computes:
-#' \deqn{\mathrm{ALR}(x)_i = \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}{
-#' \log\left(\frac{x_i + \text{pseudocount}}{x_{ref} + \text{pseudocount}}\right)}
-#' for all taxa \(i\) except the reference.
+#' For each sample, the transform computes
+#' \eqn{\mathrm{ALR}(x)_i = \log\!\big( (x_i + c)/(x_{ref} + c) \big)}, where
+#' \eqn{c} is the pseudocount, for all taxa \eqn{i} except the reference.
 #'
 #' @examples
 #' # Example with 2 samples and 2 taxa:
-#' mat <- matrix(c(1,2,4,8), nrow = 2, byrow = TRUE)
+#' mat <- matrix(c(1, 2, 4, 8), nrow = 2, byrow = TRUE)
 #' colnames(mat) <- c("TaxonA", "TaxonB")
 #' # Using TaxonA as the reference.
 #' out <- setaALR(mat, ref = "TaxonA", pseudocount = 0)
 #' out$counts
+#'
 #' @name setaALR
 #' @export
 setaALR <- function(counts, ref, pseudocount = 1) {
@@ -222,25 +215,24 @@ setaPercent <- function(counts) {
 #' Samples are in rows and taxa in columns.
 #'
 #' @param counts A numeric matrix with rows as samples and columns as taxa.
-#' @param pseudocount Numeric.
-#'        Added to counts to avoid \code{log2(0)}. Default is 1.
+#' @param pseudocount Numeric. Added to counts to avoid \code{log2(0)}. Default is 1.
 #' @param size_factors Optional numeric vector of library sizes for each sample.
-#'        If \code{NULL}, the row sums are used.
-#' @param scale_factor Numeric.
-#'        The scaling factor, typically 1e6 for CPM. Default is 1e6.
+#'   If \code{NULL}, the row sums are used.
+#' @param scale_factor Numeric. The scaling factor, typically \code{1e6} for CPM.
+#'   Default is \code{1e6}.
 #'
 #' @return A list with:
 #' \describe{
 #'   \item{method}{The string \code{"logCPM"}.}
-#'   \item{counts}{A matrix of the same dimensions
-#'                 with log2-transformed CPM values.}
+#'   \item{counts}{A matrix of the same dimensions with log2-transformed CPM values.}
 #' }
 #'
 #' @details
-#' The transform is defined as:
-#' \deqn{\log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right),}{
-#' \log_2\left(\frac{(x + \text{pseudocount})}{\text{library size}} \times \text{scale_factor}\right)}
-#' where the library size is computed per sample.
+#' The transform is
+#' \deqn{\log_2 \big( ((x + c)/L) \times s \big),}
+#' where \eqn{c} is the pseudocount, \eqn{L} is the per-sample library size, and \eqn{s}
+#' is \code{scale_factor}.
+#'
 #' @examples
 #' mat <- matrix(c(10, 20, 100, 200), nrow = 2, byrow = TRUE)
 #' out <- setaLogCPM(mat, pseudocount = 1)
@@ -261,69 +253,69 @@ setaLogCPM <- function(counts,
     list(method = "logCPM", counts = log_cpm)
 }
 
-#' User‑defined balance transform (geometric‑mean log‑ratio)
+#' User-defined balance transform (geometric-mean log-ratio)
 #'
 #' `setaBalance()` computes *one or more* biologically meaningful balances
-#' (log‑ratios) from a count matrix.  Each balance is defined by two
+#' (log-ratios) from a count matrix. Each balance is defined by two
 #' groups of taxa: **numerator** (`num`) and **denominator** (`denom`).
-#' Groups may be given as leaf names, higher‑level labels (resolved through a
+#' Groups may be given as leaf names, higher-level labels (resolved through a
 #' `taxonomyDF`), or column indices. The resulting balance will be positive
-#' if weighted in the numerator direction, and negative toward the denominator
+#' if weighted in the numerator direction, and negative toward the denominator.
 #'
 #' For every balance and every sample the function returns
-#' \deqn{\log \frac{\mathrm{GM}(\mathrm{num})}{\mathrm{GM}(\mathrm{denom})}}
-#' where GM() is the geometric mean of the (pseudocount‑adjusted) counts in
+#' \deqn{\log \big( \mathrm{GM}(\mathrm{num}) / \mathrm{GM}(\mathrm{denom}) \big),}
+#' where \eqn{\mathrm{GM}(\cdot)} is the geometric mean of the (pseudocount-adjusted) counts in
 #' the respective group.
 #'
-#' @param counts Numeric matrix with **rows = samples, columns = taxa**.
-#' @param balances A *single* balance (list with `num`, `denom`) **or**
-#'        a *named list* of such lists for multiple balances.
-#' @param taxonomyDF Optional.  A data frame from [setaTaxonomyDF()] used to
-#'        expand higher‑level labels into their descendant leaves.
-#' @param taxonomy_col Character.  Column in `taxonomyDF` whose values should
-#'        match any higher‑level labels given in `balances`.
+#' @param counts Numeric matrix with rows = samples and columns = taxa.
+#' @param balances A single balance (list with `num`, `denom`) **or**
+#'   a named list of such lists for multiple balances.
+#' @param taxonomyDF Optional. A data frame from [setaTaxonomyDF()] used to
+#'   expand higher-level labels into their descendant leaves.
+#' @param taxonomy_col Character. Column in `taxonomyDF` whose values should
+#'   match any higher-level labels given in `balances`.
 #' @param normalize_to_parent Logical (default `FALSE`). If `TRUE`, each sample
-#'        is re‑closed to the sub‑composition formed by `num ∪ denom` before
-#'        taking the log‑ratio – i.e. the balance is within the parent total.
+#'   is re-closed to the sub-composition formed by the union of \code{num} and \code{denom} before
+#'   taking the log-ratio, i.e., the balance is within the parent total.
 #' @param pseudocount Numeric. Value added to every count to avoid
-#'        `log(0)`.  Default `1`.
+#'   `log(0)`. Default `1`.
 #'
 #' @return A list with
 #' \describe{
-#'   \item{method}{`"balance"`}
-#'   \item{counts}{Matrix **samples × balances**.  Column names are the
-#'                 balance names (or `"Balance1"` if unnamed).}
+#'   \item{method}{\code{"balance"}.}
+#'   \item{counts}{Matrix with dimensions samples \eqn{\times} balances. Column names are the
+#'     balance names (or \code{"Balance1"} if unnamed).}
 #' }
 #'
 #' @examples
-#' ## Toy metadata & taxonomy table (from setaTaxonomyDF documentation)
+#' # Toy metadata & taxonomy table (from setaTaxonomyDF documentation)
 #' meta <- data.frame(
-#'   bc          = paste0("cell", 1:6),
-#'   fine_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
-#'   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
-#'   broad_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+#'   bc         = paste0("cell", 1:6),
+#'   fine_type  = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+#'   mid_type   = c("Alv","Alv","Alv","Fib","Fib","Alv"),
+#'   broad_type = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
 #' )
 #' taxDF <- setaTaxonomyDF(meta,
-#'              resolution_cols = c("broad_type","mid_type","fine_type"))
+#'   resolution_cols = c("broad_type","mid_type","fine_type"))
 #'
-#' ## Fake counts (2 samples × n_taxa leaves)
+#' # Fake counts (2 samples x n_taxa leaves)
 #' set.seed(687)
 #' cnt <- matrix(rpois(2 * 3, 10), nrow = 2)
 #' colnames(cnt) <- rownames(taxDF)
 #'
-#' ## (a) One balance: Epi vs Stroma (broad_type level)
+#' # (a) One balance: Epi vs Stroma (broad_type level)
 #' bal1 <- list(num = "Epi", denom = "Stroma")
 #' out1 <- setaBalance(cnt, bal1,
-#'                     taxonomyDF = taxDF, taxonomy_col = "broad_type")
+#'   taxonomyDF = taxDF, taxonomy_col = "broad_type")
 #' out1$counts
 #'
-#' ## (b) Two balances in one call
+#' # (b) Two balances in one call
 #' bals <- list(
 #'   epi_vs_stroma = list(num = "Epi", denom = "Stroma"),
 #'   AT1_vs_AT2    = list(num = "AT1", denom = "AT2")
 #' )
 #' out2 <- setaBalance(cnt, bals,
-#'                     taxonomyDF = taxDF, taxonomy_col = "fine_type")
+#'   taxonomyDF = taxDF, taxonomy_col = "fine_type")
 #' out2$counts
 #' @export
 setaBalance <- function(counts,
@@ -499,7 +491,7 @@ setaTransform <- function(
         ))
     }
     
-    ## Reference‑frames
+    ## Reference frames
     if (!all(colnames(counts) %in% rownames(taxonomyDF)))
         stop("Some colnames(counts) are not in rownames(taxonomyDF).")
     

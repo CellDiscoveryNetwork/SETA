@@ -68,7 +68,7 @@ library(reshape2)
 
 ## Load and prepare data
 
-```{r, message=FALSE, warning=FALSE, echo=TRUE}
+```{r load data, message=FALSE, warning=FALSE, echo=TRUE}
 sce <- TabulaMurisSenisDroplet(tissues = "Lung")$Lung
 
 # Two samples in this dataset have had certain celltype lineages depleted. 
@@ -78,13 +78,13 @@ sce <- sce[, colData(sce)$subtissue != "immune-endo-depleted"]
 
 Quick data exploration:
 
-```{r}
+```{r tabular data exploration}
 table(sce$free_annotation, sce$age)
 table(sce$free_annotation, sce$sex)
 
 ```
 
-```{r}
+```{r palettes}
 # Set up a color palette for plots
 # 3-group distinct categoricals
 age_palette <- c(
@@ -140,7 +140,7 @@ remain stable across conditions pre-sampling. In an ideal scenario this could a
 spike-in of a known number of cells. In this example, we assume that one of the
 reference cell types are "NK cells". If it does not exist in your dataset,
 change the reference accordingly or use CLR.
-```{r}
+```{r ALR}
 # ALR Transformation: using "NK cell" as the reference cell type
 if ("Natural Killer" %in% colnames(taxa_counts)) {
     alr_out <- setaALR(taxa_counts, ref = "Natural Killer", pseudocount = 1)
@@ -153,19 +153,19 @@ if ("Natural Killer" %in% colnames(taxa_counts)) {
 
 ILR Transform using Helmert basis (boxcox_p = 0 for standard ILR)
 This is the method used by Cacoa (Viktor Petukhov & Kharchenko Lab)
-```{r}
+```{r ILR}
 ilr_out <- setaILR(taxa_counts, boxcox_p = 0, pseudocount = 1)
 print(ilr_out$counts[1:5, 1:5])
 ```
 
 Simple Percentage Transform
-```{r}
+```{r percent}
 pct_out <- setaPercent(taxa_counts)
 print(pct_out$counts[1:5, 1:5])
 ```
 
 LogCPM (counts per 10k) Transform
-```{r}
+```{r logCPM}
 lcpm_out <- setaLogCPM(taxa_counts, pseudocount = 1)
 print(lcpm_out$counts[1:5, 1:5])
 ```
@@ -197,7 +197,7 @@ ve_df <- data.frame(
 )
 ```
 
-```{r, fig.width = 6, fig.height = 4}
+```{r variance plot, fig.width = 6, fig.height = 4}
 ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
     geom_line(color = "#2ca1db", size = 1.5, group = 1) +
     geom_point(color = "#f44323", size = 3) +
@@ -213,7 +213,7 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
 We overlay the PCA latent space coordinates (using the CLR transform) with
 metadata from the Seurat object. In this example, points are colored by age.
 
-```{r, PCA scatter}
+```{r PCA scatter}
 # Extract latent space coordinates from PCA result.
 pca_coords <- latent_pca$latentSpace
 
@@ -256,7 +256,7 @@ loadings_long <- melt(loadings_df, id.vars = "Celltype",
 
 Visualize the PC loadings for each cell
 
-```{r, fig.width = 12, fig.height = 9}
+```{r loadings viz, fig.width = 12, fig.height = 9}
 # Subset rows where PC is "PC1" or "PC2"
 loading_df <- loadings_long[loadings_long$PC %in% c("PC1", "PC2"), ]
 
@@ -300,6 +300,6 @@ compositional data analysis (e.g., Aitchison, 1982).
 
 ## Session Info
 
-```{r}
+```{r packages used}
 sessionInfo()
 ```

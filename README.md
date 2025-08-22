@@ -1,4 +1,4 @@
-<img src="docs/SETAsmall.jpg?raw=true" align="right" width=250px>  
+<img src="man/figures/SETAsmall.jpg?raw=true" align="right" width=250px>  
 
 ![Downloads](https://img.shields.io/github/downloads/CellDiscoveryNetwork/SETA/total)
 ![GitHub stars](https://img.shields.io/github/stars/CellDiscoveryNetwork/SETA?style=social)

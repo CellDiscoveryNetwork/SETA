@@ -51,9 +51,9 @@ informative error.
 \examples{
 meta <- data.frame(
   bc          = paste0("cell", 1:6),
-  broad_type   = c("AT1","AT2","AT1","Fib1","Fib1","AT2"),
+  broad_type   = c("Epi","Epi","Epi","Stroma","Stroma","Epi"),
   mid_type    = c("Alv","Alv","Alv","Fib","Fib","Alv"),
-  fine_type  = c("Epi","Epi","Epi","Stroma","Stroma","Epi")
+  fine_type  = c("AT1","AT2","AT1","Fib1","Fib1","AT2")
 )
 setaTaxonomyDF(meta,
                resolution_cols = c("broad_type","mid_type","fine_type"))
