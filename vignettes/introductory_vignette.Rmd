@@ -34,15 +34,71 @@ font-size: 10px
 ```
 ## Introduction
 
+### Why use SETA? 
+
+`SETA` (Single Cell Ecological Taxonomic Analysis) performs
+compositional analysis of single-cell data by combining established 
+compositional data analysis (CoDA) methods with ecological principles. 
+While other excellent Bioconductor packages address cell-type compositions, 
+`SETA` is uniquely designed to teach and apply a variety of CoDA methods.
+
+### Compositional Analysis of Single-Cell RNA-seq Data
+
+Single-cell RNA-seq experiments produce data where cell-type abundances 
+are inherently compositional - the proportions of different cell types sum 
+to 1 (or 100%). This compositional constraint means that changes in one 
+cell type affect all others, and standard statistical methods can produce 
+misleading results. `SETA` applies well-established compositional data 
+analysis (CoDA) methods from ecology to properly handle these 
+constraints.
+
+### What SETA Does Exceptionally Well
+
+Several Bioconductor packages already address single-cell compositional 
+analysis, each with strong statistical background, including 
+`DCATS`, `speckle`, and `muscat`. `SETA` aims to provide 
+a more comprehensive set of tools for compositional analysis with a focus
+on simpler models that respect the compositional constraint.
+
+**SETA's unique strengths:**
+- **Explicit distance calculations**: Aitchison distances and compositional 
+  geometry
+- **Ecological metrics**: Balance transforms, diversity indices, and 
+  ecological framing
+- **Comprehensive transforms**: CLR, ALR, ILR, and user-defined balance 
+  transforms
+- **Educational focus**: separating each step of the workflow into separate functions,
+  `SETA` aims to make the workflow transparent and easier to explain.
+
+### Why These Steps Should Be Executed
+
+The workflow presented in this vignette is essential because:
+
+1. **Proper Data Handling**: Cell-type counts must be treated as 
+   compositional data to avoid spurious correlations and misleading 
+   statistical results
+2. **Appropriate Transforms**: Log-ratio transforms (CLR, ALR, ILR) maintain 
+   compositional properties while enabling standard statistical analysis
+3. **Ecological Insights**: Applying ecological methods provides novel 
+   perspectives on cell-type community structure and diversity
+4. **Educational Value**: `SETA` opens up the entire compositional analysis 
+   workflow to users, teaching the mathematical foundations rather than 
+   hiding them in black-box functions
+5. **Unique Capabilities**: `SETA` provides explicit distance calculations, 
+   ecological metrics, and comprehensive compositional transforms in a 
+   single, educational framework
+
+### Package Overview
+
 `SETA` provides a set of functions for compositional analysis of single-cell
 RNA-seq data.
 
 In this vignette we show how to:
 
--   **Extract a taxonomic counts matrix** from various objects (e.g. a Seurat
+-   **Extract a taxonomic counts matrix** from various objects (e.g. a `Seurat`
 object)
--   **Apply compositional transforms** such as CLR and ALR
--   **Compute a latent space** using PCA (with options for PCoA or NMDS)
+-   **Apply compositional transforms** such as `CLR` and `ALR`
+-   **Compute a latent space** using `PCA` (with options for `PCoA` or `NMDS`)
 
 This example works with the Tabula Muris Senis lung dataset which can be
 downloaded directly with bioconductor It contains lung single-cell profiles from
@@ -53,6 +109,14 @@ young adult to old, recorded in the age column. Standard cell-type labels
 *This vignette is modular; users can update or replace the dataset-specific
 settings* *(e.g., metadata column names, reference cell type) as appropriate for
 their own data.*
+
+## Installation
+
+```{r installation, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("SETA")
+```
 
 ## Loading the Data
 
@@ -97,10 +161,17 @@ age_palette <- c(
 
 ## Extracting the Taxonomic Counts Matrix
 
-The `setaCounts` function extracts a cell-type counts matrix given that the
-object contains cell-level metadata. For this dataset, we want the cell-type
-annotations to come from Celltype and the sample identifiers from donor_id. If
-necessary, we reassign these columns before extraction.
+The first step in compositional analysis is to extract a cell-type counts matrix from single-cell objects. 
+The `setaCounts()` function converts cell-level metadata into a sample-by-cell-type count matrix, 
+where each row represents a sample and each column represents a cell type. 
+This transformation is crucial because compositional analysis requires sample-level data, 
+not individual cell data.
+
+For this dataset, we want the cell-type annotations to come from the `free_annotation` column 
+and the sample identifiers from `mouse.id`. 
+The function aggregates individual cells by sample and cell type, 
+creating a counts matrix suitable for compositional analysis. 
+If necessary, we reassign these columns before extraction to match the expected column names.
 
 ```{r data wrangling, message=FALSE, warning=FALSE, echo=TRUE}
 # Extract the taxonomic counts matrix using custom metadata column names
@@ -120,13 +191,16 @@ head(taxa_counts)
 
 ## Applying Compositional Transforms
 
-Below we apply three transforms:
+Once we have our cell-type counts matrix, we must apply appropriate compositional transforms before statistical analysis. 
+Raw count data cannot be used directly because it violates the compositional constraint (proportions must sum to 1). 
+Log-ratio transforms solve this problem by converting the data to a space where standard statistical methods can be applied.
 
--   The centered log-ratio (CLR) transform,
+Below we demonstrate four different compositional transforms, each with specific advantages:
 
--   The additive log-ratio (ALR) transform.
-
--   The isometric log-ratio (ILR) transform.
+-   **Centered Log-Ratio (CLR)**: Centers log-transformed data around the geometric mean, useful when no reference cell type is available
+-   **Additive Log-Ratio (ALR)**: Uses a specific cell type as reference, appropriate when one cell type remains stable across conditions
+-   **Isometric Log-Ratio (ILR)**: Projects data onto orthonormal basis, reducing dimensionality by one while maintaining all information
+-   **Simple transforms**: Percentages and log-CPM for comparison and visualization
 
 CLR Transformation
 ```{r transformation, echo=TRUE}
@@ -172,7 +246,17 @@ print(lcpm_out$counts[1:5, 1:5])
 
 ## Latent Space Analysis
 
-Once we have our compositional data transformed we can compute a latent space using `PCA`, `PCoA` or `NMDS`. 
+After applying compositional transforms, we can perform dimensionality reduction to 
+visualize and analyze the relationships between samples. 
+The transformed data can be analyzed using standard multivariate methods, 
+but it's important to remember that we're now working in log-ratio space, 
+not the original count space.
+
+We demonstrate three different latent space methods, each with specific advantages:
+
+-   **Principal Component Analysis (PCA)**: Linear dimensionality reduction that maximizes variance, provides loadings for interpretation
+-   **Principal Coordinate Analysis (PCoA)**: Works with distance matrices, useful when relationships between samples are more important than individual features
+-   **Non-metric Multidimensional Scaling (NMDS)**: Non-linear method that preserves rank-order relationships, robust to outliers 
 ```{r latent spaces, echo=TRUE}
 latent_pca <- setaLatent(clr_out, method = "PCA", dims = 5)
 # PCA Latent Space Coordinates:
@@ -202,7 +286,7 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
     geom_line(color = "#2ca1db", size = 1.5, group = 1) +
     geom_point(color = "#f44323", size = 3) +
     labs(title = "Cumulative Variance Explained by Principal Components",
-         x = "Principal Component", y = "Cumulative Variance Explained (%)") +
+        x = "Principal Component", y = "Cumulative Variance Explained (%)") +
     theme_minimal() +
     ylim(c(0, 1)) +
     theme(text = element_text(size = 12))
@@ -210,8 +294,8 @@ ggplot(ve_df, aes(x = PC, y = VarianceExplained)) +
 
 ### PCA Scatter plot
 
-We overlay the PCA latent space coordinates (using the CLR transform) with
-metadata from the Seurat object. In this example, points are colored by age.
+We overlay the PCA latent space coordinates (using the `CLR` transform) with
+metadata from the `Seurat` object. In this example, points are colored by age.
 
 ```{r PCA scatter}
 # Extract latent space coordinates from PCA result.
@@ -227,7 +311,7 @@ meta_df <- setaMetadata(
 pca_plot_df <- cbind(pca_coords, meta_df)
 ```
 
-```{r, fig.width = 6, fig.height = 4}
+```{r PCA scatter plot, fig.width = 6, fig.height = 4}
 # Create the scatter plot
 ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
     geom_text(aes(label = sample_id), size = 5) +
@@ -235,7 +319,7 @@ ggplot(pca_plot_df, aes(x = PC1, y = PC2, color = age)) +
         values = age_palette
     ) +
     labs(title = "PCA Scatter Plot",
-         x = "PC1", y = "PC2", color = "Age") +
+        x = "PC1", y = "PC2", color = "Age") +
     theme_linedraw() +
     xlab(sprintf("PC1 (%s%%)", signif(latent_pca$varExplained[1], 4) * 100)) +
     ylab(sprintf("PC2 (%s%%)", signif(latent_pca$varExplained[2], 4) * 100))
@@ -249,9 +333,9 @@ Plot the variance explained by interesting principal components.
 loadings_df <- as.data.frame(latent_pca$loadings)
 loadings_df$Celltype <- rownames(loadings_df)
 
-# Melt the loadings into long format for ggplot2
+# Melt the loadings into long format for `ggplot2`
 loadings_long <- melt(loadings_df, id.vars = "Celltype",
-                      variable.name = "PC", value.name = "Loading")
+                    variable.name = "PC", value.name = "Loading")
 ```
 
 Visualize the PC loadings for each cell
@@ -267,13 +351,13 @@ loading_df$Celltype_PC <- paste(loading_df$Celltype, loading_df$PC, sep = "___")
 loading_df$Celltype_PC <- with(loading_df, reorder(Celltype_PC, Loading))
 
 ggplot(loading_df,
-       aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
+        aes(x = Loading, y = Celltype, label = Celltype, fill = Loading)) +
     geom_col() +
     facet_wrap(~PC, scales = "free") +
     # scale_y_reordered() +
     labs(title = "PC Loadings",
-         x = "Loading",
-         y = "Cell Type") +
+        x = "Loading",
+        y = "Cell Type") +
     theme_linedraw() +
     scale_fill_viridis_c() +
     expand_limits(x = c(-0.2, 0.4))
@@ -283,11 +367,11 @@ ggplot(loading_df,
 
 This vignette illustrated a basic workflow using the SETA package:
 
-1.  Extracting a taxonomic counts matrix from a Seurat Object with setaCounts
+1.  Extracting a taxonomic counts matrix from a `Seurat` Object with `setaCounts()`
 
-2.  Applying compositional transforms (CLR, ALR, ILR, and simple transforms)
+2.  Applying compositional transforms (`CLR`, `ALR`, `ILR`, and simple transforms)
 
-3.  Performing latent space analysis (PCA)
+3.  Performing latent space analysis (`PCA`)
 
 4.  Visualizing sample-level latent spaces
 

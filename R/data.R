@@ -83,6 +83,10 @@ mockSC <- function(
     )
     
     ## 4) build Seurat object (single assay, no extra layers) ---------------
+    if (!requireNamespace("SeuratObject", quietly = TRUE)) {
+        stop("SeuratObject package is required for mockSC() but not installed. ",
+             "Please install it with: BiocManager::install('SeuratObject')")
+    }
     se <- SeuratObject::CreateSeuratObject(counts = counts, meta.data = meta)
     
     # # light preprocessing (optional)
@@ -133,7 +137,10 @@ mockCount <- function(df = mockLong()) {
 #' @export
 
 mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
-    stopifnot(requireNamespace("SingleCellExperiment", quietly = TRUE))
+    if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+        stop("SingleCellExperiment package is required for mockSCE() but not installed. ",
+             "Please install it with: BiocManager::install('SingleCellExperiment')")
+    }
     df  <- mockLong(nc, nt, ns, nb, useBatch)
     mat <- matrix(rpois(nc * 20, lambda = 5), 20,
                     dimnames = list(paste0("gene", seq_len(20)), df$bc))

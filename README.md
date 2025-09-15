@@ -39,9 +39,17 @@ SETA aims to make compositional analysis user friendly and easy to understand wi
 
 ## Installation
 
-Until acceptance on Bioconductor, you can install from GitHub:
+### From Bioconductor (recommended)
 
-```{r}
+```r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("SETA")
+```
+
+### From GitHub (development version)
+
+```r
 install.packages("remotes")
 remotes::install_github("CellDiscoveryNetwork/SETA")
 ```

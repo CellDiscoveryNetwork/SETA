@@ -47,8 +47,8 @@
 #' @importFrom MASS isoMDS
 #' @export
 setaLatent <- function(transform_obj,
-                       method = c("PCA", "PCoA", "NMDS"),
-                       dims = 2) {
+                        method = c("PCA", "PCoA", "NMDS"),
+                        dims = 2) {
     method <- match.arg(method)
     x <- transform_obj$counts
     if (!is.matrix(x)) stop("'transform_obj$counts' must be a matrix.")

@@ -54,6 +54,14 @@ Standard cell-type labels (free_annotation) and additional metadata (e.g. sex) a
 *This vignette is modular; users can update or replace the dataset-specific settings*
 *(e.g., metadata column names, reference cell type) as appropriate for their own data.*
 
+## Installation
+
+```{r installation, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("SETA")
+```
+
 ## Load libraries 
 
 ```{r load libraries, message=FALSE, warning=FALSE, echo=TRUE}
@@ -154,8 +162,8 @@ merged_dist <- dist_df |>
 
 # Create a age-age category for comparison
 merged_dist$age_pair <- paste(merged_dist$age.from,
-                              merged_dist$age.to,
-                              sep = "-")
+                            merged_dist$age.to,
+                            sep = "-")
 ```
 
 Visualize distances
@@ -164,8 +172,8 @@ ggplot(merged_dist, aes(x = age_pair, y = distance)) +
     geom_boxplot(fill = "grey90") +
     geom_jitter(width = 0.2, color = "black") +
     labs(title = "Aitchison Distances Between Age Groups",
-         x = "Age Pair",
-         y = "Aitchison Distance") +
+        x = "Age Pair",
+        y = "Aitchison Distance") +
     theme_minimal(base_size = 16) + 
     theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
 ```
@@ -181,7 +189,7 @@ clr_long <- clr_long |>
 ```{r viz pairwise distances, fig.width = 15, fig.height = 10}
 # Apply pairwise Wilcoxon tests and plot using ggpubr
 ggplot(clr_long, aes(x = age, y = CLR,
-                     fill = age, color = age)) +
+                    fill = age, color = age)) +
     geom_boxplot(position = position_dodge(0.8), alpha = 0.7) +
     geom_jitter(size = 1.5, shape = 21) +
     # stat_compare_means(method = "wilcox.test",
@@ -196,8 +204,8 @@ ggplot(clr_long, aes(x = age, y = CLR,
     scale_color_manual(values = age_palette) +
     theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 1)) +
     labs(title = "CLR by Celltype and Age",
-         x = "Age",
-         y = "CLR-transformed Composition")
+        x = "Age",
+        y = "CLR-transformed Composition")
 ```
 
 ## Correlate celltype compositions with metadata
@@ -231,18 +239,18 @@ p_mat <- cor.mtest(full_cor_mat)$p
 Visualize correlations
 ```{r corr viz, fig.width = 12, fig.height = 12}
 corrplot(full_cor_mat,
-         method = "circle",
-         type = "full",
-         addrect = 4,
-         col = c_palette,
-         p.mat = p_mat,
-         sig.level = c(.001, .01, .05),
-         insig = "label_sig",
-         tl.cex = 0.8,
-         pch.cex = 1.5,
-         tl.col = "black",
-         order = "hclust",
-         diag = FALSE)
+        method = "circle",
+        type = "full",
+        addrect = 4,
+        col = c_palette,
+        p.mat = p_mat,
+        sig.level = c(.001, .01, .05),
+        insig = "label_sig",
+        tl.cex = 0.8,
+        pch.cex = 1.5,
+        tl.col = "black",
+        order = "hclust",
+        diag = FALSE)
 ```
 
 
@@ -257,16 +265,16 @@ train_df <- clr_metadata |>
 train_control <- trainControl(method = "cv", number = 5)
 
 model <- train(age ~ ., data = subset(train_df),
-               method = "glmnet",
-               trControl = train_control)
+                method = "glmnet",
+                trControl = train_control)
 
 importance <- varImp(model)
 ```
 
 ```{r plot caret, fig.width = 12, fig.height = 12}
 plot(importance,
-     main = "Cross-Validated Variable Importance",
-     sub = "Caret GLMnet model"
+    main = "Cross-Validated Variable Importance",
+    sub = "Caret GLMnet model"
 )
 ```
 

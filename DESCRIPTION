@@ -1,6 +1,6 @@
 Package: SETA
 Title: Single Cell Ecological Taxonomic Analysis
-Version: 0.99.1
+Version: 0.99.2
 Authors@R: c(
     person("Kyle", "Kimler", email = "kkimler@broadinstitute.org", role = c("aut", "cre"), comment=c(ORCID="0000-0003-4735-9064")),
     person("Marc", "Elosua-Bayes", role = "aut")
@@ -19,6 +19,7 @@ Imports:
     tidygraph,
     rlang
 Suggests:
+    BiocStyle,
     caret,
     corrplot,
     ggplot2,
