@@ -24,6 +24,17 @@
 #' SETA also provides multi-resolution analysis capabilities, allowing users to 
 #' analyze data at different taxonomic levels (e.g., broad cell types vs. specific subtypes).
 #'
+#' @return
+#' This package provides functions that return various data structures:
+#' \itemize{
+#'   \item \code{setaCounts()}: Returns a sample-by-cell-type count matrix
+#'   \item \code{setaTransform()}: Returns a list with transformed counts and method information
+#'   \item \code{setaLatent()}: Returns a list with latent space coordinates, loadings, and variance explained
+#'   \item \code{setaDistances()}: Returns a data frame with pairwise distances between samples
+#'   \item \code{setaTaxonomyDF()}: Returns a data frame with hierarchical taxonomy information
+#'   \item \code{taxonomy_to_tbl_graph()}: Returns a \code{tbl_graph} object for visualization
+#' }
+#'
 #' Key functions include:
 #' \itemize{
 #'   \item \code{\link{setaCounts}}: Extract cell-type count matrices from single-cell objects

@@ -1,6 +1,6 @@
 # SETA NEWS
 
-## Version 0.99.2 (2025-09-15)
+## Version 0.99.3 (2025-09-15)
 
 ### Bioconductor Preparation
 - Updated package for Bioconductor review

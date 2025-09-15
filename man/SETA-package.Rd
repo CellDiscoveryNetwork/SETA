@@ -4,6 +4,37 @@
 \alias{SETA-package}
 \alias{SETA}
 \title{Single Cell Ecological Taxonomic Analysis}
+\value{
+This package provides functions that return various data structures:
+\itemize{
+  \item \code{setaCounts()}: Returns a sample-by-cell-type count matrix
+  \item \code{setaTransform()}: Returns a list with transformed counts and method information
+  \item \code{setaLatent()}: Returns a list with latent space coordinates, loadings, and variance explained
+  \item \code{setaDistances()}: Returns a data frame with pairwise distances between samples
+  \item \code{setaTaxonomyDF()}: Returns a data frame with hierarchical taxonomy information
+  \item \code{taxonomy_to_tbl_graph()}: Returns a \code{tbl_graph} object for visualization
+}
+
+Key functions include:
+\itemize{
+  \item \code{\link{setaCounts}}: Extract cell-type count matrices from single-cell objects
+  \item \code{\link{setaTransform}}: Apply compositional transforms (CLR, ALR, ILR, balance)
+  \item \code{\link{setaLatent}}: Perform dimensionality reduction (PCA, PCoA, NMDS)
+  \item \code{\link{setaDistances}}: Calculate compositional distances between samples
+  \item \code{\link{setaTaxonomyDF}}: Create hierarchical taxonomies for multi-resolution analysis
+  \item \code{\link{taxonomy_to_tbl_graph}}: Convert taxonomies to graph objects for visualization
+}
+
+For detailed examples, see the package vignettes:
+\itemize{
+  \item \code{vignette("introductory_vignette", package = "SETA")}
+  \item \code{vignette("comparing_samples", package = "SETA")}
+  \item \code{vignette("reference_frames", package = "SETA")}
+}
+
+The package is designed to be educational, teaching users about compositional 
+data analysis principles while providing practical tools for single-cell research.
+}
 \description{
 SETA provides tools for compositional analysis of single-cell RNA-seq data, 
 applying ecological principles and compositional data analysis (CoDA) methods 
@@ -27,26 +58,6 @@ The package implements several compositional transforms:
 
 SETA also provides multi-resolution analysis capabilities, allowing users to 
 analyze data at different taxonomic levels (e.g., broad cell types vs. specific subtypes).
-
-Key functions include:
-\itemize{
-  \item \code{\link{setaCounts}}: Extract cell-type count matrices from single-cell objects
-  \item \code{\link{setaTransform}}: Apply compositional transforms (CLR, ALR, ILR, balance)
-  \item \code{\link{setaLatent}}: Perform dimensionality reduction (PCA, PCoA, NMDS)
-  \item \code{\link{setaDistances}}: Calculate compositional distances between samples
-  \item \code{\link{setaTaxonomyDF}}: Create hierarchical taxonomies for multi-resolution analysis
-  \item \code{\link{taxonomy_to_tbl_graph}}: Convert taxonomies to graph objects for visualization
-}
-
-For detailed examples, see the package vignettes:
-\itemize{
-  \item \code{vignette("introductory_vignette", package = "SETA")}
-  \item \code{vignette("comparing_samples", package = "SETA")}
-  \item \code{vignette("reference_frames", package = "SETA")}
-}
-
-The package is designed to be educational, teaching users about compositional 
-data analysis principles while providing practical tools for single-cell research.
 }
 \references{
 Aitchison, J. (1982). The Statistical Analysis of Compositional Data.
