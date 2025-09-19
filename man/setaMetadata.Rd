@@ -4,7 +4,7 @@
 \alias{setaMetadata}
 \title{Extract Sample-Level Metadata from Various Objects}
 \usage{
-setaMetadata(x, sample_col = "Sample ID", meta_cols)
+setaMetadata(x, sample_col = "Sample ID", meta_cols = NULL)
 }
 \arguments{
 \item{x}{An object of class dataframe which contains cell-level or
@@ -36,7 +36,7 @@ visualizations or analyses where sample-level inspection is required.
 # Using a Seurat object
 \donttest{
 # if (requireNamespace("SeuratObject", quietly = TRUE)) {
-# meta_df <- setaMetadata(seurat_obj@meta.data,
+# meta_df <- setaMetadata(seurat_obj[[]],
 #                         sample_col="donor_id",
 #                         meta_cols=c("disease", "Severity"))
 # }

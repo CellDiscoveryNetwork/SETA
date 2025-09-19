@@ -1,10 +1,10 @@
 #' @rdname data
 #' @name data
-#' @aliases mockSC mockSCE mockLong mockCount makeTypeHierarchy
+#' @aliases mockSeurat mockSCE mockLong mockCount makeTypeHierarchy
 #' @title Synthetic single-cell, mixture and marker data
 #'
 #' @description
-#' \code{mockSC/mockSCE/mockLong} are designed to generate synthetic single-cell
+#' \code{mockSeurat/mockSCE/mockLong} are designed to generate synthetic single-cell
 #' data. These data are not meant to represent biologically
 #' meaningful use-cases, but are solely intended for use in examples, for
 #' unit-testing, and to demonstrate \code{SETA}'s general functionality.
@@ -16,7 +16,7 @@
 #'   column
 #' @return
 #' \itemize{
-#' \item{\code{mockSC} returns a \code{Seurat} object
+#' \item{\code{mockSeurat} returns a \code{Seurat} object
 #'   with rows = genes, columns = single cells, and cell metadata
 #'   column \code{type} containing group identifiers.}
 #' \item{\code{mockLong} returns a \code{data.frame} object
@@ -35,7 +35,7 @@
 #' }
 #'
 #' @examples
-#' seu <- mockSC()
+#' seu <- mockSeurat()
 #' sce <- mockSCE()
 #' hierarchy <- makeTypeHierarchy(c("Lineage", "Type", "State"))
 NULL
@@ -45,7 +45,7 @@ NULL
 #' @importFrom stats rpois
 #' @export
 #' 
-mockSC <- function(
+mockSeurat <- function(
         ng = 200,   # genes
         nc = 50,    # cells per fine type
         nt = 3,     # fine types
@@ -84,7 +84,7 @@ mockSC <- function(
     
     ## 4) build Seurat object (single assay, no extra layers) ---------------
     if (!requireNamespace("SeuratObject", quietly = TRUE)) {
-        stop("SeuratObject package is required for mockSC() but not installed. ",
+        stop("SeuratObject package is required for mockSeurat() but not installed. ",
              "Please install it with: BiocManager::install('SeuratObject')")
     }
     se <- SeuratObject::CreateSeuratObject(counts = counts, meta.data = meta)
@@ -95,7 +95,7 @@ mockSC <- function(
     #     ScaleData(se, verbose = FALSE) |>
     #     RunPCA(se, npcs = 5, verbose = FALSE)
     
-    se@misc$pvclust <- list()  # placeholder slot for downstream tests
+    SeuratObject::Misc(se, "pvclust") <- list()  # placeholder slot for downstream tests
     se
 }
 

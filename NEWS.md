@@ -1,5 +1,13 @@
 # SETA NEWS
 
+## Version 0.99.4 (2025-09-19)
+
+### Bioconductor Preparation
+- Updated package for Stefano's review
+- Included direct access of SCE and Seurat objects with SetaCounts
+- removed direct accessors from tests and mockup of these objects
+
+
 ## Version 0.99.3 (2025-09-15)
 
 ### Bioconductor Preparation
@@ -58,7 +66,7 @@
 
 ### Data
 - Added mock data functions for testing and examples:
-  - `mockSC()`: Mock Seurat object
+  - `mockSeurat()`: Mock Seurat object
   - `mockSCE()`: Mock SingleCellExperiment object
   - `mockCount()`: Mock count matrix
   - `mockLong()`: Mock long-form data frame

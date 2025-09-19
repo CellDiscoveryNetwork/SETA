@@ -28,7 +28,7 @@ A `data.frame` with one row per unique value of the finest label
 }
 \description{
 setaTaxonomyDF() converts **one long-form metadata data.frame**-typically
-colData(sce), seu@meta.data, or any frame you already have, into a tidy
+colData(sce), seu[[]], or any frame you already have, into a tidy
 taxonomy table.  Each row corresponds to a unique value of the *finest*
 label (the **last** element of `resolution_cols`), and every coarser label
 sits in its own column.

@@ -1,4 +1,4 @@
-mockSC <- function(ng = 200,   # genes
+mockSeurat <- function(ng = 200,   # genes
                    nc = 50,    # cells per fine‑type
                    nt = 3,     # # fine‑types ("type1", …)
                    ns = 4,     # # samples

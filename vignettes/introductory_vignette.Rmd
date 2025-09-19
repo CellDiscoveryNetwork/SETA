@@ -52,13 +52,15 @@ misleading results. `SETA` applies well-established compositional data
 analysis (CoDA) methods from ecology to properly handle these 
 constraints.
 
-### What SETA Does Exceptionally Well
+### What SETA Does Well
 
 Several Bioconductor packages already address single-cell compositional 
 analysis, each with strong statistical background, including 
-`DCATS`, `speckle`, and `muscat`. `SETA` aims to provide 
-a more comprehensive set of tools for compositional analysis with a focus
-on simpler models that respect the compositional constraint.
+`DCATS`, `speckle`, `muscat` and `sccomp`. While these packages, especially
+sccomp, provides the statistical rigor for complex analyses, `SETA` 
+aims to open up the entire compositional analysis workflow to users 
+who want to understand and apply these methods step-by-step.
+`SETA` focuses on simpler models that respect the compositional constraint.
 
 **SETA's unique strengths:**
 - **Explicit distance calculations**: Aitchison distances and compositional 

@@ -2,14 +2,14 @@
 % Please edit documentation in R/data.R
 \name{data}
 \alias{data}
-\alias{mockSC}
+\alias{mockSeurat}
 \alias{mockSCE}
 \alias{mockLong}
 \alias{mockCount}
 \alias{makeTypeHierarchy}
 \title{Synthetic single-cell, mixture and marker data}
 \usage{
-mockSC(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2)
+mockSeurat(ng = 200, nc = 50, nt = 3, ns = 4, nb = 2)
 
 mockLong(nc = 50, nt = 3, ns = 4, nb = 2, useBatch = TRUE)
 
@@ -33,7 +33,7 @@ be assigned to fine, mid and broad annotations}
 }
 \value{
 \itemize{
-\item{\code{mockSC} returns a \code{Seurat} object
+\item{\code{mockSeurat} returns a \code{Seurat} object
   with rows = genes, columns = single cells, and cell metadata
   column \code{type} containing group identifiers.}
 \item{\code{mockLong} returns a \code{data.frame} object
@@ -52,14 +52,14 @@ be assigned to fine, mid and broad annotations}
 }
 }
 \description{
-\code{mockSC/mockSCE/mockLong} are designed to generate synthetic single-cell
+\code{mockSeurat/mockSCE/mockLong} are designed to generate synthetic single-cell
 data. These data are not meant to represent biologically
 meaningful use-cases, but are solely intended for use in examples, for
 unit-testing, and to demonstrate \code{SETA}'s general functionality.
 Please don't use it in real life.
 }
 \examples{
-seu <- mockSC()
+seu <- mockSeurat()
 sce <- mockSCE()
 hierarchy <- makeTypeHierarchy(c("Lineage", "Type", "State"))
 }

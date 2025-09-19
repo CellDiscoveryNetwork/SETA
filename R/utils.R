@@ -1,11 +1,47 @@
+#' Extract metadata from single-cell objects
+#'
+#' This function extracts metadata from various single-cell objects
+#' and converts them to data.frames for use with other SETA functions.
+#'
+#' @param obj A single-cell object (Seurat, SingleCellExperiment, or data.frame)
+#' @return A data.frame containing cell metadata
+#' @keywords internal
+.extractMetadata <- function(obj) {
+    if (is.data.frame(obj)) {
+        return(obj)
+    }
+    
+    # Check for Seurat object
+    if (inherits(obj, "Seurat")) {
+        if (!requireNamespace("SeuratObject", quietly = TRUE)) {
+            stop("SeuratObject package not found. Load it and try again")
+        }
+        return(obj[[]])
+    }
+    
+    # Check for SingleCellExperiment object
+    if (inherits(obj, "SingleCellExperiment")) {
+        if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+            stop("SingleCellExperiment package is required for SingleCellExperiment objects but not installed. ",
+                 "Please install it with: BiocManager::install('SingleCellExperiment')")
+        }
+        if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
+            stop("SummarizedExperiment package is required for SingleCellExperiment objects but not installed. ",
+                 "Please install it with: BiocManager::install('SummarizedExperiment')")
+        }
+        return(as.data.frame(SummarizedExperiment::colData(obj)))
+    }
+    
+    stop("Object must be a data.frame, Seurat object, or SingleCellExperiment")
+}
+
 #' Extract Taxonomic Counts from Various Single Cell Objects
 #'
 #' Given a long-form \code{data.frame},
 #' creates a type-by-sample matrix of cell counts.
 #' Users can specify the column names for cell types, samples, and barcodes.
 #'
-#' @param obj A long-form data.frame. Typically colData from a
-#'   SingleCellExperiment or @meta.data from a Seurat object.
+#' @param obj A long-form data.frame, Seurat object, or SingleCellExperiment object.
 #' @param cell_type_col Column name for cell types (default "type")
 #' @param sample_col Column name for sample IDs (default "sample")
 #' @param bc_col Column name for barcodes (default "bc")
@@ -30,11 +66,8 @@ setaCounts <- function(obj,
                        cell_type_col = "type",
                        sample_col   = "sample",
                        bc_col       = "bc") {
-    if (!is.data.frame(obj)) {
-        stop("Input must be a data.frame.
-          If you want to use Seurat metadata or SCE colData,
-          convert these to a dataframe and input them directly.")
-    }
+    # Extract metadata from various object types
+    obj <- .extractMetadata(obj)
     
     fac_cols <- names(obj)[vapply(obj, is.factor, logical(1))]
     if (length(fac_cols)) {
@@ -72,7 +105,7 @@ setaCounts <- function(obj,
 #' Build a taxonomy data frame at multiple resolutions
 #'
 #' setaTaxonomyDF() converts **one long-form metadata data.frame**-typically
-#' colData(sce), seu@meta.data, or any frame you already have, into a tidy
+#' colData(sce), seu[[]], or any frame you already have, into a tidy
 #' taxonomy table.  Each row corresponds to a unique value of the *finest*
 #' label (the **last** element of `resolution_cols`), and every coarser label
 #' sits in its own column.

@@ -25,7 +25,7 @@
 #' # Using a Seurat object
 #' \donttest{
 #' # if (requireNamespace("SeuratObject", quietly = TRUE)) {
-#' # meta_df <- setaMetadata(seurat_obj@meta.data,
+#' # meta_df <- setaMetadata(seurat_obj[[]],
 #' #                         sample_col="donor_id",
 #' #                         meta_cols=c("disease", "Severity"))
 #' # }
@@ -41,15 +41,21 @@
 #' @export
 setaMetadata <- function(x,
                          sample_col = "Sample ID",
-                         meta_cols) {
+                         meta_cols = NULL) {
     stopifnot(
         is.data.frame(x),
         length(sample_col) == 1L, is.character(sample_col),
-        sample_col %in% names(x),
-        is.character(meta_cols), length(meta_cols) > 0L
+        sample_col %in% names(x)
     )
+    if (!is.null(meta_cols)) {
+        stopifnot(is.character(meta_cols), length(meta_cols) > 0L)
+    }
     if (anyNA(x[[sample_col]])) stop("`", sample_col, "` contains NA.")
     
+    # If meta_cols is NULL, use all columns except sample_col
+    if (is.null(meta_cols)) {
+        meta_cols <- setdiff(names(x), sample_col)
+    }
     meta_cols <- setdiff(unique(meta_cols), sample_col)
     missing <- setdiff(meta_cols, names(x))
     if (length(missing)) stop(

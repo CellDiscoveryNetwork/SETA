@@ -7,8 +7,7 @@
 setaCounts(obj, cell_type_col = "type", sample_col = "sample", bc_col = "bc")
 }
 \arguments{
-\item{obj}{A long-form data.frame. Typically colData from a
-SingleCellExperiment or @meta.data from a Seurat object.}
+\item{obj}{A long-form data.frame, Seurat object, or SingleCellExperiment object.}
 
 \item{cell_type_col}{Column name for cell types (default "type")}
 
