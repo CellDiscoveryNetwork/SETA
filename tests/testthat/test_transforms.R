@@ -82,12 +82,11 @@ test_that("setaPercent and setaLogCPM error on non-matrix", {
 })
 
 test_that("Transforms work on mock SCE, Seurat, and long data", {
-  skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("Seurat")
   sce <- mockSCE()
   seu <- mockSeurat()
   df  <- mockLong()
-  matSCE <- setaCounts(as.data.frame(SummarizedExperiment::colData(sce)),
+  matSCE <- setaCounts(as.data.frame(SingleCellExperiment::colData(sce)),
                        bc = "bc")
   matSeurat <- setaCounts(seu, bc = "rownames")
   matDF <- setaCounts(df)

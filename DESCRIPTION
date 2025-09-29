@@ -1,6 +1,6 @@
 Package: SETA
 Title: Single Cell Ecological Taxonomic Analysis
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: c(
     person("Kyle", "Kimler", email = "kkimler@broadinstitute.org", role = c("aut", "cre"), comment=c(ORCID="0000-0003-4735-9064")),
     person("Marc", "Elosua-Bayes", role = "aut")
@@ -15,6 +15,7 @@ Imports:
     dplyr,
     MASS,
     Matrix,
+    SingleCellExperiment (>= 1.30.1),
     stats,
     tidygraph,
     rlang,
@@ -33,7 +34,6 @@ Suggests:
     SeuratObject,
     Seurat,
     SummarizedExperiment,
-    SingleCellExperiment,
     TabulaMurisSenisData,
     tidyr,
     tidytext,

@@ -6,11 +6,9 @@
 
 ## SETA: Ecological Compositional Analysis of scRNA-seq Data
 
-SETA aims to make compositional analysis user friendly and easy to understand with visualization of single-cell RNA-seq data, allowing researchers to easily assess cell-type proportions and distribution changes across biological conditions.
+SETA aims to make compositional analysis user friendly and easy to understand by breaking down a full analysis into educational pieces. SETA includes vignettes for visualization of compositional analysis of single-cell RNA-seq data, aiming to make it easier to perform sample-level unsupervised analysis of single-cell data via sample embeddings and distances. 
 
 ## Project Status
-
-**In Development**
 
 - Based on a non-Bioconductor-compliant package, [SETA](https://github.com/jo-m-lab/SETA)
 

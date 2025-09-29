@@ -1,5 +1,10 @@
 # SETA NEWS
 
+## Version 0.99.6 (2025-09-29)
+
+### Dependency Changes
+- Moved `SingleCellExperiment` from Suggests to Imports
+
 ## Version 0.99.5 (2025-09-19)
 
 ### Bioconductor Preparation

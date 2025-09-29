@@ -42,6 +42,7 @@ NULL
 
 #' @rdname data
 #' @importFrom Matrix Matrix
+#' @importFrom SingleCellExperiment SingleCellExperiment
 #' @importFrom stats rpois
 #' @export
 #' 
@@ -137,10 +138,6 @@ mockCount <- function(df = mockLong()) {
 #' @export
 
 mockSCE <- function(nc = 500, nt = 3, ns = 4, nb = 2, useBatch = TRUE) {
-    if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-        stop("SingleCellExperiment package is required for mockSCE() but not installed. ",
-             "Please install it with: BiocManager::install('SingleCellExperiment')")
-    }
     df  <- mockLong(nc, nt, ns, nb, useBatch)
     mat <- matrix(rpois(nc * 20, lambda = 5), 20,
                     dimnames = list(paste0("gene", seq_len(20)), df$bc))

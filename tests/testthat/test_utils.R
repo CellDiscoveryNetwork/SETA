@@ -1,7 +1,6 @@
 set.seed(687)
 
 test_that("setaCounts returns a correctly‑shaped matrix from metadata frames", {
-  skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("Seurat")
 
   sce <- mockSCE()
@@ -42,8 +41,6 @@ test_that("setaCounts works directly with Seurat objects", {
 })
 
 test_that("setaCounts works directly with SingleCellExperiment objects", {
-  skip_if_not_installed("SingleCellExperiment")
-  
   sce <- mockSCE()
   mat <- setaCounts(sce, bc_col = "rownames")
   
@@ -61,11 +58,7 @@ test_that("setaCounts errors gracefully when SeuratObject not installed", {
   expect_no_error(setaCounts(seu, bc_col = "rownames"))
 })
 
-test_that("setaCounts errors gracefully when SingleCellExperiment not installed", {
-  # This test would require mocking the requireNamespace check
-  # For now, we'll test that the function works when packages are available
-  skip_if_not_installed("SingleCellExperiment")
-  
+test_that("setaCounts works with SingleCellExperiment objects", {
   sce <- mockSCE()
   expect_no_error(setaCounts(sce, bc_col = "rownames"))
 })
@@ -112,7 +105,6 @@ test_that("setaCounts warns on invalid sample IDs", {
 })
 
 test_that("setaTaxonomyDF builds one‑to‑one taxonomy frames", {
-  skip_if_not_installed("SingleCellExperiment")
   skip_if_not_installed("Seurat")
 
   res_cols <- c("broad_type", "mid_type", "fine_type")

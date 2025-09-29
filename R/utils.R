@@ -6,6 +6,7 @@
 #' @param obj A single-cell object (Seurat, SingleCellExperiment, or data.frame)
 #' @return A data.frame containing cell metadata
 #' @keywords internal
+#' @importFrom SingleCellExperiment colData
 .extractMetadata <- function(obj) {
     if (is.data.frame(obj)) {
         return(obj)
@@ -21,15 +22,7 @@
     
     # Check for SingleCellExperiment object
     if (inherits(obj, "SingleCellExperiment")) {
-        if (!requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-            stop("SingleCellExperiment package is required for SingleCellExperiment objects but not installed. ",
-                 "Please install it with: BiocManager::install('SingleCellExperiment')")
-        }
-        if (!requireNamespace("SummarizedExperiment", quietly = TRUE)) {
-            stop("SummarizedExperiment package is required for SingleCellExperiment objects but not installed. ",
-                 "Please install it with: BiocManager::install('SummarizedExperiment')")
-        }
-        return(as.data.frame(SummarizedExperiment::colData(obj)))
+        return(as.data.frame(SingleCellExperiment::colData(obj)))
     }
     
     stop("Object must be a data.frame, Seurat object, or SingleCellExperiment")

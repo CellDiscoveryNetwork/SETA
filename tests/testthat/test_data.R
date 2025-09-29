@@ -75,7 +75,6 @@ test_that("mockSeurat returns a Seurat object", {
 
 
 test_that("mockSeuratE returns a SingleCellExperiment object", {
-    skip_if_not_installed("SingleCellExperiment")
     expect_true("SingleCellExperiment" %in% class(sc))
     expect_true(ncol(SingleCellExperiment::colData(sc)) > 0)
     expect_equal(ncol(sc), 500)
