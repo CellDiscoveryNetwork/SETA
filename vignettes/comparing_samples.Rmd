@@ -72,6 +72,10 @@ library(dplyr)
 library(tidyr)
 library(corrplot)
 library(caret)
+have_ml <- all(vapply(c("caret","glmnet"), requireNamespace, logical(1), quietly = TRUE))
+if (!have_ml) {
+    warning("Some machine learning packages are not installed. ML chunks will be skipped.")
+}
 library(TabulaMurisSenisData)
 ```
 
@@ -256,7 +260,7 @@ corrplot(full_cor_mat,
 
 ## Use SETA transformed data to create predictive models with caret
 
-```{r caret, warning=FALSE}
+```{r caret, warning=FALSE, eval = have_ml}
 set.seed(687)
 train_df <- clr_metadata |>
     select(-`mouse.id`) |>
@@ -271,7 +275,7 @@ model <- train(age ~ ., data = subset(train_df),
 importance <- varImp(model)
 ```
 
-```{r plot caret, fig.width = 12, fig.height = 12}
+```{r plot caret, fig.width = 12, fig.height = 12, eval = have_ml}
 plot(importance,
     main = "Cross-Validated Variable Importance",
     sub = "Caret GLMnet model"
