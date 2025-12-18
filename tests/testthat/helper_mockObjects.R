@@ -97,3 +97,31 @@ makeTypeHierarchy <- function(type_levels) {
         broad = setNames(paste0("broad", ifelse(i <= n / 2, 1, 2)), type_levels)
     )
 }
+
+#' Create a simple phylogenetic tree for testing PhILR
+#' 
+#' Creates a binary tree using ape::rtree with specified tip labels.
+#' Uses a fixed seed for reproducibility. This is a helper function for tests.
+#' 
+#' @param tip_labels Character vector of tip labels. If NULL, creates labels
+#'   "Taxon1", "Taxon2", etc.
+#' @param n_taxa Integer. Number of taxa (only used if tip_labels is NULL).
+#' @param seed Integer. Random seed for tree generation. Default is 687 to match
+#'   other SETA mock data.
+#' @return A phylo object from ape package
+#' @keywords internal
+mockPhyloTree <- function(tip_labels = NULL, n_taxa = 4, seed = 687) {
+    if (!requireNamespace("ape", quietly = TRUE)) {
+        stop("ape package is required for mockPhyloTree")
+    }
+    
+    if (is.null(tip_labels)) {
+        tip_labels <- paste0("Taxon", seq_len(n_taxa))
+    }
+    
+    # Use fixed seed for reproducibility (matches SETA's set.seed(687) pattern)
+    set.seed(seed)
+    tree <- ape::rtree(n = length(tip_labels), tip.label = tip_labels)
+    
+    tree
+}

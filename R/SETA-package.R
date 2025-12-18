@@ -18,6 +18,7 @@
 #'   \item \strong{CLR (Centered Log-Ratio)}: Centers log-transformed data around the geometric mean
 #'   \item \strong{ALR (Additive Log-Ratio)}: Uses a reference cell type as denominator
 #'   \item \strong{ILR (Isometric Log-Ratio)}: Projects data onto orthonormal basis
+#'   \item \strong{PhILR (Phylogenetic Isometric Log-Ratio)}: Phylogenetic extension of ILR using a tree structure
 #'   \item \strong{Balance transforms}: User-defined log-ratios between groups of cell types
 #' }
 #'
@@ -38,7 +39,7 @@
 #' Key functions include:
 #' \itemize{
 #'   \item \code{\link{setaCounts}}: Extract cell-type count matrices from single-cell objects
-#'   \item \code{\link{setaTransform}}: Apply compositional transforms (CLR, ALR, ILR, balance)
+#'   \item \code{\link{setaTransform}}: Apply compositional transforms (CLR, ALR, ILR, phILR, balance)
 #'   \item \code{\link{setaLatent}}: Perform dimensionality reduction (PCA, PCoA, NMDS)
 #'   \item \code{\link{setaDistances}}: Calculate compositional distances between samples
 #'   \item \code{\link{setaTaxonomyDF}}: Create hierarchical taxonomies for multi-resolution analysis

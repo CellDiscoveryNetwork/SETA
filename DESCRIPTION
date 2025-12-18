@@ -21,6 +21,7 @@ Imports:
     rlang,
     utils
 Suggests:
+    ape,
     BiocStyle,
     caret,
     glmnet,
@@ -30,6 +31,8 @@ Suggests:
     knitr,
     methods,
     patchwork,
+    philr,
+    phyloseq,
     reshape2,
     rmarkdown,
     SeuratObject,

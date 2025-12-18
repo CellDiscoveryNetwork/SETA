@@ -151,6 +151,29 @@ test_that("setaTransform works with balance method", {
   expect_false(is.null(result$counts))
 })
 
+test_that("setaTransform works with phILR method", {
+  skip_if_not_installed("phyloseq")
+  skip_if_not_installed("philr")
+  skip_if_not_installed("ape")
+  
+  # Use same mock data structure as other transforms
+  set.seed(687)
+  df <- mockLong()
+  mat <- setaCounts(df)
+  
+  # Create tree based on cell types
+  cell_types <- colnames(mat)
+  tree <- mockPhyloTree(tip_labels = cell_types, seed = 687)
+  
+  result <- setaTransform(mat, method = "phILR", tree = tree)
+  expect_equal(result$method, "phILR")
+  expect_equal(result$within_resolution, FALSE)
+  expect_equal(result$grouping_var, NULL)
+  expect_true(is.matrix(result$counts))
+  expect_equal(nrow(result$counts), nrow(mat))
+  expect_equal(ncol(result$counts), ncol(mat) - 1)  # n_taxa - 1 dimensions
+})
+
 test_that("setaBalance supports multiple balances", {
   mat <- matrix(1:12, nrow = 3)
   colnames(mat) <- paste0("T", 1:4)
