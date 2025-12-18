@@ -24,7 +24,7 @@ SETA aims to make compositional analysis user friendly and easy to understand by
   - Latent space methods (RDA, PLS-DA, tensors!) - vegan and otherwise
   - Add trajectory capabilities
 - Compositional Transforms
-  - ILR with balances
+  - ILR with balances - now available via PhILR
   - ideas welcome
 - Methods for Cell Type Trees
   - Addition of metadata to tree objects
