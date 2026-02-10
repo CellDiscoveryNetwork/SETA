@@ -1,5 +1,27 @@
 # SETA NEWS
 
+## Version 0.99.8 (2025-02-10)
+
+### New Features
+- Added PhILR (Phylogenetic Isometric Log-Ratio) transform via `setaPhILR()` function
+- Added granularity scan functionality via `setaGranularityScan()` function for exploring compositional structure across tree resolutions
+- Integrated PhILR as a new method option in `setaTransform()`
+
+### New Functions
+- `setaPhILR()`: Applies PhILR transform using phylogenetic tree structure
+- `setaGranularityScan()`: Performs cluster granularity scan by cutting cell type phylogenetic/taxonomic tree at different resolutions and computing compositional latent spaces
+
+### Dependencies
+- Added `ape`, `philr`, and `phyloseq` to Suggests (optional dependencies for PhILR and granularity scan features - tree based compositional analysis)
+
+### Documentation
+- Added documentation for PhILR and granularity scan functions with usage examples
+- Updated package-level documentation to include new functions
+
+### Testing
+- Added test suite for `setaPhILR()` (test_philr.R)
+- Added test suite for `setaGranularityScan()` (test_granularityScan.R)
+
 ## Version 0.99.6 (2025-09-29)
 
 ### Dependency Changes

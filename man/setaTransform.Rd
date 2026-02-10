@@ -4,16 +4,20 @@
 \alias{setaTransform}
 \title{Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
 A convenience function that dispatches to one of the transforms:
-CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
+CLR, ALR, ILR, percent, logCPM, phILR, or balance. Note that the input \code{counts} matrix
 should have rows as samples and columns as taxa. Optionally, you can supply
 a taxonomy data frame to perform a within-lineage transform at a specified
 resolution.}
 \usage{
 setaTransform(
   counts,
-  method = c("CLR", "ALR", "ILR", "percent", "logCPM", "balance"),
+  method = c("CLR", "ALR", "ILR", "percent", "logCPM", "phILR", "balance"),
   ref = NULL,
   taxTree = NULL,
+  tree = NULL,
+  sample_data = NULL,
+  part.weights = "enorm.x.gm.counts",
+  ilr.weights = "blw.sqrt",
   pseudocount = 1,
   size_factors = NULL,
   taxonomyDF = NULL,
@@ -28,14 +32,26 @@ setaTransform(
 
 \item{method}{A character string specifying which transform to apply.
 One of \code{"CLR"}, \code{"ALR"}, \code{"ILR"}, \code{"percent"},
-\code{"logCPM"} or \code{"balance"}.}
+\code{"logCPM"}, \code{"phILR"}, or \code{"balance"}.}
 
 \item{ref}{Reference taxon (only used if \code{method = "ALR"}). This can be
 a taxon name or a column index.}
 
 \item{taxTree}{Optional tree for ILR (not yet implemented).}
 
-\item{pseudocount}{Numeric, used by CLR, ALR, ILR, and logCPM. Default is 1.}
+\item{tree}{Phylogenetic tree object (class \code{phylo}) required for
+\code{method = "phILR"}. Tip labels must match \code{colnames(counts)}.}
+
+\item{sample_data}{Optional data frame or phyloseq \code{sample_data} object
+for \code{method = "phILR"}. Row names should match \code{rownames(counts)}.}
+
+\item{part.weights}{Character. Part weights method for PhILR.
+Default is \code{"enorm.x.gm.counts"}. See \code{\link[philr]{philr}}.}
+
+\item{ilr.weights}{Character. ILR weights method for PhILR.
+Default is \code{"blw.sqrt"}. See \code{\link[philr]{philr}}.}
+
+\item{pseudocount}{Numeric, used by CLR, ALR, ILR, logCPM, and phILR. Default is 1.}
 
 \item{size_factors}{For logCPM scaling. If \code{NULL}, uses row sums.}
 
@@ -49,7 +65,7 @@ each taxon belongs to. Only used if \code{within_resolution = TRUE}.}
 \item{within_resolution}{Logical. If \code{TRUE}, applies the transform
 within each lineage of taxa defined by \code{taxonomyDF[[taxonomy_col]]}
 separately, then merges them back into the original matrix structure.
-Default is \code{FALSE}. Ignored for `"balance"`.}
+Default is \code{FALSE}. Ignored for `"balance"` and `"phILR"`.}
 
 \item{balances}{For `"balance"`: a single balance list or a named list;}
 
@@ -71,7 +87,7 @@ A list with the following elements:
 \description{
 Wrapper for Compositional Transforms with Optional Within-Lineage Resolutions
 A convenience function that dispatches to one of the transforms:
-CLR, ALR, ILR, percent, or logCPM. Note that the input \code{counts} matrix
+CLR, ALR, ILR, percent, logCPM, phILR, or balance. Note that the input \code{counts} matrix
 should have rows as samples and columns as taxa. Optionally, you can supply
 a taxonomy data frame to perform a within-lineage transform at a specified
 resolution.
